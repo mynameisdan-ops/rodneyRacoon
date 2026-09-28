@@ -3,9 +3,6 @@ import type { SkillId } from '../game/problems';
 export interface WorldDef {
   id: number;
   name: string;
-  /** Placeholder colors until the M3 art pass. */
-  sky: string;
-  ground: string;
 }
 
 export interface LevelDef {
@@ -24,9 +21,7 @@ export interface LevelDef {
   boss?: boolean;
 }
 
-export const WORLDS: WorldDef[] = [
-  { id: 1, name: 'Sunny Meadow', sky: '#bfe6ff', ground: '#6cc36c' },
-];
+export const WORLDS: WorldDef[] = [{ id: 1, name: 'Sunny Meadow' }];
 
 export const LEVELS: LevelDef[] = [
   {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { avatarForProfile } from './art/hero/avatar';
 import { getLevel } from './content/levels';
 import { isUnlocked } from './game/progress';
 import type { PageEvaluation } from './game/scoring';
@@ -138,7 +139,7 @@ function Game() {
         <PageScreen
           key={current.attempt}
           level={level}
-          heroColor={profile!.color}
+          avatar={avatarForProfile(profile!)}
           onFinish={finish}
           onQuit={toMap}
         />
@@ -153,6 +154,7 @@ function Game() {
       return (
         <ResultsScreen
           level={level}
+          avatar={avatarForProfile(profile!)}
           evaluation={current.evaluation}
           hasNext={nextOpen}
           onNext={() => next && play(next.id)}

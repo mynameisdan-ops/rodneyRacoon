@@ -1,6 +1,8 @@
 import { totalStars } from '../game/progress';
 import type { Profile } from '../state/schema';
-import { PlaceholderHero } from '../ui/PlaceholderHero';
+import { avatarForProfile } from '../art/hero/avatar';
+import { Hero } from '../art/hero/Hero';
+import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 
 interface Props {
   profiles: Profile[];
@@ -15,6 +17,7 @@ export const MAX_PROFILES = 6;
 export function ProfileSelect({ profiles, lastProfileId, onSelect, onEdit, onAdd }: Props) {
   return (
     <div className="profiles">
+      <WorldBackdrop worldId={1} height={800} horizon={420} groundTop={520} />
       <h1 className="profiles__title">Who's playing?</h1>
       <div className="profiles__grid">
         {profiles.map((p) => (
@@ -28,7 +31,7 @@ export function ProfileSelect({ profiles, lastProfileId, onSelect, onEdit, onAdd
               onClick={() => onSelect(p.id)}
               aria-label={`Play as ${p.name}`}
             >
-              <PlaceholderHero color={p.color} size={150} />
+              <Hero avatar={avatarForProfile(p)} size={160} />
               <span className="profile-card__name">{p.name}</span>
               <span className="profile-card__stars">★ {totalStars(p.progress)}</span>
             </button>

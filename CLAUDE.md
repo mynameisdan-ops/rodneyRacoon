@@ -32,6 +32,9 @@ npm test           # vitest
 npm run lint
 ```
 
+In a dev build, open `http://localhost:5173/#gallery` for the art gallery (every hero pose,
+hair style and skin tone). Use it to check art changes; it is left out of production builds.
+
 (Keep this list in sync with `package.json`.)
 
 ## Architecture rules

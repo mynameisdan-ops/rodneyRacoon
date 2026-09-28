@@ -1,6 +1,6 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Sep 27, 2026 (after M2). The full design and milestones are in `docs/PLAN.md`.
+Last updated: Sep 27, 2026 (after M3). The full design and milestones are in `docs/PLAN.md`.
 
 ## Goals
 
@@ -20,8 +20,8 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 
 ## Current state
 
-- **M0, M1 and M2 are done.** M0-M1 are on `main`; M2 is on branch `m2-profiles-map`.
-  World 1 (levels 1-8, addition) is playable, with saved players and a trail map.
+- **M0-M3 are done.** M0-M2 are on `main`; M3 is on branch `m3-art-system`.
+  World 1 (levels 1-8, addition) is playable, with saved players, a trail map, and drawn art.
   Run it with `npm install` then `npm run dev`.
 - **M0 Scaffold:** Vite 8 + TypeScript 6 + React 19, ESLint, Prettier (Markdown excluded), Vitest 5,
   `vite-plugin-pwa` (SVG icon only so far), `.claude/launch.json`, and `.gitattributes` forcing LF
@@ -51,6 +51,23 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
   - Checked in the browser: create, rename and delete a player; separate progress per player;
     progress survives a reload; passing unlocks the next level; Next level and quit. No console
     errors. 42 unit tests.
+- **M3 Art system:**
+  - `src/art/hero/`: the `<Hero>` paper doll (SVG, facing right, big-head kid proportions):
+    separate arm/leg groups that rotate from their joints, poses in `hero.css` (idle with blink,
+    walk, jump, climb, cheer with open mouth, one-shot stumble with frown), `facing` and `size`
+    props. `AvatarConfig` (skin, hair style and color, shirt, pants, shoes); options live in
+    `src/content/avatar.ts`. `avatarForProfile()` maps a profile's `color` to the shirt until
+    the builder (M8) stores a full avatar. `PlaceholderHero` is gone.
+  - `src/art/worlds/`: `WorldBackdrop` draws sky, drifting clouds, far hills, a tree/bush line and
+    near ground with flowers, plus an optional dirt path. Each layer is a doubled 1280px tile with
+    its own parallax speed (overridable, e.g. `{ near: 0 }`). Scenery is placed with the seeded RNG,
+    so it is the same every time. Colors per world in `themes.ts` (only the meadow so far; other
+    worlds fall back to it). World colors were removed from `content/levels.ts`.
+  - Used on "Who's playing?", the player editor (cheering preview), the trail map, the page
+    strip (walks a step per correct answer, stumbles on a miss, cheers at the end of a passed
+    page, scenery drifts as he goes) and the results screen (cheer on pass, idle on retry).
+  - Dev art gallery at `#gallery` (dev builds only; confirmed absent from the production bundle).
+  - Checked in the browser: every screen, pose switching during play, no console errors or warnings.
 - **Decided (was open):** levels unlock strictly in order. A parent "unlock any level" switch is
   planned for Settings (M10).
 - **Still open:**
@@ -67,10 +84,16 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 - Typing `0` for a two-digit answer waits for a second digit, as designed (auto-submit only fires
   at the answer's length). The ✓ key submits early.
 - When editing files with Python on Windows, open them with `newline=''` or Python writes CRLF.
+- Performance on the real Android tablet is untested. If animation stutters, the first suspects are
+  the CSS `filter: brightness()` on the back limbs (swap for pre-darkened colors) and the number
+  of scenery elements in the backdrops.
+- The page strip's goal is still a plain flag; the real obstacle props come with the cut scenes (M4).
 
 ## Next steps
 
-1. **M3 Art system:** the paper-doll `<Hero>` with poses (idle, walk, jump, climb, cheer,
-   stumble), world background layers, and the trail strip on the page using them. It replaces
-   `PlaceholderHero` (profile `color` becomes the first avatar setting).
-2. **M4-M10** in the order `docs/PLAN.md` §9 lists them.
+1. **M4 Cut scenes:** a timeline-driven `CutScenePlayer` (steps like `walkTo`, `jump`,
+   `useProp`, `camera`, `caption`, `wait`) that plays after a passed page, reusable obstacle
+   templates (tall grass, puddle, fence, bees, stepping logs, windy hill, sleeping bull, rope
+   bridge), and World 1's 8 scenes as data. It replaces the text card on the results screen and
+   the flag in the page strip. Build on `Hero` poses and `WorldBackdrop`'s `scroll`.
+2. **M5-M10** in the order `docs/PLAN.md` §9 lists them.

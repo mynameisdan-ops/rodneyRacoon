@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useReducer, useState, type ReactNode } from 'react';
-import { getWorld, type LevelDef } from '../content/levels';
+import type { AvatarConfig } from '../art/hero/avatar';
+import type { HeroPose } from '../art/hero/Hero';
+import type { LevelDef } from '../content/levels';
 import { CONFIG } from '../game/config';
 import { generatePage, type Problem } from '../game/problems';
 import { createRng, randomSeed } from '../game/rng';
@@ -10,7 +12,7 @@ import { TrailStrip } from '../ui/TrailStrip';
 
 interface Props {
   level: LevelDef;
-  heroColor: string;
+  avatar: AvatarConfig;
   onFinish: (evaluation: PageEvaluation) => void;
   onQuit: () => void;
 }
@@ -19,7 +21,7 @@ interface Props {
 const FINISH_PAUSE_MS = 1300;
 
 export function PageScreen(props: Props) {
-  const { level, heroColor, onQuit } = props;
+  const { level, avatar, onQuit } = props;
   const [countdown, setCountdown] = useState<number>(CONFIG.countdownSeconds);
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export function PageScreen(props: Props) {
     return (
       <PageLayout
         level={level}
-        heroColor={heroColor}
+        avatar={avatar}
         onQuit={onQuit}
         secondsLeft={CONFIG.pageSeconds}
         running={false}
@@ -46,7 +48,7 @@ export function PageScreen(props: Props) {
   return <TimedPage {...props} />;
 }
 
-function TimedPage({ level, heroColor, onFinish, onQuit }: Props) {
+function TimedPage({ level, avatar, onFinish, onQuit }: Props) {
   const [problems] = useState<Problem[]>(() =>
     generatePage(level.skill, level.problems, createRng(randomSeed()), level.difficulty),
   );
@@ -113,17 +115,23 @@ function TimedPage({ level, heroColor, onFinish, onQuit }: Props) {
   }, [handleKey]);
 
   const correct = state.results.filter((r) => r.correct).length;
-  const misses = state.feedback && state.feedback.kind !== 'correct' ? state.feedback.seq : 0;
+  // Cheer at the end if the page is a pass (stars don't matter here, so time left is 0).
+  const endPose: HeroPose | undefined = done
+    ? evaluatePage(state.results, problems.length, 0).passed
+      ? 'cheer'
+      : 'idle'
+    : undefined;
 
   return (
     <PageLayout
       level={level}
-      heroColor={heroColor}
+      avatar={avatar}
       onQuit={onQuit}
       secondsLeft={secondsLeft}
       running={!done}
       progress={correct / problems.length}
-      stumbleKey={misses}
+      feedback={state.feedback}
+      endPose={endPose}
       counter={`${Math.min(state.index + 1, problems.length)} / ${problems.length}`}
       pad={<NumberPad onKey={handleKey} disabled={state.phase !== 'playing'} />}
     >
@@ -180,12 +188,13 @@ function ProblemView({ state }: { state: SessionState }) {
 
 interface LayoutProps {
   level: LevelDef;
-  heroColor: string;
+  avatar: AvatarConfig;
   onQuit: () => void;
   secondsLeft: number;
   running: boolean;
   progress?: number;
-  stumbleKey?: number;
+  feedback?: SessionState['feedback'];
+  endPose?: HeroPose;
   counter?: string;
   pad?: ReactNode;
   children: ReactNode;
@@ -193,28 +202,28 @@ interface LayoutProps {
 
 function PageLayout({
   level,
-  heroColor,
+  avatar,
   onQuit,
   secondsLeft,
   running,
   progress = 0,
-  stumbleKey = 0,
+  feedback,
+  endPose,
   counter,
   pad,
   children,
 }: LayoutProps) {
-  const world = getWorld(level.world);
   const shown = Math.ceil(secondsLeft);
   return (
     <div className="page">
       <TrailStrip
-        sky={world?.sky ?? '#bfe6ff'}
-        ground={world?.ground ?? '#6cc36c'}
+        worldId={level.world}
         obstacle={level.obstacle}
+        avatar={avatar}
         progress={progress}
-        stumbleKey={stumbleKey}
+        feedback={feedback}
         running={running}
-        heroColor={heroColor}
+        endPose={endPose}
       />
       <div className="page__hud">
         <button type="button" className="icon-button" aria-label="Back to levels" onClick={onQuit}>

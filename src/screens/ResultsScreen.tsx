@@ -1,9 +1,12 @@
+import type { AvatarConfig } from '../art/hero/avatar';
+import { Hero } from '../art/hero/Hero';
 import type { LevelDef } from '../content/levels';
 import type { PageEvaluation } from '../game/scoring';
 import { Stars } from '../ui/Stars';
 
 interface Props {
   level: LevelDef;
+  avatar: AvatarConfig;
   evaluation: PageEvaluation;
   hasNext: boolean;
   onNext: () => void;
@@ -18,13 +21,24 @@ const RETRY_LINES = [
   'A little stumble — you’ve got this!',
 ];
 
-export function ResultsScreen({ level, evaluation, hasNext, onNext, onRetry, onMap }: Props) {
+export function ResultsScreen({
+  level,
+  avatar,
+  evaluation,
+  hasNext,
+  onNext,
+  onRetry,
+  onMap,
+}: Props) {
   const { passed, stars, correct, total } = evaluation;
   const lines = passed ? PASS_CHEERS : RETRY_LINES;
   const line = lines[(level.id + correct) % lines.length];
 
   return (
     <div className={passed ? 'results results--pass' : 'results results--retry'}>
+      <div className="results__hero">
+        <Hero avatar={avatar} pose={passed ? 'cheer' : 'idle'} size={280} />
+      </div>
       <h1 className="results__title">{line}</h1>
       {passed && <Stars count={stars} size={96} />}
       <div className="results__score">

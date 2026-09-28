@@ -1,0 +1,282 @@
+/*
+ * Hero poses. Limbs are drawn hanging down from their joint at local (0, 0),
+ * so rotating around that point swings them. Negative angles swing forward
+ * (toward the way the hero faces).
+ */
+
+.hero-svg {
+  overflow: visible;
+}
+
+.hero-arm,
+.hero-leg {
+  transform-box: view-box;
+  transform-origin: 0 0;
+}
+
+.hero-arm--back,
+.hero-leg--back {
+  filter: brightness(0.82);
+}
+
+.hero-arm--front {
+  transform: rotate(-8deg);
+}
+
+.hero-arm--back {
+  transform: rotate(10deg);
+}
+
+.hero-body,
+.hero-head,
+.hero-eyes {
+  transform-box: fill-box;
+}
+
+.hero-body {
+  transform-origin: 50% 100%;
+}
+
+.hero-eyes {
+  transform-origin: 50% 50%;
+}
+
+/* ---- idle: breathe and blink ---- */
+
+.hero-svg--idle .hero-body {
+  animation: hero-breathe 2.4s ease-in-out infinite;
+}
+
+.hero-svg .hero-eyes {
+  animation: hero-blink 4.2s linear infinite;
+}
+
+@keyframes hero-breathe {
+  50% {
+    transform: translateY(1.5px);
+  }
+}
+
+@keyframes hero-blink {
+  0%,
+  94%,
+  100% {
+    transform: scaleY(1);
+  }
+  97% {
+    transform: scaleY(0.1);
+  }
+}
+
+/* ---- walk ---- */
+
+.hero-svg--walk .hero-body {
+  animation: hero-step-bob 0.28s ease-in-out infinite alternate;
+}
+
+.hero-svg--walk .hero-leg--front,
+.hero-svg--walk .hero-arm--back {
+  animation: hero-swing-a 0.56s ease-in-out infinite alternate;
+}
+
+.hero-svg--walk .hero-leg--back,
+.hero-svg--walk .hero-arm--front {
+  animation: hero-swing-b 0.56s ease-in-out infinite alternate;
+}
+
+@keyframes hero-step-bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes hero-swing-a {
+  from {
+    transform: rotate(-28deg);
+  }
+  to {
+    transform: rotate(26deg);
+  }
+}
+
+@keyframes hero-swing-b {
+  from {
+    transform: rotate(26deg);
+  }
+  to {
+    transform: rotate(-28deg);
+  }
+}
+
+/* ---- jump (held in the air) ---- */
+
+.hero-svg--jump .hero-body {
+  transform: translateY(-10px);
+}
+
+.hero-svg--jump .hero-leg--front {
+  transform: rotate(-40deg);
+}
+
+.hero-svg--jump .hero-leg--back {
+  transform: rotate(30deg);
+}
+
+.hero-svg--jump .hero-arm--front {
+  transform: rotate(-120deg);
+}
+
+.hero-svg--jump .hero-arm--back {
+  transform: rotate(125deg);
+}
+
+.hero-svg--jump .hero-shadow {
+  transform: scale(0.7);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+/* ---- climb ---- */
+
+.hero-svg--climb .hero-arm--front,
+.hero-svg--climb .hero-leg--back {
+  animation: hero-climb-a 0.7s ease-in-out infinite alternate;
+}
+
+.hero-svg--climb .hero-arm--back,
+.hero-svg--climb .hero-leg--front {
+  animation: hero-climb-b 0.7s ease-in-out infinite alternate;
+}
+
+.hero-svg--climb .hero-leg--back,
+.hero-svg--climb .hero-leg--front {
+  animation-name: hero-climb-leg;
+}
+
+.hero-svg--climb .hero-leg--front {
+  animation-direction: alternate-reverse;
+}
+
+/* Hands reach forward to the wall in front, alternating high and low. */
+@keyframes hero-climb-a {
+  from {
+    transform: rotate(-125deg);
+  }
+  to {
+    transform: rotate(-92deg);
+  }
+}
+
+@keyframes hero-climb-b {
+  from {
+    transform: rotate(-92deg);
+  }
+  to {
+    transform: rotate(-125deg);
+  }
+}
+
+@keyframes hero-climb-leg {
+  from {
+    transform: rotate(-45deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+/* ---- cheer ---- */
+
+.hero-svg--cheer .hero-body {
+  animation: hero-hop 0.5s ease-in-out infinite alternate;
+}
+
+.hero-svg--cheer .hero-arm--front {
+  animation: hero-wave-a 0.25s ease-in-out infinite alternate;
+}
+
+.hero-svg--cheer .hero-arm--back {
+  animation: hero-wave-b 0.25s ease-in-out infinite alternate;
+}
+
+.hero-svg--cheer .hero-mouth {
+  d: path('M60 61 Q71 76 82 60 Z');
+  fill: #7a2e2e;
+}
+
+@keyframes hero-hop {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-9px);
+  }
+}
+
+/* Arms up in a V: front arm up past the face, back arm up behind the head. */
+@keyframes hero-wave-a {
+  from {
+    transform: rotate(-135deg);
+  }
+  to {
+    transform: rotate(-112deg);
+  }
+}
+
+@keyframes hero-wave-b {
+  from {
+    transform: rotate(112deg);
+  }
+  to {
+    transform: rotate(135deg);
+  }
+}
+
+/* ---- stumble (one-shot) ---- */
+
+.hero-svg--stumble .hero-body {
+  animation: hero-stumble-body 0.6s ease-out;
+}
+
+.hero-svg--stumble .hero-arm--front {
+  animation: hero-flail 0.6s ease-out;
+}
+
+.hero-svg--stumble .hero-arm--back {
+  animation: hero-flail 0.6s ease-out reverse;
+}
+
+.hero-svg--stumble .hero-mouth {
+  d: path('M64 66 Q71 62 78 66');
+}
+
+@keyframes hero-stumble-body {
+  0% {
+    transform: rotate(0);
+  }
+  30% {
+    transform: translateX(-6px) rotate(-16deg);
+  }
+  60% {
+    transform: translateX(2px) rotate(6deg);
+  }
+  100% {
+    transform: rotate(0);
+  }
+}
+
+@keyframes hero-flail {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  30% {
+    transform: rotate(-110deg);
+  }
+  60% {
+    transform: rotate(-50deg);
+  }
+}

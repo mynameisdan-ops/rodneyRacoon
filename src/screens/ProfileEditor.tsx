@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { PROFILE_COLORS } from '../content/profiles';
 import { MAX_NAME_LENGTH, type Profile } from '../state/schema';
 import { cleanName } from '../state/store';
-import { PlaceholderHero } from '../ui/PlaceholderHero';
+import { avatarForProfile } from '../art/hero/avatar';
+import { Hero } from '../art/hero/Hero';
 
 interface Props {
   /** Undefined when creating a new player. */
@@ -81,7 +82,7 @@ export function ProfileEditor({
 
       <div className="editor__middle">
         <div className="editor__preview">
-          <PlaceholderHero color={color} size={260} />
+          <Hero avatar={avatarForProfile({ color })} pose="cheer" size={280} />
         </div>
         <div>
           <div className="editor__label">Pick a color</div>

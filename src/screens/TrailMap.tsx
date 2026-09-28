@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { LEVELS, WORLDS, getLevel } from '../content/levels';
 import { currentLevel, isPassed, isUnlocked, totalStars } from '../game/progress';
 import type { Profile } from '../state/schema';
-import { PlaceholderHero } from '../ui/PlaceholderHero';
+import { avatarForProfile } from '../art/hero/avatar';
+import { Hero } from '../art/hero/Hero';
+import { getTheme } from '../art/worlds/themes';
+import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 import { Stars } from '../ui/Stars';
 
 interface Props {
@@ -55,37 +58,27 @@ export function TrailMap({ profile, saveFailed, onPlay, onSwitchPlayer }: Props)
   const nextWorld = WORLDS[worldIndex + 1];
   const nextWorldFirst = LEVELS.find((l) => l.world === nextWorld?.id);
   const canGoNext = nextWorldFirst !== undefined && isUnlocked(profile.progress, nextWorldFirst.id);
+  const theme = getTheme(world.id);
 
   return (
-    <div className="map" style={{ background: `linear-gradient(${world.sky}, #ffffff 90%)` }}>
-      <svg className="map__land" viewBox="0 0 1280 800" aria-hidden>
-        <path
-          d="M0 300 Q 260 230 560 290 T 1280 250 V 800 H 0 Z"
-          fill={world.ground}
-          opacity={0.45}
-        />
-        <path
-          d="M0 420 Q 360 340 700 420 T 1280 380 V 800 H 0 Z"
-          fill={world.ground}
-          opacity={0.7}
-        />
-        <path d="M0 560 Q 420 480 820 560 T 1280 520 V 800 H 0 Z" fill={world.ground} />
+    <div className="map">
+      <WorldBackdrop worldId={world.id} height={800} horizon={190} groundTop={290}>
         <path
           d={smoothPath(STOPS.slice(0, levels.length))}
           fill="none"
-          stroke="#e4c48a"
+          stroke={theme.path}
           strokeWidth={34}
           strokeLinecap="round"
         />
         <path
           d={smoothPath(STOPS.slice(0, levels.length))}
           fill="none"
-          stroke="#c9a263"
+          stroke={theme.pathEdge}
           strokeWidth={6}
           strokeLinecap="round"
           strokeDasharray="4 22"
         />
-      </svg>
+      </WorldBackdrop>
 
       <div className="map__hud">
         <button type="button" className="player-chip" onClick={onSwitchPlayer}>
@@ -147,7 +140,7 @@ export function TrailMap({ profile, saveFailed, onPlay, onSwitchPlayer }: Props)
             {level.boss && <div className="stop__label">{level.obstacle}</div>}
             {isHere && (
               <div className="map__hero">
-                <PlaceholderHero color={profile.color} size={120} />
+                <Hero avatar={avatarForProfile(profile)} size={124} />
               </div>
             )}
           </div>
