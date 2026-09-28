@@ -8,7 +8,7 @@ interface Props {
   hasNext: boolean;
   onNext: () => void;
   onRetry: () => void;
-  onLevels: () => void;
+  onMap: () => void;
 }
 
 const PASS_CHEERS = ['Great job!', 'Awesome!', 'You did it!', 'Super speedy!'];
@@ -18,7 +18,7 @@ const RETRY_LINES = [
   'A little stumble — you’ve got this!',
 ];
 
-export function ResultsScreen({ level, evaluation, hasNext, onNext, onRetry, onLevels }: Props) {
+export function ResultsScreen({ level, evaluation, hasNext, onNext, onRetry, onMap }: Props) {
   const { passed, stars, correct, total } = evaluation;
   const lines = passed ? PASS_CHEERS : RETRY_LINES;
   const line = lines[(level.id + correct) % lines.length];
@@ -40,8 +40,8 @@ export function ResultsScreen({ level, evaluation, hasNext, onNext, onRetry, onL
       )}
 
       <div className="results__actions">
-        <button type="button" className="big-button big-button--quiet" onClick={onLevels}>
-          Levels
+        <button type="button" className="big-button big-button--quiet" onClick={onMap}>
+          Map
         </button>
         {passed ? (
           <>

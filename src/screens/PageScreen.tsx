@@ -10,6 +10,7 @@ import { TrailStrip } from '../ui/TrailStrip';
 
 interface Props {
   level: LevelDef;
+  heroColor: string;
   onFinish: (evaluation: PageEvaluation) => void;
   onQuit: () => void;
 }
@@ -17,7 +18,8 @@ interface Props {
 /** Pause on the finished page before moving to results, in ms. */
 const FINISH_PAUSE_MS = 1300;
 
-export function PageScreen({ level, onFinish, onQuit }: Props) {
+export function PageScreen(props: Props) {
+  const { level, heroColor, onQuit } = props;
   const [countdown, setCountdown] = useState<number>(CONFIG.countdownSeconds);
 
   useEffect(() => {
@@ -28,17 +30,23 @@ export function PageScreen({ level, onFinish, onQuit }: Props) {
 
   if (countdown > 0) {
     return (
-      <PageLayout level={level} onQuit={onQuit} secondsLeft={CONFIG.pageSeconds} running={false}>
+      <PageLayout
+        level={level}
+        heroColor={heroColor}
+        onQuit={onQuit}
+        secondsLeft={CONFIG.pageSeconds}
+        running={false}
+      >
         <div className="countdown" key={countdown}>
           {countdown}
         </div>
       </PageLayout>
     );
   }
-  return <TimedPage level={level} onFinish={onFinish} onQuit={onQuit} />;
+  return <TimedPage {...props} />;
 }
 
-function TimedPage({ level, onFinish, onQuit }: Props) {
+function TimedPage({ level, heroColor, onFinish, onQuit }: Props) {
   const [problems] = useState<Problem[]>(() =>
     generatePage(level.skill, level.problems, createRng(randomSeed()), level.difficulty),
   );
@@ -110,6 +118,7 @@ function TimedPage({ level, onFinish, onQuit }: Props) {
   return (
     <PageLayout
       level={level}
+      heroColor={heroColor}
       onQuit={onQuit}
       secondsLeft={secondsLeft}
       running={!done}
@@ -171,6 +180,7 @@ function ProblemView({ state }: { state: SessionState }) {
 
 interface LayoutProps {
   level: LevelDef;
+  heroColor: string;
   onQuit: () => void;
   secondsLeft: number;
   running: boolean;
@@ -183,6 +193,7 @@ interface LayoutProps {
 
 function PageLayout({
   level,
+  heroColor,
   onQuit,
   secondsLeft,
   running,
@@ -203,6 +214,7 @@ function PageLayout({
         progress={progress}
         stumbleKey={stumbleKey}
         running={running}
+        heroColor={heroColor}
       />
       <div className="page__hud">
         <button type="button" className="icon-button" aria-label="Back to levels" onClick={onQuit}>
