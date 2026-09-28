@@ -79,6 +79,12 @@ describe('sessionReducer', () => {
     expect(s.input).toBe('');
   });
 
+  it('does not count paused time toward a problem', () => {
+    let s = createSession([p(2, 3)], 0);
+    s = run(s, { type: 'pausedFor', ms: 5000 }, digit(5, 6000));
+    expect(s.results).toEqual([{ correct: true, tries: 1, ms: 1000 }]);
+  });
+
   it('ends the page when time is up', () => {
     const s = run(createSession([p(1, 1), p(1, 2)], 0), digit(2), { type: 'timeUp' });
     expect(s.phase).toBe('done');

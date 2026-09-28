@@ -1,6 +1,6 @@
 # Project Plan — "The Long Way Home" (working title)
 
-Last updated Sep 28, 2026. This is the forward plan: design, milestones with their status, and open
+Last updated Sep 28, 2026 (M4 built). This is the forward plan: design, milestones with their status, and open
 questions. Update it whenever a design decision changes or a milestone moves (see the end-of-session
 checklist in `CLAUDE.md`). Current state in a few lines: `STATUS.md`. Session history: `docs/decisions.md`.
 
@@ -15,7 +15,7 @@ a big obstacle on his way home.
 |---|---|
 | Hero | A little boy (the child's own avatar) replaces Rodney and makes his own journey home |
 | Platforms | Windows PC and Android tablet, as one **web app / PWA** (installable, works offline) |
-| Stack | Vite + TypeScript + React, art drawn in code as SVG, animation with CSS (decided in M3; `motion` only if cut scenes need it in M4) |
+| Stack | Vite + TypeScript + React, art drawn in code as SVG, animation with CSS; cut scenes sample a pure timeline on a `requestAnimationFrame` clock (decided in M4: no animation library) |
 | Avatar | Cartoon **avatar builder** (skin, hair, eyes, clothes), plus an **optional photo face** that is cropped into a circle and stays on the device |
 | Profiles | Local profiles saved on each device (IndexedDB). No accounts, no cloud |
 | Page | A fixed number of problems in a **60-second** page; the count grows across levels |
@@ -132,11 +132,12 @@ src/
   ui/                          NumberPad, Timer, Buttons, StarRow, CoinCounter
 ```
 
-- **Cut scenes are data**: each is a short script of steps (`walkTo`, `jump`, `useProp`,
-  `camera`, `caption`, `wait`) played by one `CutScenePlayer`. 40 scenes are assembled from
+- **Cut scenes are data**: each is a short script of steps (`walk`, `move`, `jump`, `hold`,
+  `prop`, `caption`, `face`) compiled into a timeline and drawn by one `CutSceneView`; the camera
+  follows the hero automatically in scenes wider than the screen. 40 scenes are assembled from
   about 10 reusable obstacle templates plus 5 bespoke boss scenes.
 - **Rendering**: fixed 16:10 design canvas (1280×800) scaled to fit, landscape only. SVG for
-  art; CSS keyframes and transitions for animation (`motion` only if the cut scenes in M4 need it). Target 60fps on a mid-range Android tablet.
+  art; CSS keyframes and transitions for animation, a rAF-driven timeline for cut scenes. Target 60fps on a mid-range Android tablet.
 - **Offline/PWA**: `vite-plugin-pwa` precaches everything. After the first load no network is needed.
 - **Hosting**: GitHub Pages (HTTPS is required for PWA install and camera access on the tablet).
   On Windows, install from Edge or Chrome as an app; on Android, use Chrome → "Add to Home screen".
@@ -154,8 +155,8 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M0 | Scaffold: Vite+TS+React, ESLint/Prettier, Vitest, PWA plugin, `.claude/launch.json` | Blank app runs, tests run | ✅ |
 | M1 | Core loop: generators for World 1 skills, 60s page, number pad and keyboard, auto-submit, pass/retry, placeholder art | Play levels 1–8 as plain pages | ✅ |
 | M2 | Profiles + persistence + trail map + level unlocks | Two kids with separate saved progress | ✅ |
-| M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer | 🟡 `m3-art-system` |
-| M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | ⬜ |
+| M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer | ✅ |
+| M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | 🟡 `m4-cut-scenes` (scenes and pause built; the tablet check is still to do) |
 | M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ⬜ |
 | M6 | Adaptive difficulty + weak-fact weighting | Difficulty adjusts for each kid | ⬜ |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ⬜ |
@@ -167,8 +168,8 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 
 | Gap | Where it gets fixed |
 |---|---|
-| No pause: the 60-second timer keeps running while the "turn sideways" hint shows or the app is in the background, so a kid can fail a page they never saw. Pause (and hide the problem) on `visibilitychange` and in portrait. | M4 |
-| Tablet performance is untested (CSS `filter` on the back limbs, number of scenery elements). Deploy a preview and play it on the tablet once cut scenes exist. | M4 |
+| ~~No pause~~ Done in M4: a ⏸ button, auto-pause on `visibilitychange` and portrait, problem hidden, Continue to resume. | ✅ M4 |
+| Tablet performance is untested (CSS `filter` on the back limbs, scenery elements, cut scenes re-rendering the SVG every frame). The repo is **private**, so GitHub Pages needs a paid plan or a public repo; the quickest check is the LAN preview (`npm run build`, then `npm run preview -- --host`, and open the PC's address on the tablet over home Wi-Fi). | M4 |
 | Leaving a page with ✕ records nothing. Decide whether it counts as a play before stats exist. | M6 (before stats in M10) |
 | PNG icons (192/512) for the best Android install; GitHub Pages `base` path. | M10 (the path is needed earlier for the M4 preview) |
 

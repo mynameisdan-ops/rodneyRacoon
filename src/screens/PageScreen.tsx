@@ -1,6 +1,7 @@
-import { useCallback, useEffect, useReducer, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useReducer, useRef, useState, type ReactNode } from 'react';
 import type { AvatarConfig } from '../art/hero/avatar';
 import type { HeroPose } from '../art/hero/Hero';
+import { getCutScene } from '../content/cutscenes';
 import type { LevelDef } from '../content/levels';
 import { CONFIG } from '../game/config';
 import { generatePage, type Problem } from '../game/problems';
@@ -19,6 +20,9 @@ interface Props {
 
 /** Pause on the finished page before moving to results, in ms. */
 const FINISH_PAUSE_MS = 1300;
+
+const PORTRAIT = '(orientation: portrait)';
+const shouldAutoPause = () => document.hidden || window.matchMedia(PORTRAIT).matches;
 
 export function PageScreen(props: Props) {
   const { level, avatar, onQuit } = props;
@@ -59,31 +63,65 @@ function TimedPage({ level, avatar, onFinish, onQuit }: Props) {
   const [secondsLeft, setSecondsLeft] = useState<number>(CONFIG.pageSeconds);
   const done = state.phase === 'done';
 
+  // Pausing: the clock stops, the problem is hidden, and it resumes only on Continue.
+  // It pauses by itself when the app goes to the background or the tablet turns to portrait.
+  const [pausedSince, setPausedSince] = useState<number | null>(() =>
+    shouldAutoPause() ? performance.now() : null,
+  );
+  const pausedTotal = useRef(0);
+  const paused = pausedSince !== null;
+
+  const pause = useCallback(() => setPausedSince((p) => p ?? performance.now()), []);
+  const resume = useCallback(() => {
+    if (pausedSince === null || shouldAutoPause()) return;
+    const ms = performance.now() - pausedSince;
+    pausedTotal.current += ms;
+    dispatch({ type: 'pausedFor', ms });
+    setPausedSince(null);
+  }, [pausedSince]);
+
+  useEffect(() => {
+    if (done) return;
+    const onVisibility = () => document.hidden && pause();
+    const portrait = window.matchMedia(PORTRAIT);
+    const onOrientation = () => portrait.matches && pause();
+    document.addEventListener('visibilitychange', onVisibility);
+    portrait.addEventListener('change', onOrientation);
+    return () => {
+      document.removeEventListener('visibilitychange', onVisibility);
+      portrait.removeEventListener('change', onOrientation);
+    };
+  }, [done, pause]);
+
   const remaining = useCallback(
-    () => Math.max(0, CONFIG.pageSeconds - (performance.now() - startedAt) / 1000),
+    () =>
+      Math.max(
+        0,
+        CONFIG.pageSeconds - (performance.now() - startedAt - pausedTotal.current) / 1000,
+      ),
     [startedAt],
   );
 
   // Page clock.
   useEffect(() => {
-    if (done) return;
+    if (done || paused) return;
     const id = setInterval(() => {
       const left = remaining();
       setSecondsLeft(left);
       if (left <= 0) dispatch({ type: 'timeUp' });
     }, 100);
     return () => clearInterval(id);
-  }, [done, remaining]);
+  }, [done, paused, remaining]);
 
-  // After a revealed answer, move on.
+  // After a revealed answer, move on (the wait restarts after a pause).
   useEffect(() => {
-    if (state.phase !== 'revealing') return;
+    if (state.phase !== 'revealing' || paused) return;
     const id = setTimeout(
       () => dispatch({ type: 'advance', now: performance.now() }),
       CONFIG.revealMs,
     );
     return () => clearTimeout(id);
-  }, [state.phase, state.index]);
+  }, [state.phase, state.index, paused]);
 
   // When the page ends, show it briefly, then report the result.
   useEffect(() => {
@@ -93,12 +131,16 @@ function TimedPage({ level, avatar, onFinish, onQuit }: Props) {
     return () => clearTimeout(id);
   }, [done, state.results, problems.length, remaining, onFinish]);
 
-  const handleKey = useCallback((key: PadKey) => {
-    const now = performance.now();
-    if (key === 'back') dispatch({ type: 'backspace' });
-    else if (key === 'enter') dispatch({ type: 'submit', now });
-    else dispatch({ type: 'digit', digit: key, now });
-  }, []);
+  const handleKey = useCallback(
+    (key: PadKey) => {
+      if (paused) return;
+      const now = performance.now();
+      if (key === 'back') dispatch({ type: 'backspace' });
+      else if (key === 'enter') dispatch({ type: 'submit', now });
+      else dispatch({ type: 'digit', digit: key, now });
+    },
+    [paused],
+  );
 
   // Physical keyboard support.
   useEffect(() => {
@@ -127,20 +169,28 @@ function TimedPage({ level, avatar, onFinish, onQuit }: Props) {
       level={level}
       avatar={avatar}
       onQuit={onQuit}
+      onPause={done ? undefined : pause}
       secondsLeft={secondsLeft}
-      running={!done}
+      running={!done && !paused}
       progress={correct / problems.length}
       feedback={state.feedback}
       endPose={endPose}
       counter={`${Math.min(state.index + 1, problems.length)} / ${problems.length}`}
-      pad={<NumberPad onKey={handleKey} disabled={state.phase !== 'playing'} />}
+      pad={<NumberPad onKey={handleKey} disabled={paused || state.phase !== 'playing'} />}
     >
-      {done ? (
+      {paused ? (
+        <div className="paused">
+          <div className="paused__title">Paused</div>
+          <button type="button" className="big-button" onClick={resume}>
+            Continue ▶
+          </button>
+        </div>
+      ) : done ? (
         <div className="page-over">{state.timedOut ? "Time's up!" : 'Page done!'}</div>
       ) : (
         <ProblemView state={state} />
       )}
-      {state.combo >= 3 && !done && (
+      {state.combo >= 3 && !done && !paused && (
         <div className="combo" key={`combo-${state.combo}`}>
           {state.combo} in a row!
         </div>
@@ -190,6 +240,8 @@ interface LayoutProps {
   level: LevelDef;
   avatar: AvatarConfig;
   onQuit: () => void;
+  /** Shows the pause button when set. */
+  onPause?: () => void;
   secondsLeft: number;
   running: boolean;
   progress?: number;
@@ -204,6 +256,7 @@ function PageLayout({
   level,
   avatar,
   onQuit,
+  onPause,
   secondsLeft,
   running,
   progress = 0,
@@ -218,7 +271,7 @@ function PageLayout({
     <div className="page">
       <TrailStrip
         worldId={level.world}
-        obstacle={level.obstacle}
+        obstacle={getCutScene(level.id)?.obstacle}
         avatar={avatar}
         progress={progress}
         feedback={feedback}
@@ -229,6 +282,11 @@ function PageLayout({
         <button type="button" className="icon-button" aria-label="Back to levels" onClick={onQuit}>
           ✕
         </button>
+        {onPause && (
+          <button type="button" className="icon-button" aria-label="Pause" onClick={onPause}>
+            ⏸
+          </button>
+        )}
         <div className="page__level">Level {level.id}</div>
         {counter && <div className="page__counter">{counter}</div>}
         <div className={shown <= 10 && running ? 'timer timer--low' : 'timer'}>{shown}</div>

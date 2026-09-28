@@ -21,6 +21,8 @@ interface Props {
   detail?: number;
   /** Override layer speeds, e.g. `{ near: 0 }` to keep the ground still. */
   parallax?: Partial<typeof PARALLAX>;
+  /** Ease scroll changes (page strip). Turn off when the camera moves every frame (cut scenes). */
+  smooth?: boolean;
   children?: ReactNode;
 }
 
@@ -40,6 +42,7 @@ export function WorldBackdrop({
   scroll = 0,
   detail = 1,
   parallax,
+  smooth = true,
   children,
 }: Props) {
   const speed = { ...PARALLAX, ...parallax };
@@ -74,7 +77,12 @@ export function WorldBackdrop({
   );
 
   return (
-    <svg className="backdrop" viewBox={`0 0 ${W} ${height}`} preserveAspectRatio="none" aria-hidden>
+    <svg
+      className={smooth ? 'backdrop backdrop--smooth' : 'backdrop'}
+      viewBox={`0 0 ${W} ${height}`}
+      preserveAspectRatio="none"
+      aria-hidden
+    >
       <defs>
         <linearGradient id={skyId} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor={theme.skyTop} />

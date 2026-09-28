@@ -27,7 +27,9 @@ export type SessionAction =
   | { type: 'backspace' }
   | { type: 'submit'; now: number }
   | { type: 'advance'; now: number }
-  | { type: 'timeUp' };
+  | { type: 'timeUp' }
+  /** Time spent paused: pushes the current problem's start later so it isn't counted. */
+  | { type: 'pausedFor'; ms: number };
 
 export function createSession(problems: Problem[], now: number): SessionState {
   return {
@@ -54,6 +56,9 @@ const MAX_INPUT_DIGITS = 4;
 export function sessionReducer(state: SessionState, action: SessionAction): SessionState {
   if (action.type === 'timeUp') {
     return state.phase === 'done' ? state : { ...state, phase: 'done', timedOut: true };
+  }
+  if (action.type === 'pausedFor') {
+    return { ...state, problemStartedAt: state.problemStartedAt + action.ms };
   }
   if (action.type === 'advance') {
     return state.phase === 'revealing' ? nextProblem(state, action.now) : state;

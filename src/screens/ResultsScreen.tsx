@@ -8,8 +8,8 @@ interface Props {
   level: LevelDef;
   avatar: AvatarConfig;
   evaluation: PageEvaluation;
-  hasNext: boolean;
-  onNext: () => void;
+  /** Continue after a pass: plays the cut scene. */
+  onContinue: () => void;
   onRetry: () => void;
   onMap: () => void;
 }
@@ -21,15 +21,7 @@ const RETRY_LINES = [
   'A little stumble — you’ve got this!',
 ];
 
-export function ResultsScreen({
-  level,
-  avatar,
-  evaluation,
-  hasNext,
-  onNext,
-  onRetry,
-  onMap,
-}: Props) {
+export function ResultsScreen({ level, avatar, evaluation, onContinue, onRetry, onMap }: Props) {
   const { passed, stars, correct, total } = evaluation;
   const lines = passed ? PASS_CHEERS : RETRY_LINES;
   const line = lines[(level.id + correct) % lines.length];
@@ -45,33 +37,25 @@ export function ResultsScreen({
         {correct} / {total} right
       </div>
 
-      {passed && (
-        // Placeholder for the obstacle cut scene (M4).
-        <div className={level.boss ? 'scene-card scene-card--boss' : 'scene-card'}>
-          <div className="scene-card__label">{level.obstacle}</div>
-          <div className="scene-card__caption">{level.caption}</div>
-        </div>
-      )}
-
       <div className="results__actions">
-        <button type="button" className="big-button big-button--quiet" onClick={onMap}>
-          Map
-        </button>
         {passed ? (
           <>
             <button type="button" className="big-button big-button--quiet" onClick={onRetry}>
               Play again
             </button>
-            {hasNext && (
-              <button type="button" className="big-button" onClick={onNext}>
-                Next level ▶
-              </button>
-            )}
+            <button type="button" className="big-button" onClick={onContinue}>
+              Continue ▶
+            </button>
           </>
         ) : (
-          <button type="button" className="big-button" onClick={onRetry}>
-            Try again ↻
-          </button>
+          <>
+            <button type="button" className="big-button big-button--quiet" onClick={onMap}>
+              Map
+            </button>
+            <button type="button" className="big-button" onClick={onRetry}>
+              Try again ↻
+            </button>
+          </>
         )}
       </div>
     </div>

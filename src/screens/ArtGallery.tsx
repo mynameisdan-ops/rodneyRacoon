@@ -3,12 +3,33 @@ import { HAIR_COLORS, HAIR_STYLES, SKIN_TONES } from '../content/avatar';
 import { DEFAULT_AVATAR } from '../art/hero/avatar';
 import { Hero } from '../art/hero/Hero';
 import { HERO_POSES, type HeroPose } from '../art/hero/poses';
+import { getCutScene } from '../content/cutscenes';
+import { getLevel, LEVELS } from '../content/levels';
+import { ScenePreview } from './ScenePreview';
 
 /** Dev-only page (open with #gallery in a dev build) for checking art at a glance. */
 export function ArtGallery() {
   const [stumbleKey, setStumbleKey] = useState(0);
+  const [sceneLevel, setSceneLevel] = useState<number | null>(null);
+
+  const level = sceneLevel === null ? undefined : getLevel(sceneLevel);
+  if (level) return <ScenePreview level={level} onClose={() => setSceneLevel(null)} />;
+
   return (
     <div className="gallery">
+      <h1>Cut scenes</h1>
+      <div className="gallery__row">
+        {LEVELS.filter((l) => getCutScene(l.id)).map((l) => (
+          <button
+            key={l.id}
+            type="button"
+            className="big-button big-button--quiet"
+            onClick={() => setSceneLevel(l.id)}
+          >
+            {l.id}
+          </button>
+        ))}
+      </div>
       <h1>Hero poses</h1>
       <div className="gallery__row">
         {HERO_POSES.map((pose: HeroPose) => (
