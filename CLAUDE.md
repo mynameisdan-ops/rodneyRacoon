@@ -89,6 +89,8 @@ hair style and skin tone). Use it to check art changes; it is left out of produc
 
 ## Before ending a session
 
+Run `/wrapup` to do all of this (the skill follows this checklist); or work through it by hand:
+
 1. Add a dated entry to `docs/decisions.md` (what was built or decided, and why).
 2. Update `STATUS.md` (state, next steps, what's open, date). Keep it short; history goes in decisions.md.
 3. Update `docs/PLAN.md` if a design decision changed or a milestone moved (its status column too).
