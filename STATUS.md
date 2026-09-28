@@ -41,3 +41,16 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 2. **M5:** skills for Worlds 2–5 (subtraction, 2-digit, ×, ÷), all 40 level definitions, their world
    themes, obstacle art and cut scenes.
 3. **M6–M10** in the order `docs/PLAN.md` §9 lists them.
+
+## Handoff
+
+- **Branch:** `m4-cut-scenes` at the M4 commit, pushed, CI green, nothing uncommitted. Not merged: M4 closes
+  with the tablet check.
+- **Waiting on the user:** how to get the build onto the tablet — the LAN preview (`npm run build`, then
+  `npm run preview -- --host`, open the "Network" address on the tablet), making the repo public for a free
+  Pages deploy, or Pages on a paid plan. Then their report on whether the cut scenes run smoothly.
+- **Next action:** fix any stutter they report (suspects: the CSS `filter` on the back limbs, and the whole
+  scene SVG re-rendering each frame), merge `m4-cut-scenes` to `main`, push, then start M5.
+- **Gotchas:** in a hidden browser pane `requestAnimationFrame` stops and `document.hidden` is true, so the
+  page auto-pauses and scenes don't advance; to test there, override `document.hidden` and swap rAF for a
+  `setTimeout` shim in the console. Long Bash heredocs can fail on Windows; write a file and run it instead.
