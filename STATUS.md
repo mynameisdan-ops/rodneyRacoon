@@ -21,8 +21,7 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 ## Current state
 
 - **Planning only.** The design (`docs/PLAN.md`) and working rules (`CLAUDE.md`) are written.
-- **No code yet.** The git repo holds only the initial commit (README). `CLAUDE.md` and `docs/`
-  are not committed yet.
+- **No code yet.** The git repo holds the README, `CLAUDE.md`, `docs/PLAN.md` and this file.
 - **Still open:**
   - the final title and the story opening
   - whether levels unlock strictly in order
@@ -30,13 +29,12 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 
 ## Next steps
 
-1. Commit `CLAUDE.md`, `docs/PLAN.md` and this file.
-2. **M0 Scaffold:**
+1. **M0 Scaffold:**
    - Vite + TypeScript + React, ESLint/Prettier, Vitest, the PWA plugin and `.claude/launch.json`.
    - Done when a blank app runs and the tests run.
-3. **M1 Core loop:**
+2. **M1 Core loop:**
    - World 1 problem generators, the 60-second page, the number pad and keyboard, and auto-submit.
    - Pass or retry, with placeholder art.
    - Done when levels 1-8 are playable as plain pages.
-4. **M2:** profiles, saving, the trail map and level unlocks.
-5. **M3-M10** in the order `docs/PLAN.md` §9 lists them.
+3. **M2:** profiles, saving, the trail map and level unlocks.
+4. **M3-M10** in the order `docs/PLAN.md` §9 lists them.
