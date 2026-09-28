@@ -1,5 +1,9 @@
 # Project Plan — "The Long Way Home" (working title)
 
+Last updated Sep 28, 2026. This is the forward plan: design, milestones with their status, and open
+questions. Update it whenever a design decision changes or a milestone moves (see the end-of-session
+checklist in `CLAUDE.md`). Current state in a few lines: `STATUS.md`. Session history: `docs/decisions.md`.
+
 A timed mental-math adventure inspired by the classic *Rodney the Raccoon* math game.
 The player only does math; the game tells the story. Each correct answer moves the
 hero along the trail, and each finished page ends in a cut scene where he gets past
@@ -11,7 +15,7 @@ a big obstacle on his way home.
 |---|---|
 | Hero | A little boy (the child's own avatar) replaces Rodney and makes his own journey home |
 | Platforms | Windows PC and Android tablet, as one **web app / PWA** (installable, works offline) |
-| Stack | Vite + TypeScript + React, art drawn in code as SVG, animation with `motion` |
+| Stack | Vite + TypeScript + React, art drawn in code as SVG, animation with CSS (decided in M3; `motion` only if cut scenes need it in M4) |
 | Avatar | Cartoon **avatar builder** (skin, hair, eyes, clothes), plus an **optional photo face** that is cropped into a circle and stays on the device |
 | Profiles | Local profiles saved on each device (IndexedDB). No accounts, no cloud |
 | Page | A fixed number of problems in a **60-second** page; the count grows across levels |
@@ -21,6 +25,8 @@ a big obstacle on his way home.
 | Rewards | Coins spent in an avatar shop, 1–3 stars per level, combo streaks, and journey stickers (one per level) |
 | Audio | Sound effects + music only (no voice). Cut scenes tell the story mostly through visuals, with very short captions |
 | Parent tools | Stats and difficulty settings live in the normal **Settings** screen (not locked) |
+| Unlocking | Levels unlock **strictly in order** (decided in M2). A parent "unlock any level" switch comes with Settings in M10 |
+| Hero look before M8 | The hero wears the player's chosen shirt color on the default avatar until the builder stores a full avatar (M3) |
 
 ## 2. Core game loop
 
@@ -130,7 +136,7 @@ src/
   `camera`, `caption`, `wait`) played by one `CutScenePlayer`. 40 scenes are assembled from
   about 10 reusable obstacle templates plus 5 bespoke boss scenes.
 - **Rendering**: fixed 16:10 design canvas (1280×800) scaled to fit, landscape only. SVG for
-  art; CSS and `motion` for animation. Target 60fps on a mid-range Android tablet.
+  art; CSS keyframes and transitions for animation (`motion` only if the cut scenes in M4 need it). Target 60fps on a mid-range Android tablet.
 - **Offline/PWA**: `vite-plugin-pwa` precaches everything. After the first load no network is needed.
 - **Hosting**: GitHub Pages (HTTPS is required for PWA install and camera access on the tablet).
   On Windows, install from Edge or Chrome as an app; on Android, use Chrome → "Add to Home screen".
@@ -139,25 +145,37 @@ src/
 
 ## 9. Milestones
 
-Each milestone ends in something playable and gets checked in the browser before moving on.
+Each milestone ends in something playable and gets checked in the browser before moving on. Work happens
+on a branch per milestone (`mN-short-name`), pushed as it goes, and merged to `main` after the browser
+check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 
-| # | Milestone | Playable result |
-|---|---|---|
-| M0 | Scaffold: Vite+TS+React, ESLint/Prettier, Vitest, PWA plugin, `.claude/launch.json` | Blank app runs, tests run |
-| M1 | Core loop: generators for World 1 skills, 60s page, number pad and keyboard, auto-submit, pass/retry, placeholder art | Play levels 1–8 as plain pages |
-| M2 | Profiles + persistence + trail map + level unlocks | Two kids with separate saved progress |
-| M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer |
-| M4 | Cut-scene player + obstacle templates + World 1 scenes | Full World 1 experience end to end |
-| M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable |
-| M6 | Adaptive difficulty + weak-fact weighting | Difficulty adjusts for each kid |
-| M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop |
-| M8 | Avatar builder + photo-face crop | Kids play as themselves |
-| M9 | Audio: synthesized SFX + music loops | Sound on |
-| M10 | Settings/stats, PWA polish, GitHub Pages deploy, tablet testing | Installed on PC and tablet |
+| # | Milestone | Playable result | Status |
+|---|---|---|---|
+| M0 | Scaffold: Vite+TS+React, ESLint/Prettier, Vitest, PWA plugin, `.claude/launch.json` | Blank app runs, tests run | ✅ |
+| M1 | Core loop: generators for World 1 skills, 60s page, number pad and keyboard, auto-submit, pass/retry, placeholder art | Play levels 1–8 as plain pages | ✅ |
+| M2 | Profiles + persistence + trail map + level unlocks | Two kids with separate saved progress | ✅ |
+| M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer | 🟡 `m3-art-system` |
+| M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | ⬜ |
+| M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ⬜ |
+| M6 | Adaptive difficulty + weak-fact weighting | Difficulty adjusts for each kid | ⬜ |
+| M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ⬜ |
+| M8 | Avatar builder + photo-face crop | Kids play as themselves | ⬜ |
+| M9 | Audio: synthesized SFX + music loops | Sound on | ⬜ |
+| M10 | Settings/stats (incl. the unlock-any-level switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing | Installed on PC and tablet | ⬜ |
+
+### Known gaps, scheduled
+
+| Gap | Where it gets fixed |
+|---|---|
+| No pause: the 60-second timer keeps running while the "turn sideways" hint shows or the app is in the background, so a kid can fail a page they never saw. Pause (and hide the problem) on `visibilitychange` and in portrait. | M4 |
+| Tablet performance is untested (CSS `filter` on the back limbs, number of scenery elements). Deploy a preview and play it on the tablet once cut scenes exist. | M4 |
+| Leaving a page with ✕ records nothing. Decide whether it counts as a play before stats exist. | M6 (before stats in M10) |
+| PNG icons (192/512) for the best Android install; GitHub Pages `base` path. | M10 (the path is needed earlier for the M4 preview) |
 
 ## 10. Open items to confirm later
 
 - Game title (placeholder: "The Long Way Home") and the hero's story opening (for example, a
   balloon ride carries him far from home).
-- Whether levels should unlock strictly in order or whole worlds can be browsed.
 - Extensions after level 40 (fractions, money, time, bigger numbers, "endless" mode).
+
+Decided (no longer open): levels unlock strictly in order, with a parent switch in M10.

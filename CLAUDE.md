@@ -10,12 +10,18 @@ across 40 levels (5 worlds × 8). The child **only does math**. The game shows t
 moving along the trail as answers come in, and plays an obstacle cut scene after each page.
 
 The full design and milestones are in [docs/PLAN.md](docs/PLAN.md). Read it before starting a milestone,
-and update it when a design decision changes.
+and update it when a design decision changes. The tracking files:
+
+| File | Holds |
+| --- | --- |
+| `docs/PLAN.md` | Design, milestones with status, scheduled gaps, open questions |
+| `STATUS.md` | A short snapshot: current state, next steps, what's open |
+| `docs/decisions.md` | A dated entry per session or milestone: what was built, decided and why |
 
 ## Stack
 
 - Vite + TypeScript (strict) + React
-- SVG art as React components; animation with `motion` and CSS
+- SVG art as React components; animation with CSS keyframes and transitions (`motion` only if cut scenes need it)
 - zustand for state; IndexedDB via `idb-keyval` for saves (versioned schema with migrations)
 - `vite-plugin-pwa` for offline/installable; hosted on GitHub Pages
 - Vitest for unit tests
@@ -28,8 +34,10 @@ npm install
 npm run dev        # dev server
 npm run build      # type-check + production build
 npm run preview    # serve the production build
-npm test           # vitest
+npm test           # vitest (once)
+npm run test:watch # vitest in watch mode
 npm run lint
+npm run format     # prettier --write
 ```
 
 In a dev build, open `http://localhost:5173/#gallery` for the art gallery (every hero pose,
@@ -73,4 +81,18 @@ hair style and skin tone). Use it to check art changes; it is left out of produc
 - Verify UI changes in the browser preview at 1280×800 and a phone/tablet size before calling them done.
 - New problem generators need tests covering operand ranges, answer correctness, and no negative/non-integer results where they're not allowed.
 - Save-format changes need a version bump and migration in `src/state/`.
-- Before ending a session, update STATUS.md.
+- One branch per milestone (`mN-short-name`), pushed as it goes and merged to `main` after the browser check.
+  CI (`.github/workflows/ci.yml`) runs lint, tests and build on every push.
+- Only one session works in this repo at a time. Before starting, check `git status` for someone else's
+  uncommitted work and ask before building on it.
+- When editing files with Python on Windows, open them with `newline=''`, or Python writes CRLF.
+
+## Before ending a session
+
+1. Add a dated entry to `docs/decisions.md` (what was built or decided, and why).
+2. Update `STATUS.md` (state, next steps, what's open, date). Keep it short; history goes in decisions.md.
+3. Update `docs/PLAN.md` if a design decision changed or a milestone moved (its status column too).
+4. Update this file if the stack, commands, rules or architecture changed.
+5. Run `npm run lint`, `npm test` and `npm run build`.
+6. Commit to the milestone branch and push.
+7. If the session was started from the project status page, mark its step as its prompt says.
