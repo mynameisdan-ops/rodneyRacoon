@@ -1,0 +1,1 @@
+add a parent menu where initial level settings can be adjusted. settings should include broad difficulty (easy, medium, hard, very hard, expert) and detailed settings (problem type, number of digits, number of problems)

@@ -1,7 +1,8 @@
 /*
- * Hero poses. Limbs are drawn hanging down from their joint at local (0, 0),
- * so rotating around that point swings them. Negative angles swing forward
- * (toward the way the hero faces).
+ * Hero poses. Limbs are drawn hanging down from their joint at local (0, 0), so
+ * rotating around that point swings them. Negative angles swing forward (toward
+ * the way the hero faces). Knees bend with positive shin angles, elbows with
+ * negative forearm angles.
  */
 
 .hero-svg {
@@ -9,39 +10,50 @@
 }
 
 .hero-arm,
-.hero-leg {
+.hero-fore,
+.hero-leg,
+.hero-shin {
   transform-box: view-box;
   transform-origin: 0 0;
 }
 
-.hero-arm--back,
-.hero-leg--back {
-  filter: brightness(0.82);
+.hero-body {
+  transform-box: view-box;
+  transform-origin: 52px 163px;
+}
+
+.hero-head {
+  transform-box: view-box;
+  transform-origin: 55px 50px;
+}
+
+.hero-eyes {
+  transform-box: view-box;
+  transform-origin: 64px 31px;
+}
+
+.hero-cape {
+  transform-box: view-box;
+  transform-origin: 52px 57px;
 }
 
 .hero-arm--front {
   transform: rotate(-8deg);
 }
 
+.hero-fore--front {
+  transform: rotate(-14deg);
+}
+
 .hero-arm--back {
   transform: rotate(10deg);
 }
 
-.hero-body,
-.hero-head,
-.hero-eyes {
-  transform-box: fill-box;
+.hero-fore--back {
+  transform: rotate(-10deg);
 }
 
-.hero-body {
-  transform-origin: 50% 100%;
-}
-
-.hero-eyes {
-  transform-origin: 50% 50%;
-}
-
-/* ---- idle: breathe and blink ---- */
+/* ---- idle: breathe, blink, cape sways ---- */
 
 .hero-svg--idle .hero-body {
   animation: hero-breathe 2.4s ease-in-out infinite;
@@ -51,9 +63,13 @@
   animation: hero-blink 4.2s linear infinite;
 }
 
+.hero-svg--idle .hero-cape {
+  animation: hero-cape-sway 3s ease-in-out infinite alternate;
+}
+
 @keyframes hero-breathe {
   50% {
-    transform: translateY(1.5px);
+    transform: translateY(1.2px);
   }
 }
 
@@ -68,20 +84,49 @@
   }
 }
 
-/* ---- walk ---- */
-
-.hero-svg--walk .hero-body {
-  animation: hero-step-bob 0.28s ease-in-out infinite alternate;
+@keyframes hero-cape-sway {
+  from {
+    transform: rotate(-2deg);
+  }
+  to {
+    transform: rotate(4deg);
+  }
 }
 
-.hero-svg--walk .hero-leg--front,
-.hero-svg--walk .hero-arm--back {
-  animation: hero-swing-a 0.56s ease-in-out infinite alternate;
+/* ---- walk and run: a full stride cycle; the back limbs run half a cycle behind ---- */
+
+.hero-svg--walk .hero-body {
+  animation: hero-step-bob 0.3s ease-in-out infinite alternate;
+}
+
+.hero-svg--walk .hero-leg,
+.hero-svg--walk .hero-shin,
+.hero-svg--walk .hero-arm {
+  animation-duration: 0.6s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.hero-svg--walk .hero-leg {
+  animation-name: hero-walk-thigh;
+}
+
+.hero-svg--walk .hero-shin {
+  animation-name: hero-walk-shin;
+}
+
+.hero-svg--walk .hero-arm {
+  animation-name: hero-walk-arm;
 }
 
 .hero-svg--walk .hero-leg--back,
+.hero-svg--walk .hero-shin--back,
 .hero-svg--walk .hero-arm--front {
-  animation: hero-swing-b 0.56s ease-in-out infinite alternate;
+  animation-delay: -0.3s;
+}
+
+.hero-svg--walk .hero-cape {
+  transform: rotate(10deg);
 }
 
 @keyframes hero-step-bob {
@@ -89,48 +134,163 @@
     transform: translateY(0);
   }
   to {
-    transform: translateY(-3px);
+    transform: translateY(-2.5px);
   }
 }
 
-@keyframes hero-swing-a {
-  from {
-    transform: rotate(-28deg);
+@keyframes hero-walk-thigh {
+  0%,
+  100% {
+    transform: rotate(-26deg);
   }
-  to {
-    transform: rotate(26deg);
+  50% {
+    transform: rotate(24deg);
   }
 }
 
-@keyframes hero-swing-b {
+@keyframes hero-walk-shin {
+  0%,
+  45%,
+  100% {
+    transform: rotate(4deg);
+  }
+  75% {
+    transform: rotate(42deg);
+  }
+}
+
+@keyframes hero-walk-arm {
+  0%,
+  100% {
+    transform: rotate(24deg);
+  }
+  50% {
+    transform: rotate(-24deg);
+  }
+}
+
+.hero-svg--run .hero-body {
+  animation: hero-run-body 0.22s ease-in-out infinite alternate;
+}
+
+.hero-svg--run .hero-leg,
+.hero-svg--run .hero-shin,
+.hero-svg--run .hero-arm {
+  animation-duration: 0.44s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+
+.hero-svg--run .hero-leg {
+  animation-name: hero-run-thigh;
+}
+
+.hero-svg--run .hero-shin {
+  animation-name: hero-run-shin;
+}
+
+.hero-svg--run .hero-arm {
+  animation-name: hero-run-arm;
+}
+
+.hero-svg--run .hero-fore {
+  transform: rotate(-85deg);
+}
+
+.hero-svg--run .hero-leg--back,
+.hero-svg--run .hero-shin--back,
+.hero-svg--run .hero-arm--front {
+  animation-delay: -0.22s;
+}
+
+.hero-svg--run .hero-cape,
+.hero-svg--ride .hero-cape {
+  animation: hero-cape-flap 0.18s ease-in-out infinite alternate;
+}
+
+@keyframes hero-run-body {
   from {
-    transform: rotate(26deg);
+    transform: rotate(10deg) translateY(0);
   }
   to {
-    transform: rotate(-28deg);
+    transform: rotate(10deg) translateY(-4px);
+  }
+}
+
+@keyframes hero-run-thigh {
+  0%,
+  100% {
+    transform: rotate(-62deg);
+  }
+  50% {
+    transform: rotate(38deg);
+  }
+}
+
+@keyframes hero-run-shin {
+  0%,
+  100% {
+    transform: rotate(20deg);
+  }
+  50% {
+    transform: rotate(40deg);
+  }
+  72% {
+    transform: rotate(100deg);
+  }
+}
+
+@keyframes hero-run-arm {
+  0%,
+  100% {
+    transform: rotate(48deg);
+  }
+  50% {
+    transform: rotate(-58deg);
+  }
+}
+
+@keyframes hero-cape-flap {
+  from {
+    transform: rotate(38deg);
+  }
+  to {
+    transform: rotate(52deg) skewY(-4deg);
   }
 }
 
 /* ---- jump (held in the air) ---- */
 
 .hero-svg--jump .hero-body {
-  transform: translateY(-10px);
+  transform: translateY(-6px);
 }
 
 .hero-svg--jump .hero-leg--front {
-  transform: rotate(-40deg);
+  transform: rotate(-58deg);
+}
+
+.hero-svg--jump .hero-shin--front {
+  transform: rotate(75deg);
 }
 
 .hero-svg--jump .hero-leg--back {
-  transform: rotate(30deg);
+  transform: rotate(14deg);
+}
+
+.hero-svg--jump .hero-shin--back {
+  transform: rotate(60deg);
 }
 
 .hero-svg--jump .hero-arm--front {
-  transform: rotate(-120deg);
+  transform: rotate(-150deg);
 }
 
 .hero-svg--jump .hero-arm--back {
-  transform: rotate(125deg);
+  transform: rotate(150deg);
+}
+
+.hero-svg--jump .hero-cape {
+  transform: rotate(25deg);
 }
 
 .hero-svg--jump .hero-shadow {
@@ -139,72 +299,141 @@
   transform-origin: 50% 50%;
 }
 
+/* ---- leap: a heroic mid-air stride ---- */
+
+.hero-svg--leap .hero-body {
+  transform: rotate(12deg);
+}
+
+.hero-svg--leap .hero-leg--front {
+  transform: rotate(-82deg);
+}
+
+.hero-svg--leap .hero-shin--front {
+  transform: rotate(18deg);
+}
+
+.hero-svg--leap .hero-leg--back {
+  transform: rotate(42deg);
+}
+
+.hero-svg--leap .hero-shin--back {
+  transform: rotate(75deg);
+}
+
+.hero-svg--leap .hero-arm--front {
+  transform: rotate(-160deg);
+}
+
+.hero-svg--leap .hero-fore--front {
+  transform: rotate(-8deg);
+}
+
+.hero-svg--leap .hero-arm--back {
+  transform: rotate(70deg);
+}
+
+.hero-svg--leap .hero-cape {
+  animation: hero-cape-flap 0.18s ease-in-out infinite alternate;
+}
+
 /* ---- climb ---- */
 
-.hero-svg--climb .hero-arm--front,
-.hero-svg--climb .hero-leg--back {
-  animation: hero-climb-a 0.7s ease-in-out infinite alternate;
+.hero-svg--climb .hero-arm,
+.hero-svg--climb .hero-fore,
+.hero-svg--climb .hero-leg,
+.hero-svg--climb .hero-shin {
+  animation-duration: 0.7s;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+.hero-svg--climb .hero-arm {
+  animation-name: hero-climb-arm;
+}
+
+.hero-svg--climb .hero-fore {
+  animation-name: hero-climb-fore;
+}
+
+.hero-svg--climb .hero-leg {
+  animation-name: hero-climb-thigh;
+}
+
+.hero-svg--climb .hero-shin {
+  animation-name: hero-climb-shin;
 }
 
 .hero-svg--climb .hero-arm--back,
-.hero-svg--climb .hero-leg--front {
-  animation: hero-climb-b 0.7s ease-in-out infinite alternate;
-}
-
-.hero-svg--climb .hero-leg--back,
-.hero-svg--climb .hero-leg--front {
-  animation-name: hero-climb-leg;
-}
-
-.hero-svg--climb .hero-leg--front {
+.hero-svg--climb .hero-fore--back,
+.hero-svg--climb .hero-leg--front,
+.hero-svg--climb .hero-shin--front {
   animation-direction: alternate-reverse;
 }
 
-/* Hands reach forward to the wall in front, alternating high and low. */
-@keyframes hero-climb-a {
+/* Hands reach up the wall in front, alternating high and low. */
+@keyframes hero-climb-arm {
   from {
-    transform: rotate(-125deg);
+    transform: rotate(-165deg);
   }
   to {
-    transform: rotate(-92deg);
+    transform: rotate(-120deg);
   }
 }
 
-@keyframes hero-climb-b {
+@keyframes hero-climb-fore {
   from {
-    transform: rotate(-92deg);
+    transform: rotate(-15deg);
   }
   to {
-    transform: rotate(-125deg);
+    transform: rotate(-60deg);
   }
 }
 
-@keyframes hero-climb-leg {
+@keyframes hero-climb-thigh {
   from {
-    transform: rotate(-45deg);
+    transform: rotate(-70deg);
   }
   to {
-    transform: rotate(0deg);
+    transform: rotate(-10deg);
   }
 }
 
-/* ---- cheer ---- */
+@keyframes hero-climb-shin {
+  from {
+    transform: rotate(85deg);
+  }
+  to {
+    transform: rotate(10deg);
+  }
+}
+
+/* ---- cheer: fist pump ---- */
 
 .hero-svg--cheer .hero-body {
   animation: hero-hop 0.5s ease-in-out infinite alternate;
 }
 
 .hero-svg--cheer .hero-arm--front {
-  animation: hero-wave-a 0.25s ease-in-out infinite alternate;
+  animation: hero-pump 0.25s ease-in-out infinite alternate;
+}
+
+.hero-svg--cheer .hero-fore--front {
+  transform: rotate(-20deg);
 }
 
 .hero-svg--cheer .hero-arm--back {
-  animation: hero-wave-b 0.25s ease-in-out infinite alternate;
+  transform: rotate(28deg);
+}
+
+.hero-svg--cheer .hero-fore--back {
+  transform: rotate(-95deg);
 }
 
 .hero-svg--cheer .hero-mouth {
-  d: path('M60 61 Q71 76 82 60 Z');
-  fill: #7a2e2e;
+  d: path('M60 40 Q66 49 72 39 Z');
+  fill: #5a1f24;
 }
 
 @keyframes hero-hop {
@@ -212,26 +441,16 @@
     transform: translateY(0);
   }
   to {
-    transform: translateY(-9px);
+    transform: translateY(-8px);
   }
 }
 
-/* Arms up in a V: front arm up past the face, back arm up behind the head. */
-@keyframes hero-wave-a {
+@keyframes hero-pump {
   from {
-    transform: rotate(-135deg);
+    transform: rotate(-170deg);
   }
   to {
-    transform: rotate(-112deg);
-  }
-}
-
-@keyframes hero-wave-b {
-  from {
-    transform: rotate(112deg);
-  }
-  to {
-    transform: rotate(135deg);
+    transform: rotate(-148deg);
   }
 }
 
@@ -250,7 +469,7 @@
 }
 
 .hero-svg--stumble .hero-mouth {
-  d: path('M64 66 Q71 62 78 66');
+  d: path('M62 43 Q66 40 70 43');
 }
 
 @keyframes hero-stumble-body {
@@ -258,10 +477,10 @@
     transform: rotate(0);
   }
   30% {
-    transform: translateX(-6px) rotate(-16deg);
+    transform: translateX(-6px) rotate(-14deg);
   }
   60% {
-    transform: translateX(2px) rotate(6deg);
+    transform: translateX(2px) rotate(5deg);
   }
   100% {
     transform: rotate(0);
@@ -278,5 +497,221 @@
   }
   60% {
     transform: rotate(-50deg);
+  }
+}
+
+/* ---- brace: leaning back, arm up against danger ---- */
+
+.hero-svg--brace .hero-body {
+  animation: hero-tremble 0.09s linear infinite alternate;
+}
+
+.hero-svg--brace .hero-arm--front {
+  transform: rotate(-112deg);
+}
+
+.hero-svg--brace .hero-fore--front {
+  transform: rotate(-100deg);
+}
+
+.hero-svg--brace .hero-arm--back {
+  transform: rotate(38deg);
+}
+
+.hero-svg--brace .hero-fore--back {
+  transform: rotate(-40deg);
+}
+
+.hero-svg--brace .hero-leg--front {
+  transform: rotate(-24deg);
+}
+
+.hero-svg--brace .hero-shin--front {
+  transform: rotate(14deg);
+}
+
+.hero-svg--brace .hero-leg--back {
+  transform: rotate(22deg);
+}
+
+.hero-svg--brace .hero-shin--back {
+  transform: rotate(16deg);
+}
+
+.hero-svg--brace .hero-cape {
+  transform: rotate(-6deg);
+}
+
+.hero-svg--brace .hero-mouth,
+.hero-svg--ride .hero-mouth {
+  d: path('M61 42 Q66 41 71 41.5');
+}
+
+@keyframes hero-tremble {
+  from {
+    transform: rotate(-7deg) translateX(-0.6px);
+  }
+  to {
+    transform: rotate(-7deg) translateX(0.6px);
+  }
+}
+
+/* ---- ride: crouched in a cart, hands on the rim (the cart hides his legs) ---- */
+
+.hero-svg--ride .hero-body {
+  animation: hero-ride-body 0.16s ease-in-out infinite alternate;
+}
+
+.hero-svg--ride .hero-leg--front {
+  transform: rotate(-88deg);
+}
+
+.hero-svg--ride .hero-leg--back {
+  transform: rotate(-72deg);
+}
+
+.hero-svg--ride .hero-shin {
+  transform: rotate(115deg);
+}
+
+.hero-svg--ride .hero-arm--front {
+  transform: rotate(-62deg);
+}
+
+.hero-svg--ride .hero-fore--front {
+  transform: rotate(-28deg);
+}
+
+.hero-svg--ride .hero-arm--back {
+  transform: rotate(-44deg);
+}
+
+.hero-svg--ride .hero-fore--back {
+  transform: rotate(-36deg);
+}
+
+@keyframes hero-ride-body {
+  from {
+    transform: translateY(15px) rotate(9deg);
+  }
+  to {
+    transform: translateY(16.5px) rotate(10deg);
+  }
+}
+
+/* ---- slide: leaning back, lead leg out front ---- */
+
+.hero-svg--slide .hero-body {
+  transform: translateY(8px) rotate(-26deg);
+}
+
+.hero-svg--slide .hero-leg--front {
+  transform: rotate(-78deg);
+}
+
+.hero-svg--slide .hero-shin--front {
+  transform: rotate(4deg);
+}
+
+.hero-svg--slide .hero-leg--back {
+  transform: rotate(-28deg);
+}
+
+.hero-svg--slide .hero-shin--back {
+  transform: rotate(105deg);
+}
+
+.hero-svg--slide .hero-arm--front {
+  transform: rotate(35deg);
+}
+
+.hero-svg--slide .hero-arm--back {
+  transform: rotate(72deg);
+}
+
+.hero-svg--slide .hero-cape {
+  transform: rotate(55deg);
+}
+
+/* ---- swing: hanging from a rope or chain with both hands ---- */
+
+.hero-svg--swing .hero-arm--front {
+  transform: rotate(-172deg);
+}
+
+.hero-svg--swing .hero-arm--back {
+  transform: rotate(176deg);
+}
+
+.hero-svg--swing .hero-fore {
+  transform: rotate(0deg);
+}
+
+.hero-svg--swing .hero-leg--front {
+  transform: rotate(-24deg);
+}
+
+.hero-svg--swing .hero-leg--back {
+  transform: rotate(-8deg);
+}
+
+.hero-svg--swing .hero-shin {
+  transform: rotate(30deg);
+}
+
+.hero-svg--swing .hero-cape {
+  transform: rotate(18deg);
+}
+
+/* ---- fall: arms and legs flailing ---- */
+
+.hero-svg--fall .hero-arm--front {
+  animation: hero-fall-arm-a 0.3s ease-in-out infinite alternate;
+}
+
+.hero-svg--fall .hero-arm--back {
+  animation: hero-fall-arm-b 0.3s ease-in-out infinite alternate;
+}
+
+.hero-svg--fall .hero-leg--front {
+  transform: rotate(-35deg);
+}
+
+.hero-svg--fall .hero-shin--front {
+  transform: rotate(60deg);
+}
+
+.hero-svg--fall .hero-leg--back {
+  transform: rotate(20deg);
+}
+
+.hero-svg--fall .hero-shin--back {
+  transform: rotate(45deg);
+}
+
+.hero-svg--fall .hero-cape {
+  transform: rotate(-30deg);
+}
+
+.hero-svg--fall .hero-mouth {
+  d: path('M64 40 Q67 40 67 43 Q67 46 64 46 Q61 46 61 43 Q61 40 64 40 Z');
+  fill: #5a1f24;
+}
+
+@keyframes hero-fall-arm-a {
+  from {
+    transform: rotate(-155deg);
+  }
+  to {
+    transform: rotate(-115deg);
+  }
+}
+
+@keyframes hero-fall-arm-b {
+  from {
+    transform: rotate(115deg);
+  }
+  to {
+    transform: rotate(155deg);
   }
 }

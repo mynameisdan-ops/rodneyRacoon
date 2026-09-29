@@ -36,9 +36,13 @@ describe('cut scenes', () => {
 describe('obstacle art', () => {
   it.each(OBSTACLE_IDS)('%s renders in every state without errors', (id) => {
     const art = OBSTACLES[id];
-    for (const state of ['idle', 'rustle', 'splash', 'curious', 'home', 'gust', 'peek', 'wobble']) {
+    const states = ['idle', 'rustle', 'splash', 'curious', 'home', 'gust', 'peek', 'wobble'];
+    states.push('rumble', 'chase', 'drop', 'crash');
+    const events = states.map((state, i) => ({ at: i * 500, state }));
+    for (const [i, state] of states.entries()) {
       for (const heroX of [-200, 50, art.width / 2, art.width + 100]) {
-        const props = { t: 1234, state, since: 1000, heroX, heroLift: -20 };
+        const t = i * 500 + 250;
+        const props = { t, state, since: i * 500, events, heroX, heroLift: -20 };
         const svg = renderToStaticMarkup(
           createElement(
             'svg',

@@ -67,7 +67,7 @@ engine moves within. The number of problems per page ramps from about 10 to abou
 
 | World | Levels | Skill progression | Sample obstacles (cut scenes) | Boss obstacle (Lv 8/16/24/32/40) |
 |---|---|---|---|---|
-| 1. Sunny Meadow | 1–8 | + within 5 → within 10 → doubles → make-10 → within 20 | tall grass, muddy puddle, fence stile, bee swarm | Crossing the **ravine** on a rope bridge |
+| 1. Old Mine Shaft | 1–8 | + within 5 → within 10 → doubles → make-10 → within 20 | cart race, cart jump, wall smash, rat swarm | Escaping the mine and jumping the **canyon** in a mine train |
 | 2. Whispering Forest | 9–16 | − within 10 → within 20 → mixed +/− within 20 → missing addend (`3 + _ = 8`) | fallen log, thorny bramble, dark hollow, owl's riddle gate | Finding a way **through the deep forest** by following fireflies |
 | 3. Rushing River | 17–24 | 2-digit +/−, first without and then with regrouping; +/− by 10s | stepping stones, beaver dam, waterfall mist, reed maze | **Crossing the river** on a raft he builds |
 | 4. Misty Mountains | 25–32 | × ×0/1/2/10 → ×5 → ×3/4 → ×6–9 → mixed up to 10×10 | rock slide, narrow ledge, snowy pass, goat trail | **Over the peak** in a storm, then sledding down |
@@ -79,18 +79,21 @@ The full list of 40 obstacles, captions and sticker names goes in `src/content/l
 **Scene recipe (from the M4 playtest: obstacles must be epic).** Every cut scene has a *threat*, an
 *escalation*, a *hero action* and a *triumph*: not "hop over a puddle" but "the gully floods and he swings
 across on a vine". Thrilling but never scary for a 6-year-old: nobody gets hurt, animals run off, and it
-ends in a cheer. The sample obstacles above get upgraded to this recipe in M5. World 1 in M4b:
+ends in a cheer. The sample obstacles above get upgraded to this recipe in M5.
+
+World 1 became the **Old Mine Shaft** (decided Sep 28, 2026, replacing the Sunny Meadow). Its lineup for
+M4b; levels 2–7 are proposals built around the samples above:
 
 | Lv | Epic version |
 |---|---|
-| 1 | The grass rustles, a wild boar charges; the hero dives aside and it crashes past |
-| 2 | A flash flood fills the gully; he swings across on a vine |
-| 3 | He climbs an old ruined wall that crumbles, and leaps from the top as it falls |
-| 4 | A giant hornet swarm chases him; he dives into a pond and they pass over |
-| 5 | Logs tumble down a rapid; timed hops across the moving logs |
-| 6 | A thunderstorm on the ridge: he braces in the gale, lightning strikes, he shield-surfs down |
-| 7 | The bull wakes and charges; he vaults a hay cart and the bull smashes through the fence |
-| 8 | The rope bridge snaps mid-crossing; he swings into the cliff face and climbs up |
+| 1 | **Cart race**: the tunnel rumbles and a boulder crashes down behind him. He leaps into a mine cart and races it along the rails, the boulder rolling after him, until it smashes through a trestle and drops into a pit. The cart slams into the buffer and flings him clear |
+| 2 | **Cart jump**: the track ends at a broken gap; the cart launches off the ramp and lands on the far rails in a shower of sparks |
+| 3 | **Wall smash**: a cave-in blocks the tunnel; he rams a loaded ore cart into the cracked wall and bursts through |
+| 4 | **Rat swarm**: a flood of rats pours out of a side tunnel; he jumps for a hanging chain and swings over them |
+| 5 | **Crystal cavern**: the ledge crumbles under him; he leaps across falling glowing crystals |
+| 6 | **Bat storm**: a lantern falls and a storm of bats bursts out; he slides under a low beam as they sweep past |
+| 7 | **Runaway lift**: the mine lift's rope snaps; he grabs the chain and climbs out as it drops away |
+| 8 | **Boss: escape the mine**: rockfall chases the mine train out of the tunnel mouth, and it jumps the canyon to the far side |
 
 ## 4. Adaptive difficulty
 
@@ -113,7 +116,7 @@ ends in a cheer. The sample obstacles above get upgraded to this recipe in M5. W
   circular crop. It's saved as a small (256px) image in IndexedDB and replaces the drawn
   face. **It never leaves the device.**
 - The same `<Hero>` component is used everywhere: map, page strip, cut scenes and shop preview.
-  It takes poses (idle, walk, jump, climb, cheer, stumble) as props.
+  It takes poses (idle, walk, run, jump, leap, climb, cheer, stumble, brace, ride, slide, swing, fall) as props.
 
 ## 6. Rewards
 
@@ -178,7 +181,7 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M2 | Profiles + persistence + trail map + level unlocks | Two kids with separate saved progress | ✅ |
 | M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer | ✅ |
 | M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | 🟡 `m4-cut-scenes` (scenes and pause built; the tablet check is still to do) |
-| M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | ⬜ |
+| M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | 🟡 `m4b-art-direction`: style test built (style kit, hero, mine backdrop, level 1 cart race); waiting for approval before levels 2–8 and UI chrome |
 | M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ⬜ |
 | M6 | Adaptive difficulty + weak-fact weighting | Difficulty adjusts for each kid | ⬜ |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ⬜ |

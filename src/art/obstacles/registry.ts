@@ -10,9 +10,12 @@ import {
   TallGrassFront,
   WindyHillArt,
 } from './meadow';
+import { CartRaceBack, CartRaceFront } from './mine';
+import { CART_RACE } from './mineLayout';
 import type { ObstacleArt, ObstacleId } from './types';
 
 export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
+  'cart-race': { back: CartRaceBack, front: CartRaceFront, width: CART_RACE.width },
   'tall-grass': { back: TallGrassBack, front: TallGrassFront, width: 360 },
   puddle: { back: PuddleArt, width: 240 },
   'fence-stile': { back: FenceStileArt, width: 200 },

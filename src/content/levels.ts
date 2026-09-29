@@ -21,7 +21,7 @@ export interface LevelDef {
   boss?: boolean;
 }
 
-export const WORLDS: WorldDef[] = [{ id: 1, name: 'Sunny Meadow' }];
+export const WORLDS: WorldDef[] = [{ id: 1, name: 'Old Mine Shaft' }];
 
 export const LEVELS: LevelDef[] = [
   {
@@ -30,8 +30,8 @@ export const LEVELS: LevelDef[] = [
     skill: 'add-within-5',
     problems: 10,
     difficulty: 0.2,
-    obstacle: 'Tall grass',
-    caption: 'Through the tall grass!',
+    obstacle: 'Cart race',
+    caption: 'Cart race!',
   },
   {
     id: 2,

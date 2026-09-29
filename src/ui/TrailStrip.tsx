@@ -112,7 +112,7 @@ function Goal({ obstacle }: { obstacle?: ObstacleId }) {
     );
   }
   const art = OBSTACLES[obstacle];
-  const still = { t: 0, state: 'idle', since: 0, heroX: -1000, heroLift: 0 };
+  const still = { t: 0, state: 'idle', since: 0, events: [], heroX: -1000, heroLift: 0 };
   return (
     <g transform={`translate(${TRAIL_END + 80} ${PATH_Y}) scale(${GOAL_SCALE})`}>
       <art.back {...still} />

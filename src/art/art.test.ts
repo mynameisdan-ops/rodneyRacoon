@@ -4,8 +4,10 @@ import { describe, expect, it } from 'vitest';
 import { HAIR_COLORS, HAIR_STYLES, PANTS_COLORS, SHOE_COLORS, SKIN_TONES } from '../content/avatar';
 import { PROFILE_COLORS } from '../content/profiles';
 import { avatarForProfile, DEFAULT_AVATAR } from './hero/avatar';
+import { Hero } from './hero/Hero';
 import { HERO_POSES } from './hero/poses';
-import { getTheme } from './worlds/themes';
+import { mix, shade, tint } from './style';
+import { getTheme, MEADOW, MINE } from './worlds/themes';
 import { WorldBackdrop } from './worlds/WorldBackdrop';
 
 describe('avatar', () => {
@@ -58,7 +60,49 @@ describe('world backdrops', () => {
     expect(render(1)).not.toBe(render(2));
   });
 
+  it('draws World 1 as the mine, with rails on the path', () => {
+    expect(getTheme(1).kind).toBe('mine');
+    expect(render(1)).toContain(MINE.rail);
+    expect(render(1)).not.toContain('NaN');
+  });
+
   it('falls back to the meadow for worlds without a theme yet', () => {
-    expect(getTheme(5)).toBe(getTheme(1));
+    expect(getTheme(5)).toBe(MEADOW);
+    expect(render(5)).not.toContain('NaN');
+  });
+});
+
+describe('style kit', () => {
+  it('mixes colors', () => {
+    expect(mix('#000000', '#ffffff', 0.5)).toBe('#808080');
+    expect(mix('#123456', '#abcdef', 0)).toBe('#123456');
+    expect(mix('#fff', '#000', 1)).toBe('#000000');
+  });
+
+  it('shades darker and tints lighter', () => {
+    const lum = (hex: string) => {
+      const n = parseInt(hex.slice(1), 16);
+      return ((n >> 16) & 255) + ((n >> 8) & 255) + (n & 255);
+    };
+    for (const c of ['#e63946', '#2d4a7a', '#f6d2b5']) {
+      expect(lum(shade(c))).toBeLessThan(lum(c));
+      expect(lum(tint(c))).toBeGreaterThan(lum(c));
+    }
+  });
+});
+
+describe('hero', () => {
+  it.each(HERO_POSES)('draws the %s pose for every hair style and skin tone', (pose) => {
+    for (const hairStyle of HAIR_STYLES) {
+      for (const skin of SKIN_TONES) {
+        const svg = renderToStaticMarkup(
+          createElement(Hero, { avatar: { ...DEFAULT_AVATAR, hairStyle, skin: skin.value }, pose }),
+        );
+        expect(svg).toContain(`hero-svg--${pose}`);
+        expect(svg).not.toContain('NaN');
+        // No CSS filters: they are slow on tablets.
+        expect(svg).not.toContain('filter');
+      }
+    }
   });
 });

@@ -18,21 +18,36 @@ export interface CutScene {
 }
 
 export const CUT_SCENES: Record<number, CutScene> = {
-  // Level 1: through the tall grass (grass spans 460–820).
+  // Level 1: the cart race (numbers match CART_RACE in art/obstacles/mineLayout.ts, anchor 500).
+  // The cart waits at 560 and stops at the buffer at 2150; the pit spans 1500–1700.
+  // He rides with his feet on the cart floor, 44px up. The three ride moves chain
+  // (ease in, steady, steady) so the speed never jumps: 0.8px/ms at full speed.
+  // The boulder trails him by 300px, so when he reaches 1900 ('drop') it is over the pit.
   1: {
-    obstacle: 'tall-grass',
-    anchor: 460,
-    width: 1280,
+    obstacle: 'cart-race',
+    anchor: 500,
+    width: 2500,
     script: {
-      startX: 140,
+      startX: 120,
       steps: [
+        { do: 'walk', x: 480, ms: 1300 },
+        { do: 'prop', state: 'rumble' },
+        { do: 'shake', ms: 1100, amp: 12 },
+        { do: 'face', facing: 'left' },
+        { do: 'hold', pose: 'brace', ms: 800 },
+        { do: 'face', facing: 'right' },
+        { do: 'jump', x: 560, lift: 44, height: 70, ms: 500 },
         { do: 'caption' },
-        { do: 'walk', x: 380, ms: 1100 },
-        { do: 'prop', state: 'rustle' },
-        { do: 'walk', x: 900, ms: 2600 },
-        { do: 'prop', state: 'idle' },
-        { do: 'walk', x: 1000, ms: 500 },
-        { do: 'hold', pose: 'cheer', ms: 1400 },
+        { do: 'prop', state: 'chase' },
+        { do: 'move', x: 1000, lift: 44, ms: 1100, pose: 'ride', ease: 'in' },
+        { do: 'move', x: 1900, lift: 44, ms: 1100, pose: 'ride', ease: 'linear' },
+        { do: 'prop', state: 'drop' },
+        { do: 'shake', ms: 800, amp: 14 },
+        { do: 'move', x: 2150, lift: 44, ms: 305, pose: 'ride', ease: 'linear' },
+        { do: 'prop', state: 'crash' },
+        { do: 'shake', ms: 450, amp: 9 },
+        { do: 'jump', x: 2380, height: 150, ms: 750, pose: 'leap' },
+        { do: 'hold', pose: 'cheer', ms: 1500 },
       ],
     },
   },

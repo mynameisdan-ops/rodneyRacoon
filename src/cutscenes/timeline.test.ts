@@ -62,6 +62,59 @@ describe('cut-scene timeline', () => {
   });
 });
 
+describe('new scene steps', () => {
+  it('runs at a steady speed and settles into idle at the end', () => {
+    const tl = buildTimeline({ startX: 0, steps: [{ do: 'run', x: 400, ms: 200 }] });
+    expect(sampleTimeline(tl, 100)).toMatchObject({ x: 200, pose: 'run' });
+    expect(sampleTimeline(tl, 200).pose).toBe('idle');
+  });
+
+  it('chains eased moves without a jump in speed', () => {
+    const tl = buildTimeline({
+      startX: 0,
+      steps: [
+        { do: 'move', x: 100, lift: 0, ms: 100, pose: 'ride', ease: 'in' },
+        { do: 'move', x: 300, lift: 0, ms: 100, pose: 'ride', ease: 'linear' },
+        { do: 'move', x: 400, lift: 0, ms: 100, pose: 'ride', ease: 'out' },
+      ],
+    });
+    const speed = (t: number) => sampleTimeline(tl, t + 0.5).x - sampleTimeline(tl, t - 0.5).x;
+    expect(speed(99.5)).toBeCloseTo(speed(100.5), 1);
+    expect(speed(199.5)).toBeCloseTo(speed(200.5), 1);
+    expect(sampleTimeline(tl, 50).x).toBeCloseTo(25);
+    expect(sampleTimeline(tl, 250).x).toBeCloseTo(375);
+  });
+
+  it('jumps with a chosen pose and lands', () => {
+    const tl = buildTimeline({
+      startX: 0,
+      steps: [{ do: 'jump', x: 100, height: 50, ms: 100, pose: 'leap' }],
+    });
+    expect(sampleTimeline(tl, 50)).toMatchObject({ x: 50, lift: 50, pose: 'leap' });
+    expect(sampleTimeline(tl, 100)).toMatchObject({ lift: 0, pose: 'idle' });
+  });
+
+  it('shakes the camera and fades the shake out', () => {
+    const tl = buildTimeline({
+      startX: 0,
+      steps: [
+        { do: 'hold', pose: 'idle', ms: 100 },
+        { do: 'shake', ms: 400, amp: 10 },
+        { do: 'hold', pose: 'brace', ms: 1000 },
+      ],
+    });
+    expect(tl.duration).toBe(1100);
+    expect(sampleTimeline(tl, 50).shake).toEqual({ x: 0, y: 0 });
+    const size = (t: number) => {
+      const s = sampleTimeline(tl, t).shake;
+      return Math.hypot(s.x, s.y);
+    };
+    expect(Math.max(size(110), size(115), size(120))).toBeGreaterThan(3);
+    expect(size(480)).toBeLessThan(1);
+    expect(sampleTimeline(tl, 600).shake).toEqual({ x: 0, y: 0 });
+  });
+});
+
 describe('cameraFor', () => {
   it('stays put in a one-screen scene and follows in a wide one', () => {
     expect(cameraFor(900, 1280)).toBe(0);

@@ -1,6 +1,7 @@
 import { useId, useMemo, type ReactNode } from 'react';
 import { createRng } from '../../game/rng';
-import { getTheme, type WorldTheme } from './themes';
+import { MineCeiling, MineFar, MineMid, MineNear } from './mine';
+import { getTheme, type OutdoorTheme } from './themes';
 import './backdrop.css';
 
 const W = 1280;
@@ -48,8 +49,17 @@ export function WorldBackdrop({
   const speed = { ...PARALLAX, ...parallax };
   const theme = getTheme(worldId);
   const skyId = useId();
-  const layers = useMemo(
-    () => ({
+  const layers = useMemo(() => {
+    if (theme.kind === 'mine') {
+      const p = { theme, horizon, groundTop, height, pathY, k: detail, seed: worldId };
+      return {
+        clouds: <MineCeiling {...p} />,
+        far: <MineFar {...p} />,
+        mid: <MineMid {...p} />,
+        near: <MineNear {...p} />,
+      };
+    }
+    return {
       clouds: <Clouds theme={theme} horizon={horizon} k={detail} seed={worldId} />,
       far: <FarHills theme={theme} horizon={horizon} height={height} />,
       mid: (
@@ -72,9 +82,8 @@ export function WorldBackdrop({
           seed={worldId}
         />
       ),
-    }),
-    [theme, horizon, groundTop, height, pathY, detail, worldId],
-  );
+    };
+  }, [theme, horizon, groundTop, height, pathY, detail, worldId]);
 
   return (
     <svg
@@ -90,7 +99,10 @@ export function WorldBackdrop({
         </linearGradient>
       </defs>
       <rect width={W} height={height} fill={`url(#${skyId})`} />
-      <Layer offset={scroll * speed.clouds} className="backdrop__clouds">
+      <Layer
+        offset={scroll * speed.clouds}
+        className={theme.kind === 'outdoor' ? 'backdrop__clouds' : undefined}
+      >
         {layers.clouds}
       </Layer>
       <Layer offset={scroll * speed.far}>{layers.far}</Layer>
@@ -114,7 +126,8 @@ function Layer({
     <g className="backdrop__layer" style={{ transform: `translateX(${-offset}px)` }}>
       <g className={className}>
         {children}
-        <g transform={`translate(${W} 0)`}>{children}</g>
+        {/* Overlap by 1px so no hairline shows where the tiles meet. */}
+        <g transform={`translate(${W - 1} 0)`}>{children}</g>
       </g>
     </g>
   );
@@ -126,7 +139,7 @@ function Clouds({
   k,
   seed,
 }: {
-  theme: WorldTheme;
+  theme: OutdoorTheme;
   horizon: number;
   k: number;
   seed: number;
@@ -158,7 +171,7 @@ function FarHills({
   horizon,
   height,
 }: {
-  theme: WorldTheme;
+  theme: OutdoorTheme;
   horizon: number;
   height: number;
 }) {
@@ -179,7 +192,7 @@ function MidLayer({
   k,
   seed,
 }: {
-  theme: WorldTheme;
+  theme: OutdoorTheme;
   horizon: number;
   groundTop: number;
   height: number;
@@ -237,7 +250,7 @@ function NearLayer({
   k,
   seed,
 }: {
-  theme: WorldTheme;
+  theme: OutdoorTheme;
   groundTop: number;
   height: number;
   pathY?: number;

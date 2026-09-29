@@ -1,6 +1,8 @@
 import type { FC } from 'react';
+import type { PropEvent } from '../../cutscenes/timeline';
 
 export const OBSTACLE_IDS = [
+  'cart-race',
   'tall-grass',
   'puddle',
   'fence-stile',
@@ -23,6 +25,11 @@ export interface ObstacleProps {
   state: string;
   /** When `state` began, ms. */
   since: number;
+  /**
+   * The scene's whole prop schedule, including states still to come, so a prop can
+   * time a motion to end exactly when a later event happens (see `eventTime`).
+   */
+  events: readonly PropEvent[];
   /** Hero feet position relative to the anchor (x px, lift px up). */
   heroX: number;
   heroLift: number;
@@ -35,4 +42,9 @@ export interface ObstacleArt {
   front?: FC<ObstacleProps>;
   /** Width from the anchor, px (used to place the page-strip preview). */
   width: number;
+}
+
+/** When the scene reaches prop `state` (ms), or Infinity if it never does. */
+export function eventTime(events: readonly PropEvent[], state: string): number {
+  return events.find((e) => e.state === state)?.at ?? Infinity;
 }

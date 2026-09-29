@@ -5,6 +5,11 @@
   overflow: hidden;
 }
 
+.scene__world {
+  position: absolute;
+  inset: 0;
+}
+
 .scene__caption {
   position: absolute;
   left: 50%;
