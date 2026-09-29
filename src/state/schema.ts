@@ -3,7 +3,7 @@ import type { LevelProgress, ProgressMap } from '../game/progress';
 /**
  * Save format. Bump SAVE_VERSION and add a step to `migrate` whenever this shape changes.
  */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export interface Profile {
   id: string;
@@ -11,6 +11,8 @@ export interface Profile {
   /** Placeholder avatar color until the avatar builder (M8). */
   color: string;
   createdAt: number;
+  /** Check answers as soon as enough digits are typed, instead of on Enter / ✓ (added in v2). */
+  autoSubmit: boolean;
   progress: ProgressMap;
 }
 
@@ -43,7 +45,7 @@ export function migrate(raw: unknown): SaveData {
   if (version > SAVE_VERSION) throw new NewerSaveError(version);
   if (version < 1) return emptySave();
 
-  // Version 1 is current: just sanitize.
+  // v1 → v2 added `autoSubmit`; sanitizing fills it in (Enter), so both versions load the same way.
   const profiles = Array.isArray(raw.profiles)
     ? raw.profiles.map(sanitizeProfile).filter((p): p is Profile => p !== null)
     : [];
@@ -69,6 +71,7 @@ function sanitizeProfile(raw: unknown): Profile | null {
     name: raw.name.slice(0, MAX_NAME_LENGTH),
     color: typeof raw.color === 'string' ? raw.color : '#e63946',
     createdAt: typeof raw.createdAt === 'number' ? raw.createdAt : 0,
+    autoSubmit: raw.autoSubmit === true,
     progress,
   };
 }

@@ -15,7 +15,7 @@ describe('migrate', () => {
 
   it('keeps valid data unchanged', () => {
     const save = {
-      version: 1,
+      version: 2,
       lastProfileId: 'a',
       profiles: [
         {
@@ -23,11 +23,23 @@ describe('migrate', () => {
           name: 'Sam',
           color: '#123456',
           createdAt: 5,
+          autoSubmit: true,
           progress: { 1: { bestStars: 2, plays: 3, passes: 1, lastPlayedAt: 9 } },
         },
       ],
     };
     expect(migrate(structuredClone(save))).toEqual(save);
+  });
+
+  it('migrates a v1 save: players wait for Enter', () => {
+    const out = migrate({
+      version: 1,
+      lastProfileId: 'a',
+      profiles: [{ id: 'a', name: 'Sam', color: '#123456', createdAt: 5, progress: {} }],
+    });
+    expect(out.version).toBe(2);
+    expect(out.lastProfileId).toBe('a');
+    expect(out.profiles[0]!.autoSubmit).toBe(false);
   });
 
   it('drops damaged profiles and progress entries', () => {

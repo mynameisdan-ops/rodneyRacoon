@@ -11,6 +11,8 @@ interface Props {
   facing?: 'left' | 'right';
   /** Rendered height in px (width follows the 100:170 aspect ratio). */
   size?: number;
+  /** Draw the ground shadow under the feet (off when a scene draws its own). */
+  shadow?: boolean;
   className?: string;
 }
 
@@ -21,7 +23,14 @@ const VIEW_H = 170;
  * The hero, drawn as a layered paper doll facing right. Each limb is its own
  * group drawn hanging down from its joint, so poses are just rotations (see hero.css).
  */
-export function Hero({ avatar, pose = 'idle', facing = 'right', size = 120, className }: Props) {
+export function Hero({
+  avatar,
+  pose = 'idle',
+  facing = 'right',
+  size = 120,
+  shadow = true,
+  className,
+}: Props) {
   const { skin, shirt, pants, shoes, hairColor, hairStyle } = avatar;
   return (
     <svg
@@ -32,7 +41,9 @@ export function Hero({ avatar, pose = 'idle', facing = 'right', size = 120, clas
       style={facing === 'left' ? { transform: 'scaleX(-1)' } : undefined}
       aria-hidden
     >
-      <ellipse className="hero-shadow" cx={52} cy={164} rx={26} ry={5} fill="rgba(0,0,0,0.18)" />
+      {shadow && (
+        <ellipse className="hero-shadow" cx={52} cy={164} rx={26} ry={5} fill="rgba(0,0,0,0.18)" />
+      )}
       <g className="hero-body">
         <g transform="translate(40 84)">
           <Arm className="hero-arm hero-arm--back" shirt={shirt} skin={skin} />

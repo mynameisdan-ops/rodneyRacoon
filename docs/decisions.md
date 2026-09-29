@@ -65,3 +65,49 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
   animation decisions and schedules the known gaps: pause and a tablet preview deploy in M4, the ✕-exit
   rule before stats. Added GitHub Actions CI (lint, test, build) and tests for the avatar options and the
   seeded backdrops (48 tests).
+
+- **2026-09-28: M4 Cut scenes and pause** (branch `m4-cut-scenes`).
+  - `src/cutscenes/timeline.ts` (pure, tested): scripts of blocking steps (`walk`, `move`, `jump` with an
+    arc, `hold`) and instant ones (`prop`, `caption`, `face`) compile to a timeline; `sampleTimeline(t)`
+    gives the hero's x, lift, the surface under him (for the shadow), pose, facing, prop state and caption.
+    The camera follows the hero (`cameraFor`) in scenes wider than 1280px.
+  - `src/art/obstacles/`: 8 World 1 obstacles drawn around an anchor on the ground line, each with a back
+    layer and optionally a front one (grass in front of his legs, the near bridge rope): tall grass that
+    parts, a muddy puddle with a splash, a fence stile, bees that drift after him, stepping logs in a
+    stream, a windy hill with a path over it, a sleeping bull that peeks, and a rope bridge whose deck sags
+    under his feet over a gorge. Motion is computed from scene time (not CSS), so any frame is exact.
+  - `src/content/cutscenes.ts`: the 8 scenes as data; the boss scene is 2300px wide and ends at a signpost
+    to the Whispering Forest. Tests check every level has a scene of 4–14s, that he ends past the obstacle,
+    on the ground and on screen, that the camera stays inside the backdrop tile, and that every obstacle
+    renders in every state without NaNs.
+  - **Decided:** after a pass the flow is results (stars) → Continue → cut scene → Map / Next level, with a
+    Skip button rather than tap-to-skip (so a 6-year-old can't skip by accident). Captions sit at the top.
+    No animation library: a `requestAnimationFrame` clock with frame gaps capped at 100ms, so a
+    backgrounded app resumes where it left off. The level 6 caption became "Whoosh! What a wind!" (he has
+    no hat).
+  - The page strip previews the level's obstacle at the end of the trail instead of a flag.
+  - **Pause:** a ⏸ button; the page also pauses itself when the app is backgrounded or the tablet turns to
+    portrait. The problem is hidden and the pad locked while paused; only Continue resumes (not while still
+    hidden or in portrait). Paused time counts neither against the minute nor toward the problem's answer
+    time (a `pausedFor` action in the session reducer).
+  - **Fixed:** the stage could end up scaled to 0 if the window had no size when the app started (a
+    background tab, possibly an app launch); it now measures its container with a `ResizeObserver`.
+  - Dev gallery: every scene with a scrub slider and Play.
+  - Checked in the browser: scenes frame by frame (after fixing a shadow that rose with the hero, a hill
+    that blended into the field, and a caption covering the ravine), the full flow page → results → scene →
+    next level, and pause (button, background, resume). No console errors. 74 tests.
+  - Not done: the tablet check. The repo is private, so GitHub Pages needs a paid plan or a public repo.
+
+- **2026-09-28: Playtest feedback → Enter to submit, M4b planned.** Feedback in `docs/feedback.txt`: answers
+  shouldn't be taken from the first thing typed; obstacles should be epic; the art should engage a 9-year-old
+  ("between Math Pirates and Zelda", not ABC Mouse).
+  - Built on `m4-cut-scenes`: `createSession(..., { autoSubmit })`, default off, so answers wait for Enter
+    / ✓. `Profile.autoSubmit` with `SAVE_VERSION = 2` (v1 saves load with Enter). An "Answers: Press to
+    check / Automatic" choice in the player editor, which moves to Settings in M10. The ✓ key never lights
+    up when the digit count matches, because that would give away the answer's length.
+  - Decided: a per-profile switch rather than removing auto-submit (the 6-year-old may prefer it). The art
+    stays code-drawn SVG, restyled cel-shaded, with no `filter`, for tablet performance. The hero becomes a
+    young adventurer. New milestone M4b (art direction + epic World 1) comes before M5, so the 32 new scenes
+    are made once in the new style. M4b starts with a style test for approval.
+  - To check in play: with Enter, 60s may be tight for the later World 1 levels; tune the counts in
+    `levels.ts` if so.

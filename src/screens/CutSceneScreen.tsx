@@ -1,0 +1,57 @@
+import { useMemo } from 'react';
+import type { AvatarConfig } from '../art/hero/avatar';
+import type { CutScene } from '../content/cutscenes';
+import { getWorld, type LevelDef } from '../content/levels';
+import { CutSceneView } from '../cutscenes/CutSceneView';
+import { buildTimeline } from '../cutscenes/timeline';
+import { useSceneClock } from '../cutscenes/useSceneClock';
+
+interface Props {
+  level: LevelDef;
+  scene: CutScene;
+  avatar: AvatarConfig;
+  hasNext: boolean;
+  onNext: () => void;
+  onMap: () => void;
+}
+
+export function CutSceneScreen({ level, scene, avatar, hasNext, onNext, onMap }: Props) {
+  const timeline = useMemo(() => buildTimeline(scene.script), [scene]);
+  const [t, skip] = useSceneClock(timeline.duration);
+  const over = t >= timeline.duration;
+
+  return (
+    <div className="scene-screen">
+      <CutSceneView
+        scene={scene}
+        timeline={timeline}
+        worldId={level.world}
+        avatar={avatar}
+        caption={level.caption}
+        t={t}
+      />
+      {!over && (
+        <button type="button" className="scene-screen__skip" onClick={skip}>
+          Skip ⏭
+        </button>
+      )}
+      {over && (
+        <div className="scene-screen__end">
+          {level.boss && (
+            <div className="scene-screen__banner">{getWorld(level.world)?.name} complete!</div>
+          )}
+          <div className="scene-screen__actions">
+            <button type="button" className="big-button big-button--quiet" onClick={onMap}>
+              Map
+            </button>
+            {hasNext && (
+              <button type="button" className="big-button" onClick={onNext}>
+                Next level ▶
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}

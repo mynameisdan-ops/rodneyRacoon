@@ -18,6 +18,8 @@ export interface SessionState {
   combo: number;
   bestCombo: number;
   timedOut: boolean;
+  /** Check the answer as soon as enough digits are typed, instead of waiting for Enter. */
+  autoSubmit: boolean;
   /** Bumped on every answer check so the UI can replay feedback animations. */
   feedback: { kind: 'correct' | 'wrong' | 'reveal'; seq: number } | null;
 }
@@ -27,9 +29,19 @@ export type SessionAction =
   | { type: 'backspace' }
   | { type: 'submit'; now: number }
   | { type: 'advance'; now: number }
-  | { type: 'timeUp' };
+  | { type: 'timeUp' }
+  /** Time spent paused: pushes the current problem's start later so it isn't counted. */
+  | { type: 'pausedFor'; ms: number };
 
-export function createSession(problems: Problem[], now: number): SessionState {
+export interface SessionOptions {
+  autoSubmit?: boolean;
+}
+
+export function createSession(
+  problems: Problem[],
+  now: number,
+  { autoSubmit = false }: SessionOptions = {},
+): SessionState {
   return {
     problems,
     index: 0,
@@ -41,6 +53,7 @@ export function createSession(problems: Problem[], now: number): SessionState {
     combo: 0,
     bestCombo: 0,
     timedOut: false,
+    autoSubmit,
     feedback: null,
   };
 }
@@ -55,6 +68,9 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
   if (action.type === 'timeUp') {
     return state.phase === 'done' ? state : { ...state, phase: 'done', timedOut: true };
   }
+  if (action.type === 'pausedFor') {
+    return { ...state, problemStartedAt: state.problemStartedAt + action.ms };
+  }
   if (action.type === 'advance') {
     return state.phase === 'revealing' ? nextProblem(state, action.now) : state;
   }
@@ -65,8 +81,8 @@ export function sessionReducer(state: SessionState, action: SessionAction): Sess
       if (state.input.length >= MAX_INPUT_DIGITS) return state;
       const input = state.input === '0' ? String(action.digit) : state.input + action.digit;
       const problem = currentProblem(state);
-      // Auto-submit once the typed answer is as long as the correct one.
-      if (problem && input.length >= String(problem.answer).length) {
+      // With auto-submit on, check once the typed answer is as long as the correct one.
+      if (state.autoSubmit && problem && input.length >= String(problem.answer).length) {
         return check({ ...state, input }, action.now);
       }
       return { ...state, input };

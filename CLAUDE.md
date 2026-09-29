@@ -21,7 +21,8 @@ and update it when a design decision changes. The tracking files:
 ## Stack
 
 - Vite + TypeScript (strict) + React
-- SVG art as React components; animation with CSS keyframes and transitions (`motion` only if cut scenes need it)
+- SVG art as React components; animation with CSS keyframes and transitions; cut scenes run on a
+  `requestAnimationFrame` clock sampling a pure timeline (no animation library)
 - zustand for state; IndexedDB via `idb-keyval` for saves (versioned schema with migrations)
 - `vite-plugin-pwa` for offline/installable; hosted on GitHub Pages
 - Vitest for unit tests
@@ -41,7 +42,8 @@ npm run format     # prettier --write
 ```
 
 In a dev build, open `http://localhost:5173/#gallery` for the art gallery (every hero pose,
-hair style and skin tone). Use it to check art changes; it is left out of production builds.
+hair style and skin tone, plus every cut scene with a scrub slider to inspect any moment and a
+Play button). Use it to check art changes; it is left out of production builds.
 
 (Keep this list in sync with `package.json`.)
 
@@ -53,8 +55,10 @@ hair style and skin tone). Use it to check art changes; it is left out of produc
   writing content should never require touching game logic.
 - `src/game/config.ts` holds every tunable number (timer, pass threshold, star rules, coin
   amounts, combo steps). Don't hard-code these elsewhere.
-- Cut scenes are **scripts (data)** run by a single `CutScenePlayer`, built from reusable
-  obstacle templates. Don't write one-off animation code for each level.
+- Cut scenes are **scripts (data)** in `src/content/cutscenes.ts`, compiled by the pure
+  `src/cutscenes/timeline.ts` and drawn by one `CutSceneView`, using reusable obstacle art from
+  `src/art/obstacles/` (registered in `registry.ts`). Don't write one-off animation code for each
+  level; obstacle motion is computed from scene time, not CSS, so any frame can be drawn exactly.
 - One `<Hero>` component renders the avatar everywhere (map, page strip, cut scenes, shop),
   driven by the avatar config and a `pose` prop.
 - The design canvas is 1280×800 (16:10), scaled to fit the screen. Lay out in design units, not raw viewport pixels.
@@ -65,7 +69,8 @@ hair style and skin tone). Use it to check art changes; it is left out of produc
 - Touch targets are **at least 72px**; the number pad is the main input and physical keyboard input is also supported.
 - Gameplay must never depend on reading ability. Captions are short and visuals carry the story.
 - Always encouraging: no "wrong!" or "game over" language. Failing a page means a gentle knock-back and a retry.
-- Auto-submit answers when the typed digit count matches the answer length.
+- Answers are checked on Enter / ✓ by default. A per-profile switch turns on auto-submit (checked as soon as
+  the typed digit count matches the answer length). Never hint at the answer's length (e.g. by lighting up ✓).
 - Respond instantly to input (under 100ms feedback). No layout shift while answering.
 - Keep the problem text very large and high-contrast.
 

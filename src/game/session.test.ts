@@ -17,10 +17,38 @@ function run(state: SessionState, ...actions: SessionAction[]) {
   return actions.reduce(sessionReducer, state);
 }
 const digit = (d: number, now = 0): SessionAction => ({ type: 'digit', digit: d, now });
+const enter = (now = 0): SessionAction => ({ type: 'submit', now });
+const auto = { autoSubmit: true };
 
 describe('sessionReducer', () => {
-  it('auto-submits when the typed answer reaches the answer length', () => {
-    const s = run(createSession([p(2, 3), p(6, 7)], 0), digit(5, 800));
+  it('waits for Enter by default, even when the typed answer is complete', () => {
+    let s = run(createSession([p(6, 7), p(2, 3)], 0), digit(1), digit(3, 400));
+    expect(s.input).toBe('13');
+    expect(s.index).toBe(0);
+    expect(s.feedback).toBeNull();
+
+    s = run(s, enter(900));
+    expect(s.index).toBe(1);
+    expect(s.results).toEqual([{ correct: true, tries: 1, ms: 900 }]);
+
+    s = run(s, digit(4), enter(1200));
+    expect(s.feedback?.kind).toBe('wrong');
+    expect(s.input).toBe('');
+    expect(s.index).toBe(1);
+  });
+
+  it('ignores Enter with nothing typed', () => {
+    const s = createSession([p(2, 3)], 0);
+    expect(run(s, enter())).toBe(s);
+  });
+
+  it('caps the typed answer at 4 digits', () => {
+    const s = run(createSession([p(2, 3)], 0), digit(1), digit(2), digit(3), digit(4), digit(5));
+    expect(s.input).toBe('1234');
+  });
+
+  it('with auto-submit, checks when the typed answer reaches the answer length', () => {
+    const s = run(createSession([p(2, 3), p(6, 7)], 0, auto), digit(5, 800));
     expect(s.index).toBe(1);
     expect(s.results).toEqual([{ correct: true, tries: 1, ms: 800 }]);
     expect(s.feedback?.kind).toBe('correct');
@@ -33,16 +61,16 @@ describe('sessionReducer', () => {
     expect(done.results[1]).toEqual({ correct: true, tries: 1, ms: 1200 });
   });
 
-  it('waits for Enter when a short answer is typed for a longer one', () => {
-    const s = run(createSession([p(6, 7)], 0), digit(9));
+  it('with auto-submit, waits for Enter when a short answer is typed for a longer one', () => {
+    const s = run(createSession([p(6, 7)], 0, auto), digit(9));
     expect(s.input).toBe('9');
-    const after = run(s, { type: 'submit', now: 100 });
+    const after = run(s, enter(100));
     expect(after.feedback?.kind).toBe('wrong');
     expect(after.input).toBe('');
   });
 
   it('gives a second try, then reveals and waits for advance', () => {
-    let s = run(createSession([p(2, 3), p(1, 1)], 0), digit(4));
+    let s = run(createSession([p(2, 3), p(1, 1)], 0, auto), digit(4));
     expect(s.feedback?.kind).toBe('wrong');
     expect(s.misses).toBe(1);
     expect(s.index).toBe(0);
@@ -62,12 +90,12 @@ describe('sessionReducer', () => {
   });
 
   it('counts a second-try success as correct but not first-try', () => {
-    const s = run(createSession([p(2, 3)], 0), digit(4), digit(5, 300));
+    const s = run(createSession([p(2, 3)], 0, auto), digit(4), digit(5, 300));
     expect(s.results).toEqual([{ correct: true, tries: 2, ms: 300 }]);
   });
 
   it('tracks combos and resets them on a miss', () => {
-    const s = run(createSession([p(1, 1), p(1, 2), p(1, 3), p(1, 4)], 0), digit(2), digit(3));
+    const s = run(createSession([p(1, 1), p(1, 2), p(1, 3), p(1, 4)], 0, auto), digit(2), digit(3));
     expect(s.combo).toBe(2);
     const missed = run(s, digit(9));
     expect(missed.combo).toBe(0);
@@ -75,12 +103,18 @@ describe('sessionReducer', () => {
   });
 
   it('supports backspace and replaces a leading zero', () => {
-    const s = run(createSession([p(6, 7)], 0), digit(0), digit(1), { type: 'backspace' });
+    const s = run(createSession([p(6, 7)], 0, auto), digit(0), digit(1), { type: 'backspace' });
     expect(s.input).toBe('');
   });
 
+  it('does not count paused time toward a problem', () => {
+    let s = createSession([p(2, 3)], 0, auto);
+    s = run(s, { type: 'pausedFor', ms: 5000 }, digit(5, 6000));
+    expect(s.results).toEqual([{ correct: true, tries: 1, ms: 1000 }]);
+  });
+
   it('ends the page when time is up', () => {
-    const s = run(createSession([p(1, 1), p(1, 2)], 0), digit(2), { type: 'timeUp' });
+    const s = run(createSession([p(1, 1), p(1, 2)], 0, auto), digit(2), { type: 'timeUp' });
     expect(s.phase).toBe('done');
     expect(s.timedOut).toBe(true);
     expect(run(s, digit(3))).toBe(s);

@@ -76,7 +76,7 @@ export const LEVELS: LevelDef[] = [
     problems: 14,
     difficulty: 0.2,
     obstacle: 'Windy hill',
-    caption: 'Hold on to your hat!',
+    caption: 'Whoosh! What a wind!',
   },
   {
     id: 7,

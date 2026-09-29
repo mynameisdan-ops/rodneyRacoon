@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useState } from 'react';
 import { avatarForProfile } from './art/hero/avatar';
+import { getCutScene } from './content/cutscenes';
 import { getLevel } from './content/levels';
 import { isUnlocked } from './game/progress';
 import type { PageEvaluation } from './game/scoring';
+import { CutSceneScreen } from './screens/CutSceneScreen';
 import { PageScreen } from './screens/PageScreen';
 import { ProfileEditor } from './screens/ProfileEditor';
 import { ProfileSelect } from './screens/ProfileSelect';
@@ -18,7 +20,8 @@ type Screen =
   | { name: 'map' }
   /** `attempt` remounts the page so a retry gets fresh problems. */
   | { name: 'page'; levelId: number; attempt: number }
-  | { name: 'results'; levelId: number; evaluation: PageEvaluation };
+  | { name: 'results'; levelId: number; evaluation: PageEvaluation }
+  | { name: 'scene'; levelId: number };
 
 export function App() {
   const status = useGame((s) => s.status);
@@ -73,7 +76,11 @@ function Game() {
   );
 
   // Everything past player selection needs an active player.
-  const needsPlayer = screen.name === 'map' || screen.name === 'page' || screen.name === 'results';
+  const needsPlayer =
+    screen.name === 'map' ||
+    screen.name === 'page' ||
+    screen.name === 'results' ||
+    screen.name === 'scene';
   const current: Screen = needsPlayer && !profile ? { name: 'profiles' } : screen;
 
   switch (current.name) {
@@ -100,12 +107,12 @@ function Game() {
           profile={editing}
           takenColors={profiles.map((p) => p.color)}
           canCancel={profiles.length > 0}
-          onSave={(name, color) => {
+          onSave={(name, color, autoSubmit) => {
             if (editing) {
-              updateProfile(editing.id, { name, color });
+              updateProfile(editing.id, { name, color, autoSubmit });
               toProfiles();
             } else {
-              createProfile(name, color);
+              createProfile(name, color, autoSubmit);
               toMap();
             }
           }}
@@ -140,6 +147,7 @@ function Game() {
           key={current.attempt}
           level={level}
           avatar={avatarForProfile(profile!)}
+          autoSubmit={profile!.autoSubmit}
           onFinish={finish}
           onQuit={toMap}
         />
@@ -149,16 +157,32 @@ function Game() {
     case 'results': {
       const level = getLevel(current.levelId);
       if (!level) return null;
-      const next = getLevel(level.id + 1);
-      const nextOpen = next !== undefined && isUnlocked(profile!.progress, next.id);
+      const hasScene = getCutScene(level.id) !== undefined;
       return (
         <ResultsScreen
           level={level}
           avatar={avatarForProfile(profile!)}
           evaluation={current.evaluation}
+          onContinue={() => (hasScene ? setScreen({ name: 'scene', levelId: level.id }) : toMap())}
+          onRetry={() => play(level.id)}
+          onMap={toMap}
+        />
+      );
+    }
+
+    case 'scene': {
+      const level = getLevel(current.levelId);
+      const scene = getCutScene(current.levelId);
+      if (!level || !scene) return null;
+      const next = getLevel(level.id + 1);
+      const nextOpen = next !== undefined && isUnlocked(profile!.progress, next.id);
+      return (
+        <CutSceneScreen
+          level={level}
+          scene={scene}
+          avatar={avatarForProfile(profile!)}
           hasNext={nextOpen}
           onNext={() => next && play(next.id)}
-          onRetry={() => play(level.id)}
           onMap={toMap}
         />
       );
