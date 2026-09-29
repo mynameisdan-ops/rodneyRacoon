@@ -134,3 +134,28 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     which reads as a lantern glow in the mine.
   - New feedback arrived in `docs/feedback.txt` (a parent menu for starting difficulty and detailed
     settings). Not acted on yet; it fits M6/M10.
+
+- **2026-09-28: M4b rolled out to World 1, then M6 adaptive difficulty.**
+  - **M4b** (`m4b-art-direction`): scenes for levels 2–8 built per PLAN §3. Cart jump (a ramp
+    and the gap), wall smash (an ore cart through a cave-in), rat swarm (a chain swing), crystal
+    cavern (sinking spires), bat storm (a slide under a beam), runaway lift (the rope snaps, he climbs
+    the chain) and the boss mine train (a rockfall chases it out of the mine; it jumps the canyon).
+    The meadow obstacle art is removed. Props get `heroAt(t)`, which the rockfall and the falling lift
+    use. The cut-scene test draws every frame of every scene. UI chrome: ink-outlined buttons, keys
+    and chips, parchment behind the problem, a wooden pad, Lilita One (bundled via @fontsource and
+    precached, so it works offline) for titles and buttons but not the problem digits (tabular, no
+    layout shift), and a lantern-style timer in the mine.
+  - `docs/feedback.md` (it replaced feedback.txt) asked for a clearer face with a nose. Added a
+    nose, bigger eyes and upper lids. (The earlier parent-menu note was removed from the file; the
+    age setting and M10 Settings cover part of it.)
+  - **M6** (`m6-adaptive-difficulty`, branched from M4b): `game/adaptive.ts` holds ratings per skill,
+    `planPage` (count and difficulty from the level's range and band, plus up to 30% weak facts), the
+    rating steps (3★ +0.15, pass +0.06, fail −0.12), and weak facts (a miss or second try logs one;
+    3 right-and-quick answers in a row retire it; at most 30 kept). Problems now carry their
+    `skill`, so review pages can bring back facts from their sub-skills. Levels got
+    `problems: [min, max]` and `band`.
+  - Age: the parent picks 5–10+ in the player editor. The start rating is 0.5 at the skill's typical
+    age, ±0.25 a year. Changing the age resets the ratings. Save format v3 adds `age`, `ratings`
+    and `weakFacts`; older saves load with no age (age 7 is used).
+  - Decided: ✕ still records nothing, so quitting doesn't lower a rating. Seeing the ratings,
+    pinning them and turning adapting off wait for the Settings screen in M10.

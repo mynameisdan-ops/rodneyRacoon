@@ -11,6 +11,7 @@ const p = (a: number, b: number): Problem => ({
   unknown: 'result',
   answer: a + b,
   key: `${a}+${b}`,
+  skill: 'add-within-10',
 });
 
 function run(state: SessionState, ...actions: SessionAction[]) {

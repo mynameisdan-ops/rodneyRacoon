@@ -10,10 +10,13 @@ export interface LevelDef {
   id: number;
   world: number;
   skill: SkillId;
-  /** Problems on the page. */
-  problems: number;
-  /** Default difficulty (0..1) inside the skill until adaptive difficulty lands (M6). */
-  difficulty: number;
+  /** Problems on the page: [at the skill's lowest rating, at its highest]. */
+  problems: readonly [number, number];
+  /**
+   * The difficulty band (0..1 inside the skill) this level covers. The player's rating for
+   * the skill picks a point in the band, so the same rating plays harder on a later level.
+   */
+  band: readonly [number, number];
   /** The obstacle the cut scene shows after this level. */
   obstacle: string;
   /** Short cut-scene caption (kept short: gameplay must not depend on reading). */
@@ -28,8 +31,8 @@ export const LEVELS: LevelDef[] = [
     id: 1,
     world: 1,
     skill: 'add-within-5',
-    problems: 10,
-    difficulty: 0.2,
+    problems: [8, 12],
+    band: [0, 1],
     obstacle: 'Cart race',
     caption: 'Cart race!',
   },
@@ -37,8 +40,8 @@ export const LEVELS: LevelDef[] = [
     id: 2,
     world: 1,
     skill: 'add-within-10',
-    problems: 10,
-    difficulty: 0.2,
+    problems: [8, 12],
+    band: [0, 0.5],
     obstacle: 'Cart jump',
     caption: 'Jump the gap!',
   },
@@ -46,8 +49,8 @@ export const LEVELS: LevelDef[] = [
     id: 3,
     world: 1,
     skill: 'add-within-10',
-    problems: 12,
-    difficulty: 0.7,
+    problems: [10, 14],
+    band: [0.4, 1],
     obstacle: 'Wall smash',
     caption: 'Smash through!',
   },
@@ -55,8 +58,8 @@ export const LEVELS: LevelDef[] = [
     id: 4,
     world: 1,
     skill: 'doubles',
-    problems: 12,
-    difficulty: 0.5,
+    problems: [10, 14],
+    band: [0, 1],
     obstacle: 'Rat swarm',
     caption: 'Swing over the rats!',
   },
@@ -64,8 +67,8 @@ export const LEVELS: LevelDef[] = [
     id: 5,
     world: 1,
     skill: 'make-10',
-    problems: 12,
-    difficulty: 0.5,
+    problems: [10, 14],
+    band: [0, 1],
     obstacle: 'Crystal cavern',
     caption: 'Hop the crystals!',
   },
@@ -73,8 +76,8 @@ export const LEVELS: LevelDef[] = [
     id: 6,
     world: 1,
     skill: 'add-within-20',
-    problems: 14,
-    difficulty: 0.2,
+    problems: [12, 16],
+    band: [0, 0.5],
     obstacle: 'Bat storm',
     caption: 'Slide under!',
   },
@@ -82,8 +85,8 @@ export const LEVELS: LevelDef[] = [
     id: 7,
     world: 1,
     skill: 'add-within-20',
-    problems: 15,
-    difficulty: 0.8,
+    problems: [12, 17],
+    band: [0.4, 1],
     obstacle: 'Runaway lift',
     caption: 'Grab the chain!',
   },
@@ -91,8 +94,8 @@ export const LEVELS: LevelDef[] = [
     id: 8,
     world: 1,
     skill: 'world1-review',
-    problems: 16,
-    difficulty: 0.6,
+    problems: [14, 18],
+    band: [0.3, 1],
     obstacle: 'Escape the mine',
     caption: 'Jump the canyon!',
     boss: true,

@@ -2,7 +2,9 @@ import { useCallback, useEffect, useState } from 'react';
 import { avatarForProfile } from './art/hero/avatar';
 import { getCutScene } from './content/cutscenes';
 import { getLevel } from './content/levels';
+import { planPage, type Answer, type PagePlan } from './game/adaptive';
 import { isUnlocked } from './game/progress';
+import { createRng, randomSeed } from './game/rng';
 import type { PageEvaluation } from './game/scoring';
 import { CutSceneScreen } from './screens/CutSceneScreen';
 import { PageScreen } from './screens/PageScreen';
@@ -19,7 +21,7 @@ type Screen =
   | { name: 'editProfile'; profileId?: string }
   | { name: 'map' }
   /** `attempt` remounts the page so a retry gets fresh problems. */
-  | { name: 'page'; levelId: number; attempt: number }
+  | { name: 'page'; levelId: number; attempt: number; plan: PagePlan }
   | { name: 'results'; levelId: number; evaluation: PageEvaluation }
   | { name: 'scene'; levelId: number };
 
@@ -60,17 +62,24 @@ function Game() {
   );
 
   const play = useCallback(
-    (levelId: number) => setScreen({ name: 'page', levelId, attempt: Date.now() }),
-    [],
+    (levelId: number) => {
+      const level = getLevel(levelId);
+      if (!level || !profile) return;
+      // The plan is fixed when the page starts, from the player's current ratings.
+      const plan = planPage(level, profile, createRng(randomSeed()));
+      setScreen({ name: 'page', levelId, attempt: Date.now(), plan });
+    },
+    [profile],
   );
   const toMap = useCallback(() => setScreen({ name: 'map' }), []);
 
   const levelId = screen.name === 'page' ? screen.levelId : undefined;
   const finish = useCallback(
-    (evaluation: PageEvaluation) => {
-      if (levelId === undefined) return;
-      recordResult(levelId, evaluation);
-      setScreen({ name: 'results', levelId, evaluation });
+    (evaluation: PageEvaluation, answers: Answer[]) => {
+      const level = levelId === undefined ? undefined : getLevel(levelId);
+      if (!level) return;
+      recordResult(level, evaluation, answers);
+      setScreen({ name: 'results', levelId: level.id, evaluation });
     },
     [levelId, recordResult],
   );
@@ -107,12 +116,12 @@ function Game() {
           profile={editing}
           takenColors={profiles.map((p) => p.color)}
           canCancel={profiles.length > 0}
-          onSave={(name, color, autoSubmit) => {
+          onSave={(name, color, autoSubmit, age) => {
             if (editing) {
-              updateProfile(editing.id, { name, color, autoSubmit });
+              updateProfile(editing.id, { name, color, autoSubmit, age });
               toProfiles();
             } else {
-              createProfile(name, color, autoSubmit);
+              createProfile(name, color, autoSubmit, age);
               toMap();
             }
           }}
@@ -148,6 +157,7 @@ function Game() {
           level={level}
           avatar={avatarForProfile(profile!)}
           autoSubmit={profile!.autoSubmit}
+          plan={current.plan}
           onFinish={finish}
           onQuit={toMap}
         />

@@ -1,11 +1,15 @@
+import type { AdaptiveState, WeakFact } from '../game/adaptive';
+import { SKILL_IDS, type BaseSkillId, type Problem, type SkillId } from '../game/problems';
 import type { LevelProgress, ProgressMap } from '../game/progress';
+import { AGES } from '../content/skills';
 
 /**
  * Save format. Bump SAVE_VERSION and add a step to `migrate` whenever this shape changes.
  */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
-export interface Profile {
+/** A player. The adaptive fields (`age`, `ratings`, `weakFacts`) were added in v3. */
+export interface Profile extends AdaptiveState {
   id: string;
   name: string;
   /** Placeholder avatar color until the avatar builder (M8). */
@@ -45,7 +49,8 @@ export function migrate(raw: unknown): SaveData {
   if (version > SAVE_VERSION) throw new NewerSaveError(version);
   if (version < 1) return emptySave();
 
-  // v1 → v2 added `autoSubmit`; sanitizing fills it in (Enter), so both versions load the same way.
+  // Each version only added fields, and sanitizing fills in their defaults: v2 added
+  // `autoSubmit` (Enter), v3 added `age` (not set), `ratings` and `weakFacts` (empty).
   const profiles = Array.isArray(raw.profiles)
     ? raw.profiles.map(sanitizeProfile).filter((p): p is Profile => p !== null)
     : [];
@@ -72,7 +77,60 @@ function sanitizeProfile(raw: unknown): Profile | null {
     color: typeof raw.color === 'string' ? raw.color : '#e63946',
     createdAt: typeof raw.createdAt === 'number' ? raw.createdAt : 0,
     autoSubmit: raw.autoSubmit === true,
+    age: sanitizeAge(raw.age),
+    ratings: sanitizeRatings(raw.ratings),
+    weakFacts: Array.isArray(raw.weakFacts)
+      ? raw.weakFacts.map(sanitizeWeakFact).filter((w): w is WeakFact => w !== null)
+      : [],
     progress,
+  };
+}
+
+function sanitizeAge(raw: unknown): number | null {
+  return typeof raw === 'number' && (AGES as readonly number[]).includes(raw) ? raw : null;
+}
+
+const isSkill = (v: unknown): v is SkillId =>
+  typeof v === 'string' && (SKILL_IDS as readonly string[]).includes(v);
+
+function sanitizeRatings(raw: unknown): Partial<Record<SkillId, number>> {
+  const out: Partial<Record<SkillId, number>> = {};
+  if (!isObject(raw)) return out;
+  for (const [skill, value] of Object.entries(raw)) {
+    if (isSkill(skill) && typeof value === 'number' && Number.isFinite(value)) {
+      out[skill] = Math.min(1, Math.max(0, value));
+    }
+  }
+  return out;
+}
+
+function sanitizeWeakFact(raw: unknown): WeakFact | null {
+  if (!isObject(raw) || !isObject(raw.problem)) return null;
+  const p = raw.problem;
+  const nums = [p.a, p.b, p.result, p.answer];
+  if (!nums.every((n) => typeof n === 'number' && Number.isInteger(n) && n >= 0)) return null;
+  if (p.op !== '+' && p.op !== '−' && p.op !== '×' && p.op !== '÷') return null;
+  if (p.unknown !== 'result' && p.unknown !== 'b') return null;
+  if (typeof p.key !== 'string' || !isSkill(p.skill) || p.skill === 'world1-review') return null;
+  // Only addition facts exist so far; check the sum adds up (later ops add their own checks).
+  if (p.op === '+' && (p.a as number) + (p.b as number) !== p.result) return null;
+  if (p.answer !== (p.unknown === 'result' ? p.result : p.b)) return null;
+  const count = (v: unknown) => (typeof v === 'number' && v >= 0 ? Math.floor(v) : 0);
+  const problem: Problem = {
+    a: p.a as number,
+    op: p.op,
+    b: p.b as number,
+    result: p.result as number,
+    unknown: p.unknown,
+    answer: p.answer as number,
+    key: p.key,
+    skill: p.skill as BaseSkillId,
+  };
+  return {
+    problem,
+    misses: Math.max(1, count(raw.misses)),
+    streak: count(raw.streak),
+    lastSeen: count(raw.lastSeen),
   };
 }
 

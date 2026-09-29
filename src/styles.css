@@ -325,21 +325,21 @@ button {
 }
 
 .editor__label {
-  margin-bottom: 20px;
-  font-size: 34px;
+  margin-bottom: 10px;
+  font-size: 30px;
   font-weight: 800;
   color: var(--ink-soft);
 }
 
 .editor__colors {
   display: grid;
-  grid-template-columns: repeat(4, 96px);
-  gap: 24px;
+  grid-template-columns: repeat(4, 80px);
+  gap: 18px;
 }
 
 .swatch {
-  width: 96px;
-  height: 96px;
+  width: 80px;
+  height: 80px;
   border: 6px solid #fff;
   border-radius: 50%;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
@@ -352,7 +352,7 @@ button {
 }
 
 .editor__label--gap {
-  margin-top: 36px;
+  margin-top: 20px;
 }
 
 .editor__submit {
@@ -364,7 +364,7 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  min-height: 80px;
+  min-height: 72px;
   padding: 0 24px;
   border: 6px solid #fff;
   border-radius: 20px;
@@ -379,6 +379,17 @@ button {
 .choice--on {
   outline: 6px solid var(--ink);
   color: var(--ink);
+}
+
+.editor__ages {
+  display: flex;
+  gap: 12px;
+}
+
+.choice--age {
+  justify-content: center;
+  min-width: 80px;
+  padding: 0 12px;
 }
 
 .choice__icon {
