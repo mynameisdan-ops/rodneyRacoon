@@ -159,3 +159,9 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     and `weakFacts`; older saves load with no age (age 7 is used).
   - Decided: ✕ still records nothing, so quitting doesn't lower a rating. Seeing the ratings,
     pinning them and turning adapting off wait for the Settings screen in M10.
+
+- **2026-09-28: Merged M4, M4b and M6 into `main`.** The user asked to merge so they can play the
+  current game. Each branch was merged in order with `--no-ff` (m4-cut-scenes, m4b-art-direction,
+  m6-adaptive-difficulty); the branches were stacked, so there were no conflicts. `main` now matches
+  `m6-adaptive-difficulty`. Lint, 121 tests and the build pass on `main`. The tablet check that was
+  meant to close M4 hasn't happened; it's now scheduled before M5 in PLAN's known gaps.

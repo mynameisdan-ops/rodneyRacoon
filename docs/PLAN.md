@@ -1,6 +1,6 @@
 # Project Plan — "The Long Way Home" (working title)
 
-Last updated Sep 28, 2026 (M4b rolled out to all of World 1; M6 adaptive difficulty built). This is the forward plan: design, milestones with their status, and open
+Last updated Sep 28, 2026 (M4, M4b and M6 merged to main; the tablet check is still to do). This is the forward plan: design, milestones with their status, and open
 questions. Update it whenever a design decision changes or a milestone moves (see the end-of-session
 checklist in `CLAUDE.md`). Current state in a few lines: `STATUS.md`. Session history: `docs/decisions.md`.
 
@@ -189,10 +189,10 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M1 | Core loop: generators for World 1 skills, 60s page, number pad and keyboard, auto-submit, pass/retry, placeholder art | Play levels 1–8 as plain pages | ✅ |
 | M2 | Profiles + persistence + trail map + level unlocks | Two kids with separate saved progress | ✅ |
 | M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer | ✅ |
-| M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | 🟡 `m4-cut-scenes` (scenes and pause built; the tablet check is still to do) |
-| M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | 🟡 `m4b-art-direction`: all 8 World 1 scenes, style kit, hero, mine backdrop and UI chrome built; the tablet check is still to do |
+| M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | ✅ merged Sep 28, 2026 at the user's request, before the tablet check (now a known gap, below) |
+| M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | ✅ merged Sep 28, 2026 at the user's request, before the tablet check (now a known gap, below) |
 | M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ⬜ |
-| M6 | Adaptive difficulty + weak-fact weighting, and an age setting for the starting point | Difficulty adjusts for each kid | 🟡 `m6-adaptive-difficulty`: engine, weak facts and age built; the parent controls (see the ratings, pin, turn off) come with Settings in M10 |
+| M6 | Adaptive difficulty + weak-fact weighting, and an age setting for the starting point | Difficulty adjusts for each kid | ✅ merged; the parent controls (see the ratings, pin, turn off) come with Settings in M10 |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ⬜ |
 | M8 | Avatar builder + photo-face crop | Kids play as themselves | ⬜ |
 | M9 | Audio: synthesized SFX + music loops | Sound on | ⬜ |
@@ -203,7 +203,7 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | Gap | Where it gets fixed |
 |---|---|
 | ~~No pause~~ Done in M4: a ⏸ button, auto-pause on `visibilitychange` and portrait, problem hidden, Continue to resume. | ✅ M4 |
-| Tablet performance is untested (the CSS `filter` is gone since M4b; still to watch: scenery elements, glows, cut scenes re-rendering the SVG every frame). The repo is **private**, so GitHub Pages needs a paid plan or a public repo; the quickest check is the LAN preview (`npm run build`, then `npm run preview -- --host`, and open the PC's address on the tablet over home Wi-Fi). | M4 |
+| Tablet performance is untested (the CSS `filter` is gone since M4b; still to watch: scenery elements, glows, cut scenes re-rendering the SVG every frame). The repo is **private**, so GitHub Pages needs a paid plan or a public repo; the quickest check is the LAN preview (`npm run build`, then `npm run preview -- --host`, and open the PC's address on the tablet over home Wi-Fi). | Before M5 (was M4's closing step; M4/M4b were merged without it) |
 | ~~Leaving a page with ✕ records nothing.~~ Decided in M6: it stays that way (quitting shouldn't lower a rating). | ✅ M6 |
 | PNG icons (192/512) for the best Android install; GitHub Pages `base` path. | M10 (the path is needed earlier for the M4 preview) |
 

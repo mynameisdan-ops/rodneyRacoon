@@ -1,6 +1,6 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Sep 28, 2026 (M4b rolled out; M6 adaptive difficulty built).
+Last updated: Sep 28, 2026 (M4, M4b and M6 merged to main).
 milestone: `docs/decisions.md`.
 
 ## Goals
@@ -21,35 +21,33 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 
 ## Current state
 
-- **Merged to `main`:** M0–M3 (timed pages, profiles, map, hero, backdrops).
-- **Built on branches, pushed, not merged** (each branches from the one before):
-  - `m4-cut-scenes`: cut scenes, pause, Enter / ✓ to answer with a per-player "Automatic" switch.
-  - `m4b-art-direction`: World 1 is the **Old Mine Shaft**, with all 8 epic scenes (cart race, cart
-    jump, wall smash, rat swarm, crystal cavern, bat storm, runaway lift, mine-train boss), the adventurer
-    hero (now with a nose), the mine backdrop, and the UI chrome (ink outlines, parchment, a wooden pad,
-    the Lilita One font, a lantern timer).
-  - `m6-adaptive-difficulty`: ratings per skill that set each page's size and difficulty, missed facts
-    brought back until they're answered fast, and an **age** picker (5–10+) in the player editor that
-    sets the starting point. Save format v3.
-- **Checks:** 121 unit tests, lint and build pass; CI runs them on every push.
-- **Waiting on:** the tablet check (LAN preview), which closes M4 and M4b; then merge all three in order.
+- **On `main` (pushed):** M0–M4b and M6. World 1 is the **Old Mine Shaft**: 8 timed levels
+  (addition), each followed by an epic cut scene (cart race, cart jump, wall smash, rat swarm, crystal
+  cavern, bat storm, runaway lift, mine-train boss). Also on `main`:
+  - the cel-shaded adventurer hero, the mine backdrop and the UI chrome;
+  - pause, and Enter / ✓ to answer (a per-player "Automatic" switch);
+  - adaptive difficulty (ratings per skill, missed facts brought back) with an **age** picker (5–10+)
+    in the player editor that sets the starting point. Save format v3.
+- **Checks:** 121 unit tests, lint and build pass on `main`; CI runs them on every push.
+- **Not yet done:** the tablet check (performance of scenes and glows, and whether the difficulty
+  feels right for each child). It's scheduled before M5 in `docs/PLAN.md`.
 - **Known gaps:** the parent controls for adaptive difficulty (see the ratings, pin, turn off) wait
   for Settings in M10; PNG icons and the Pages `base` path (M10).
 - **Still open:** the final title and story opening; what comes after level 40.
 
 ## Next steps
 
-1. On the tablet: play World 1 end to end (LAN preview: `npm run build`, then
-   `npm run preview -- --host`). Check the scenes run smoothly and the difficulty feels right for each
-   child's age. Fix anything that stutters.
-2. Merge `m4-cut-scenes`, then `m4b-art-direction`, then `m6-adaptive-difficulty` into `main`.
-3. **M5:** Worlds 2–5 (skills, 32 levels with problem ranges and bands, skill ages, backdrops, scenes
-   per the scene recipe). Then M7–M10.
+1. The user plays World 1 on the PC (`npm run dev`) and on the tablet (LAN preview: `npm run build`,
+   then `npm run preview -- --host`, open the "Network" address). Fix any stutter or difficulty feedback.
+2. **M5:** Worlds 2–5: skills and generators (with tests), 32 levels with problem ranges and bands,
+   skill ages in `content/skills.ts`, world backdrops, and scenes that follow the scene recipe in
+   PLAN §3. Branch `m5-worlds`.
+3. M7–M10 in the order `docs/PLAN.md` §9 lists them.
 
 ## Handoff
 
-- **Branch:** `m6-adaptive-difficulty`, pushed, nothing uncommitted.
-- **Waiting on the user:** the tablet run; feedback on the scenes and on how hard each child finds it.
+- **Branch:** `main` at the merge of M6, pushed, nothing uncommitted. The milestone branches are merged.
+- **Waiting on the user:** their play-through and tablet report; any feedback goes in `docs/feedback.md`.
 - **Gotchas:** in a hidden browser pane `requestAnimationFrame` stops and `document.hidden` is true, so
   pages auto-pause and scenes don't advance; scrub scenes with the gallery slider. The dev server's file
   watcher sometimes misses edits made by tools; `touch` the file. Long Bash heredocs fail on Windows;
