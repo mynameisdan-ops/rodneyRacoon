@@ -33,6 +33,10 @@ export function CutSceneView({ scene, timeline, worldId, avatar, caption, t }: P
     state: frame.propState,
     since: frame.propSince,
     events: timeline.propEvents,
+    heroAt: (time: number) => {
+      const f = sampleTimeline(timeline, time);
+      return { x: f.x - scene.anchor, lift: f.lift };
+    },
     heroX: frame.x - scene.anchor,
     heroLift: frame.lift,
   };

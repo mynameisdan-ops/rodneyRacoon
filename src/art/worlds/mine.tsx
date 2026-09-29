@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { createRng } from '../../game/rng';
+import { Glow } from '../fx';
 import { INK, ink, shade, tint } from '../style';
 import type { MineTheme } from './themes';
 
@@ -24,17 +25,6 @@ export interface MineLayerProps {
 
 /** How far the rock ceiling hangs down. */
 const ceilingDepth = (horizon: number) => Math.max(20, horizon * 0.28);
-
-/** A soft light: stacked translucent circles (cheaper than a blur filter). */
-function Glow({ x, y, r, color }: { x: number; y: number; r: number; color: string }) {
-  return (
-    <g fill={color}>
-      <circle cx={x} cy={y} r={r} opacity={0.07} />
-      <circle cx={x} cy={y} r={r * 0.62} opacity={0.09} />
-      <circle cx={x} cy={y} r={r * 0.34} opacity={0.14} />
-    </g>
-  );
-}
 
 /** The jagged rock ceiling with stalactites (uses the slow "clouds" parallax slot). */
 export function MineCeiling({ theme, horizon, k, seed }: MineLayerProps) {

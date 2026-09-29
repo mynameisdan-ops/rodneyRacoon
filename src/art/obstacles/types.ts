@@ -3,14 +3,13 @@ import type { PropEvent } from '../../cutscenes/timeline';
 
 export const OBSTACLE_IDS = [
   'cart-race',
-  'tall-grass',
-  'puddle',
-  'fence-stile',
-  'bees',
-  'stepping-logs',
-  'windy-hill',
-  'sleeping-bull',
-  'rope-bridge',
+  'cart-jump',
+  'wall-smash',
+  'rat-swarm',
+  'crystal-cavern',
+  'bat-storm',
+  'runaway-lift',
+  'mine-train',
 ] as const;
 export type ObstacleId = (typeof OBSTACLE_IDS)[number];
 
@@ -33,6 +32,8 @@ export interface ObstacleProps {
   /** Hero feet position relative to the anchor (x px, lift px up). */
   heroX: number;
   heroLift: number;
+  /** Where the hero's feet are at any scene time (same local coordinates), e.g. where he was when something began. */
+  heroAt: (t: number) => { x: number; lift: number };
 }
 
 export interface ObstacleArt {
