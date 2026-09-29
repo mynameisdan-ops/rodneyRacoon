@@ -1,6 +1,6 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Sep 28, 2026 (M4b style test built, waiting for approval). Design and milestones: `docs/PLAN.md`. What was built and decided, milestone by
+Last updated: Sep 28, 2026 (M4b rolled out; M6 adaptive difficulty built).
 milestone: `docs/decisions.md`.
 
 ## Goals
@@ -21,36 +21,36 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 
 ## Current state
 
-- **M0–M3 merged to `main`:** World 1 (levels 1–8, addition) playable as timed pages, saved players,
-  trail map, drawn hero and parallax backdrops.
-- **M4 on `m4-cut-scenes`, pushed, not merged:** cut scenes after every World 1 level, obstacle previews,
-  pause, and answers checked on Enter / ✓ with a per-player "Automatic" switch (save format v2).
-- **M4b on `m4b-art-direction` (branched from M4), pushed:** the style test. World 1 is now the **Old Mine
-  Shaft**, with a cel-shaded style kit, the young-adventurer hero (13 poses), the mine backdrop (on the map,
-  the page strip and in scenes) and the level 1 "Cart race!" scene. Look at it in `#gallery` → cut scene 1.
-- **Waiting on:** approval of the style test, and the tablet check (the LAN preview works; see `docs/PLAN.md`).
-- **Checks:** 99 unit tests, lint and build pass; CI runs them on every push.
-- **Known gaps:** levels 2–8 still show meadow obstacles on the mine backdrop until the rollout; the page
-  timer is still a "sun"; tablet performance untested; the ✕ exit records nothing (decide before stats);
-  PNG icons and the Pages `base` path (M10).
-- **New feedback, not scheduled yet:** a parent menu for starting difficulty (easy → expert) and detailed
-  settings (problem type, digits, problem count) (`docs/feedback.txt`). It fits M6/M10.
+- **Merged to `main`:** M0–M3 (timed pages, profiles, map, hero, backdrops).
+- **Built on branches, pushed, not merged** (each branches from the one before):
+  - `m4-cut-scenes`: cut scenes, pause, Enter / ✓ to answer with a per-player "Automatic" switch.
+  - `m4b-art-direction`: World 1 is the **Old Mine Shaft**, with all 8 epic scenes (cart race, cart
+    jump, wall smash, rat swarm, crystal cavern, bat storm, runaway lift, mine-train boss), the adventurer
+    hero (now with a nose), the mine backdrop, and the UI chrome (ink outlines, parchment, a wooden pad,
+    the Lilita One font, a lantern timer).
+  - `m6-adaptive-difficulty`: ratings per skill that set each page's size and difficulty, missed facts
+    brought back until they're answered fast, and an **age** picker (5–10+) in the player editor that
+    sets the starting point. Save format v3.
+- **Checks:** 121 unit tests, lint and build pass; CI runs them on every push.
+- **Waiting on:** the tablet check (LAN preview), which closes M4 and M4b; then merge all three in order.
+- **Known gaps:** the parent controls for adaptive difficulty (see the ratings, pin, turn off) wait
+  for Settings in M10; PNG icons and the Pages `base` path (M10).
 - **Still open:** the final title and story opening; what comes after level 40.
 
 ## Next steps
 
-1. The user reviews the style test (`#gallery`, cut scene 1; also the map and a level 1 page) and says
-   what to change.
-2. After approval, roll out M4b: scenes for levels 2–8 per PLAN §3 (cart jump, wall smash, rat swarm,
-   crystal cavern, bat storm, runaway lift, boss mine-train escape), UI chrome and font, a mine-themed
-   timer, then the tablet check. Merge M4 and M4b to `main`.
-3. Schedule the parent-settings feedback (PLAN §7 / M6, M10), then **M5**, then **M6–M10**.
+1. On the tablet: play World 1 end to end (LAN preview: `npm run build`, then
+   `npm run preview -- --host`). Check the scenes run smoothly and the difficulty feels right for each
+   child's age. Fix anything that stutters.
+2. Merge `m4-cut-scenes`, then `m4b-art-direction`, then `m6-adaptive-difficulty` into `main`.
+3. **M5:** Worlds 2–5 (skills, 32 levels with problem ranges and bands, skill ages, backdrops, scenes
+   per the scene recipe). Then M7–M10.
 
 ## Handoff
 
-- **Branch:** `m4b-art-direction`, pushed. `m4-cut-scenes` is its base; neither is merged.
-- **Waiting on the user:** style-test feedback; how to get the build onto the tablet.
-- **Gotchas:** in a hidden browser pane `requestAnimationFrame` stops and `document.hidden` is true, so the
-  page auto-pauses and scenes don't advance; scrub scenes with the gallery slider instead. The dev server's
-  file watcher sometimes misses edits made by tools (it served a stale `levels.ts`); `touch` the file.
-  Long Bash heredocs can fail on Windows; write a file and run it instead.
+- **Branch:** `m6-adaptive-difficulty`, pushed, nothing uncommitted.
+- **Waiting on the user:** the tablet run; feedback on the scenes and on how hard each child finds it.
+- **Gotchas:** in a hidden browser pane `requestAnimationFrame` stops and `document.hidden` is true, so
+  pages auto-pause and scenes don't advance; scrub scenes with the gallery slider. The dev server's file
+  watcher sometimes misses edits made by tools; `touch` the file. Long Bash heredocs fail on Windows;
+  write a script file to the scratchpad and run it.

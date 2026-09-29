@@ -16,4 +16,21 @@ export const CONFIG = {
     /** 3 stars: every problem right on the first try, with at least this many seconds left. */
     threeStarSecondsLeft: 10,
   },
+  /** Adaptive difficulty: a rating from 0 (easiest) to 1 (hardest) for each skill. */
+  adaptive: {
+    /** How the skill's rating moves after a page. */
+    step: { threeStars: 0.15, pass: 0.06, fail: -0.12 },
+    /** Starting rating for a player exactly the skill's typical age... */
+    startAtTypicalAge: 0.5,
+    /** ...plus this for each year older (minus for each year younger). */
+    startPerYear: 0.25,
+    /** At most this share of a page is made of facts the player missed before. */
+    weakShare: 0.3,
+    /** A weak fact is "answered quickly" when right first try within this many ms. */
+    fastMs: 5000,
+    /** Answered right and quickly this many times in a row, a weak fact is dropped. */
+    retireStreak: 3,
+    /** Remember at most this many weak facts per player (the stalest go first). */
+    maxWeakFacts: 30,
+  },
 } as const;

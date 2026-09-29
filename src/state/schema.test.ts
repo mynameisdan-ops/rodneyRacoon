@@ -15,7 +15,7 @@ describe('migrate', () => {
 
   it('keeps valid data unchanged', () => {
     const save = {
-      version: 2,
+      version: 3,
       lastProfileId: 'a',
       profiles: [
         {
@@ -24,6 +24,25 @@ describe('migrate', () => {
           color: '#123456',
           createdAt: 5,
           autoSubmit: true,
+          age: 9,
+          ratings: { doubles: 0.4, 'add-within-5': 1 },
+          weakFacts: [
+            {
+              problem: {
+                a: 7,
+                op: '+',
+                b: 8,
+                result: 15,
+                unknown: 'result',
+                answer: 15,
+                key: '7+8',
+                skill: 'add-within-20',
+              },
+              misses: 2,
+              streak: 1,
+              lastSeen: 50,
+            },
+          ],
           progress: { 1: { bestStars: 2, plays: 3, passes: 1, lastPlayedAt: 9 } },
         },
       ],
@@ -37,9 +56,64 @@ describe('migrate', () => {
       lastProfileId: 'a',
       profiles: [{ id: 'a', name: 'Sam', color: '#123456', createdAt: 5, progress: {} }],
     });
-    expect(out.version).toBe(2);
+    expect(out.version).toBe(SAVE_VERSION);
     expect(out.lastProfileId).toBe('a');
-    expect(out.profiles[0]!.autoSubmit).toBe(false);
+    expect(out.profiles[0]).toMatchObject({
+      autoSubmit: false,
+      age: null,
+      ratings: {},
+      weakFacts: [],
+    });
+  });
+
+  it('migrates a v2 save: no age yet, ratings start empty', () => {
+    const out = migrate({
+      version: 2,
+      lastProfileId: null,
+      profiles: [{ id: 'a', name: 'Sam', autoSubmit: true, progress: {} }],
+    });
+    expect(out.profiles[0]).toMatchObject({ autoSubmit: true, age: null, ratings: {} });
+  });
+
+  it('drops bad ages, ratings and weak facts', () => {
+    const fact = (over: object) => ({
+      problem: {
+        a: 2,
+        op: '+',
+        b: 3,
+        result: 5,
+        unknown: 'result',
+        answer: 5,
+        key: '2+3',
+        skill: 'add-within-5',
+        ...over,
+      },
+      misses: 1,
+      streak: 0,
+      lastSeen: 1,
+    });
+    const out = migrate({
+      version: 3,
+      profiles: [
+        {
+          id: 'a',
+          name: 'Sam',
+          age: 42,
+          ratings: { doubles: 7, nonsense: 0.5, 'make-10': 'x', 'add-within-10': 0.25 },
+          weakFacts: [
+            fact({}),
+            fact({ result: 6 }),
+            fact({ skill: 'world1-review' }),
+            fact({ a: -1 }),
+            null,
+          ],
+        },
+      ],
+    });
+    const [p] = out.profiles;
+    expect(p!.age).toBeNull();
+    expect(p!.ratings).toEqual({ doubles: 1, 'add-within-10': 0.25 });
+    expect(p!.weakFacts.map((w) => w.problem.key)).toEqual(['2+3']);
   });
 
   it('drops damaged profiles and progress entries', () => {

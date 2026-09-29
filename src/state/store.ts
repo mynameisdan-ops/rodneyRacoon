@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import type { LevelDef } from '../content/levels';
+import { applyPage, type Answer } from '../game/adaptive';
 import { recordPlay } from '../game/progress';
 import type { PageEvaluation } from '../game/scoring';
 import { loadSave, requestPersistentStorage, writeSave } from './persistence';
@@ -12,11 +14,15 @@ interface GameStore {
   activeProfileId: string | null;
 
   init(): Promise<void>;
-  createProfile(name: string, color: string, autoSubmit?: boolean): string;
-  updateProfile(id: string, patch: Partial<Pick<Profile, 'name' | 'color' | 'autoSubmit'>>): void;
+  createProfile(name: string, color: string, autoSubmit?: boolean, age?: number | null): string;
+  /** Changing `age` restarts the skill ratings from the new age (weak facts are kept). */
+  updateProfile(
+    id: string,
+    patch: Partial<Pick<Profile, 'name' | 'color' | 'autoSubmit' | 'age'>>,
+  ): void;
   deleteProfile(id: string): void;
   selectProfile(id: string | null): void;
-  recordResult(levelId: number, evaluation: PageEvaluation): void;
+  recordResult(level: LevelDef, evaluation: PageEvaluation, answers: readonly Answer[]): void;
 }
 
 function newId(): string {
@@ -70,7 +76,7 @@ export const useGame = create<GameStore>()((set, get) => {
       }
     },
 
-    createProfile(name, color, autoSubmit = false) {
+    createProfile(name, color, autoSubmit = false, age = null) {
       const id = newId();
       const profile: Profile = {
         id,
@@ -78,6 +84,9 @@ export const useGame = create<GameStore>()((set, get) => {
         color,
         createdAt: Date.now(),
         autoSubmit,
+        age,
+        ratings: {},
+        weakFacts: [],
         progress: {},
       };
       commit((d) => ({ ...d, profiles: [...d.profiles, profile], lastProfileId: id }));
@@ -91,6 +100,7 @@ export const useGame = create<GameStore>()((set, get) => {
           ...p,
           ...patch,
           ...(patch.name !== undefined && { name: cleanName(patch.name) }),
+          ...(patch.age !== undefined && patch.age !== p.age && { ratings: {} }),
         }),
         id,
       );
@@ -110,11 +120,16 @@ export const useGame = create<GameStore>()((set, get) => {
       if (id) commit((d) => ({ ...d, lastProfileId: id }));
     },
 
-    recordResult(levelId, evaluation) {
+    recordResult(level, evaluation, answers) {
       const id = get().activeProfileId;
       if (!id) return;
+      const now = Date.now();
       updateProfiles(
-        (p) => ({ ...p, progress: recordPlay(p.progress, levelId, evaluation, Date.now()) }),
+        (p) => ({
+          ...p,
+          ...applyPage(p, level, evaluation, answers, now),
+          progress: recordPlay(p.progress, level.id, evaluation, now),
+        }),
         id,
       );
     },

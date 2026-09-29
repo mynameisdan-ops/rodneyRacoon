@@ -4,6 +4,7 @@ import type { HeroPose } from '../art/hero/Hero';
 import { getCutScene } from '../content/cutscenes';
 import type { LevelDef } from '../content/levels';
 import { CONFIG } from '../game/config';
+import type { Answer, PagePlan } from '../game/adaptive';
 import { generatePage, type Problem } from '../game/problems';
 import { createRng, randomSeed } from '../game/rng';
 import { evaluatePage, type PageEvaluation } from '../game/scoring';
@@ -16,7 +17,9 @@ interface Props {
   avatar: AvatarConfig;
   /** Check answers once enough digits are typed, instead of waiting for Enter / ✓. */
   autoSubmit: boolean;
-  onFinish: (evaluation: PageEvaluation) => void;
+  /** How many problems, how hard, and which missed facts to bring back (adaptive difficulty). */
+  plan: PagePlan;
+  onFinish: (evaluation: PageEvaluation, answers: Answer[]) => void;
   onQuit: () => void;
 }
 
@@ -54,9 +57,9 @@ export function PageScreen(props: Props) {
   return <TimedPage {...props} />;
 }
 
-function TimedPage({ level, avatar, autoSubmit, onFinish, onQuit }: Props) {
+function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props) {
   const [problems] = useState<Problem[]>(() =>
-    generatePage(level.skill, level.problems, createRng(randomSeed()), level.difficulty),
+    generatePage(level.skill, plan.count, createRng(randomSeed()), plan.difficulty, plan.weak),
   );
   const [startedAt] = useState(() => performance.now());
   const [state, dispatch] = useReducer(sessionReducer, startedAt, (t) =>
@@ -129,9 +132,11 @@ function TimedPage({ level, avatar, autoSubmit, onFinish, onQuit }: Props) {
   useEffect(() => {
     if (!done) return;
     const evaluation = evaluatePage(state.results, problems.length, remaining());
-    const id = setTimeout(() => onFinish(evaluation), FINISH_PAUSE_MS);
+    // Results line up with the problems they answer (unanswered ones have none).
+    const answers = state.results.map((r, i) => ({ ...r, problem: problems[i]! }));
+    const id = setTimeout(() => onFinish(evaluation, answers), FINISH_PAUSE_MS);
     return () => clearTimeout(id);
-  }, [done, state.results, problems.length, remaining, onFinish]);
+  }, [done, state.results, problems, remaining, onFinish]);
 
   const handleKey = useCallback(
     (key: PadKey) => {

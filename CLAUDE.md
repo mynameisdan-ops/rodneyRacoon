@@ -53,6 +53,8 @@ Play button). Use it to check art changes; it is left out of production builds.
   difficulty, scoring. Everything here gets unit tests. Use a seeded RNG so tests are deterministic.
 - `src/content/` is **data only** (levels, obstacles, captions, shop items, stickers). Tuning or
   writing content should never require touching game logic.
+- Adaptive difficulty is pure logic in `src/game/adaptive.ts` (ratings per skill, weak facts, the page plan);
+  the age each skill is typically mastered at is data in `src/content/skills.ts`.
 - `src/game/config.ts` holds every tunable number (timer, pass threshold, star rules, coin
   amounts, combo steps). Don't hard-code these elsewhere.
 - Cut scenes are **scripts (data)** in `src/content/cutscenes.ts`, compiled by the pure

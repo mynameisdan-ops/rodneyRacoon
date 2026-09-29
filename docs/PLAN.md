@@ -1,6 +1,6 @@
 # Project Plan — "The Long Way Home" (working title)
 
-Last updated Sep 28, 2026 (M4 playtest feedback: Enter to submit, M4b art direction planned). This is the forward plan: design, milestones with their status, and open
+Last updated Sep 28, 2026 (M4b rolled out to all of World 1; M6 adaptive difficulty built). This is the forward plan: design, milestones with their status, and open
 questions. Update it whenever a design decision changes or a milestone moves (see the end-of-session
 checklist in `CLAUDE.md`). Current state in a few lines: `STATUS.md`. Session history: `docs/decisions.md`.
 
@@ -29,6 +29,7 @@ a big obstacle on his way home.
 | Submitting | Enter / ✓ checks the answer; auto-submit is a per-profile switch (decided after the M4 playtest) |
 | Art style | **Cel-shaded adventure** ("between Math Pirates and Zelda"), still drawn in code as SVG: ink outlines, two-tone shading as overlay shapes (no `filter`), dramatic light. The target is engaging a 9-year-old, not a preschool look (M4b) |
 | Hero | A **young adventurer**: taller proportions, tunic in the player's color, satchel, boots, cape; still the child's own avatar (M4b) |
+| Age | Each player has an age (5–10+), set by a parent in the player editor. It sets where every skill's difficulty starts (decided in M6) |
 | Hero look before M8 | The hero wears the player's chosen shirt color on the default avatar until the builder stores a full avatar (M3) |
 
 ## 2. Core game loop
@@ -99,13 +100,21 @@ M4b; levels 2–7 are proposals built around the samples above:
 
 - Each profile keeps a rating (0–1) for each **skill**. A level turns that rating into concrete
   parameters within its band: operand ranges, the problem count and the mix of problem types.
+  Each level has a problem range and a difficulty band (`content/levels.ts`); two levels on the
+  same skill split the band, so the same rating plays harder on the later one.
+- **Starting point from age** (built in M6): a skill starts at 0.5 for a child of the skill's typical
+  age (`content/skills.ts`), plus 0.25 for each year older, minus 0.25 for each year younger.
+  Changing a player's age restarts their ratings from the new age. Players saved before
+  ages existed use age 7 until a parent picks one.
 - After each page: 3 stars → rating up a step; pass → up a small step; fail → rating down.
   The 60-second timer never changes by default. A setting can override the time for a
   profile (for example 90s for a 6-year-old just starting out).
 - **Weak-fact weighting**: every missed fact (such as `7×8`) is logged, and the generator
   brings missed facts back more often until they're answered correctly and quickly several
   times. This is the main thing that builds mental-math fluency.
-- The Settings screen shows the ratings and lets a parent pin a minimum or maximum, or turn adapting off.
+- Leaving a page with ✕ records nothing, on purpose: quitting shouldn't lower a rating.
+- The Settings screen (M10) shows the ratings and lets a parent pin a minimum or maximum, or turn adapting off.
+  The numbers (steps, weak-fact share, "quick" time, retire streak) live in `CONFIG.adaptive`.
 
 ## 5. Avatar
 
@@ -129,7 +138,7 @@ M4b; levels 2–7 are proposals built around the samples above:
 
 ## 7. Settings (includes the parent tools)
 
-Profiles (add, rename, delete, change avatar) · per-profile timer override · adaptive on/off and
+Profiles (add, rename, delete, change avatar, age) · per-profile timer override · adaptive on/off and
 limits · unlock or replay any level · stats: accuracy and average answer time by fact family,
 the 10 weakest facts, recent sessions · sound and music volume · reset progress.
 
@@ -181,9 +190,9 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M2 | Profiles + persistence + trail map + level unlocks | Two kids with separate saved progress | ✅ |
 | M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer | ✅ |
 | M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | 🟡 `m4-cut-scenes` (scenes and pause built; the tablet check is still to do) |
-| M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | 🟡 `m4b-art-direction`: style test built (style kit, hero, mine backdrop, level 1 cart race); waiting for approval before levels 2–8 and UI chrome |
+| M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | 🟡 `m4b-art-direction`: all 8 World 1 scenes, style kit, hero, mine backdrop and UI chrome built; the tablet check is still to do |
 | M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ⬜ |
-| M6 | Adaptive difficulty + weak-fact weighting | Difficulty adjusts for each kid | ⬜ |
+| M6 | Adaptive difficulty + weak-fact weighting, and an age setting for the starting point | Difficulty adjusts for each kid | 🟡 `m6-adaptive-difficulty`: engine, weak facts and age built; the parent controls (see the ratings, pin, turn off) come with Settings in M10 |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ⬜ |
 | M8 | Avatar builder + photo-face crop | Kids play as themselves | ⬜ |
 | M9 | Audio: synthesized SFX + music loops | Sound on | ⬜ |
@@ -194,8 +203,8 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | Gap | Where it gets fixed |
 |---|---|
 | ~~No pause~~ Done in M4: a ⏸ button, auto-pause on `visibilitychange` and portrait, problem hidden, Continue to resume. | ✅ M4 |
-| Tablet performance is untested (CSS `filter` on the back limbs, scenery elements, cut scenes re-rendering the SVG every frame). The repo is **private**, so GitHub Pages needs a paid plan or a public repo; the quickest check is the LAN preview (`npm run build`, then `npm run preview -- --host`, and open the PC's address on the tablet over home Wi-Fi). | M4 |
-| Leaving a page with ✕ records nothing. Decide whether it counts as a play before stats exist. | M6 (before stats in M10) |
+| Tablet performance is untested (the CSS `filter` is gone since M4b; still to watch: scenery elements, glows, cut scenes re-rendering the SVG every frame). The repo is **private**, so GitHub Pages needs a paid plan or a public repo; the quickest check is the LAN preview (`npm run build`, then `npm run preview -- --host`, and open the PC's address on the tablet over home Wi-Fi). | M4 |
+| ~~Leaving a page with ✕ records nothing.~~ Decided in M6: it stays that way (quitting shouldn't lower a rating). | ✅ M6 |
 | PNG icons (192/512) for the best Android install; GitHub Pages `base` path. | M10 (the path is needed earlier for the M4 preview) |
 
 ## 10. Open items to confirm later
