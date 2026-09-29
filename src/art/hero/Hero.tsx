@@ -129,7 +129,7 @@ function Head({
   return (
     <>
       <path
-        d="M38 32 Q37 13 55 12 Q73 12 73 30 Q74 36 75 38 Q74 41 72 42 Q70 49 61 50 Q44 51 39 40 Z"
+        d="M38 32 Q37 13 55 12 Q73 12 73.5 30 Q74.5 38 72 44 Q69 50 60 50.5 Q44 51 39 40 Z"
         fill={skin}
         {...ink(LW)}
       />
@@ -138,16 +138,30 @@ function Head({
       <circle cx={45} cy={34} r={4.4} fill={shade(skin, 0.12)} {...ink(1.6)} />
       <circle cx={65} cy={40} r={3} fill="#ff7a6b" opacity={0.3} />
       <g className="hero-eyes">
-        <ellipse cx={60} cy={31} rx={3.2} ry={4.2} fill="#fff" {...ink(1.3)} />
-        <ellipse cx={69.5} cy={31} rx={2.8} ry={4} fill="#fff" {...ink(1.3)} />
-        <circle cx={61.2} cy={31.6} r={2.1} fill="#1d2433" />
-        <circle cx={70.4} cy={31.6} r={1.9} fill="#1d2433" />
-        <circle cx={61.8} cy={30.6} r={0.7} fill="#fff" />
-        <circle cx={71} cy={30.6} r={0.65} fill="#fff" />
+        <ellipse cx={59.5} cy={31} rx={3.7} ry={4.7} fill="#fff" {...ink(1.4)} />
+        <ellipse cx={68.8} cy={31} rx={3.1} ry={4.4} fill="#fff" {...ink(1.4)} />
+        <circle cx={60.9} cy={31.7} r={2.6} fill="#1d2433" />
+        <circle cx={69.9} cy={31.7} r={2.3} fill="#1d2433" />
+        <circle cx={61.7} cy={30.5} r={0.9} fill="#fff" />
+        <circle cx={70.6} cy={30.5} r={0.8} fill="#fff" />
+        {/* Upper lids give the eyes a clear, determined shape. */}
+        <path
+          d="M55.6 29 Q59.5 25.6 63.3 28.4 M65.8 28.6 Q68.8 25.8 71.9 28.6"
+          fill="none"
+          {...ink(1.7)}
+        />
       </g>
+      {/* The nose, standing out from the face in profile. */}
+      <path d="M71.6 32 Q79.5 38.2 74 41.2 Q72 41.9 70.6 40.4" fill={skin} {...ink(1.6)} />
+      <path
+        d="M72.4 39.6 Q73.6 40 74.4 39.2"
+        fill="none"
+        stroke={shade(skin, 0.45)}
+        strokeWidth={1.2}
+      />
       <path
         className="hero-mouth"
-        d="M61 42 Q66 44.5 70 41"
+        d="M61.5 44.5 Q66 47 70.5 43.8"
         fill="none"
         stroke="#5a1f24"
         strokeWidth={1.8}

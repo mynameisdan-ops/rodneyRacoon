@@ -432,7 +432,7 @@
 }
 
 .hero-svg--cheer .hero-mouth {
-  d: path('M60 40 Q66 49 72 39 Z');
+  d: path('M60.5 43 Q66 51 71.5 42.5 Z');
   fill: #5a1f24;
 }
 
@@ -469,7 +469,7 @@
 }
 
 .hero-svg--stumble .hero-mouth {
-  d: path('M62 43 Q66 40 70 43');
+  d: path('M62 46 Q66 43 70 46');
 }
 
 @keyframes hero-stumble-body {
@@ -544,7 +544,7 @@
 
 .hero-svg--brace .hero-mouth,
 .hero-svg--ride .hero-mouth {
-  d: path('M61 42 Q66 41 71 41.5');
+  d: path('M61.5 45 Q66 44 70.5 44.5');
 }
 
 @keyframes hero-tremble {
@@ -694,7 +694,7 @@
 }
 
 .hero-svg--fall .hero-mouth {
-  d: path('M64 40 Q67 40 67 43 Q67 46 64 46 Q61 46 61 43 Q61 40 64 40 Z');
+  d: path('M65 42.5 Q68 42.5 68 45 Q68 48 65 48 Q62 48 62 45 Q62 42.5 65 42.5 Z');
   fill: #5a1f24;
 }
 

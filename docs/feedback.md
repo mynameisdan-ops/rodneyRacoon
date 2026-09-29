@@ -1,0 +1,1 @@
+the player character's face should be more clear even if it is anime/cartoon style. please add a nose.
