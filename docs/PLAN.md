@@ -1,6 +1,6 @@
 # Project Plan — "The Long Way Home" (working title)
 
-Last updated Sep 28, 2026 (M4 built). This is the forward plan: design, milestones with their status, and open
+Last updated Sep 28, 2026 (M4 playtest feedback: Enter to submit, M4b art direction planned). This is the forward plan: design, milestones with their status, and open
 questions. Update it whenever a design decision changes or a milestone moves (see the end-of-session
 checklist in `CLAUDE.md`). Current state in a few lines: `STATUS.md`. Session history: `docs/decisions.md`.
 
@@ -26,6 +26,9 @@ a big obstacle on his way home.
 | Audio | Sound effects + music only (no voice). Cut scenes tell the story mostly through visuals, with very short captions |
 | Parent tools | Stats and difficulty settings live in the normal **Settings** screen (not locked) |
 | Unlocking | Levels unlock **strictly in order** (decided in M2). A parent "unlock any level" switch comes with Settings in M10 |
+| Submitting | Enter / ✓ checks the answer; auto-submit is a per-profile switch (decided after the M4 playtest) |
+| Art style | **Cel-shaded adventure** ("between Math Pirates and Zelda"), still drawn in code as SVG: ink outlines, two-tone shading as overlay shapes (no `filter`), dramatic light. The target is engaging a 9-year-old, not a preschool look (M4b) |
+| Hero | A **young adventurer**: taller proportions, tunic in the player's color, satchel, boots, cape; still the child's own avatar (M4b) |
 | Hero look before M8 | The hero wears the player's chosen shirt color on the default avatar until the builder stores a full avatar (M3) |
 
 ## 2. Core game loop
@@ -44,8 +47,10 @@ Profile select → Trail map → Level intro (3-2-1)
 - **Center**: the current problem in very large type (`7 × 8 = __`), with a small "3 / 15" progress count.
 - **Bottom/right**: a big on-screen number pad (buttons at least 72px) with ⌫. A physical
   keyboard works too (digits, Backspace, Enter).
-- **Auto-submit**: the answer is checked as soon as the number of typed digits matches
-  the correct answer, so there's no Enter step and the game stays fast.
+- **Submitting**: the answer is checked when the child presses ✓ or Enter (changed after the M4 playtest:
+  checking the first thing typed felt wrong). A per-profile switch in the player editor turns on
+  auto-submit (checked as soon as the typed digit count matches the answer). The switch moves to
+  Settings in M10.
 
 **Answer rules:**
 - Correct: a chime, +coins, the combo counter goes up, the hero steps forward.
@@ -70,6 +75,22 @@ engine moves within. The number of problems per page ramps from about 10 to abou
 
 The full list of 40 obstacles, captions and sticker names goes in `src/content/levels.ts`
 (data only), so it can be tweaked without touching game code.
+
+**Scene recipe (from the M4 playtest: obstacles must be epic).** Every cut scene has a *threat*, an
+*escalation*, a *hero action* and a *triumph*: not "hop over a puddle" but "the gully floods and he swings
+across on a vine". Thrilling but never scary for a 6-year-old: nobody gets hurt, animals run off, and it
+ends in a cheer. The sample obstacles above get upgraded to this recipe in M5. World 1 in M4b:
+
+| Lv | Epic version |
+|---|---|
+| 1 | The grass rustles, a wild boar charges; the hero dives aside and it crashes past |
+| 2 | A flash flood fills the gully; he swings across on a vine |
+| 3 | He climbs an old ruined wall that crumbles, and leaps from the top as it falls |
+| 4 | A giant hornet swarm chases him; he dives into a pond and they pass over |
+| 5 | Logs tumble down a rapid; timed hops across the moving logs |
+| 6 | A thunderstorm on the ridge: he braces in the gale, lightning strikes, he shield-surfs down |
+| 7 | The bull wakes and charges; he vaults a hay cart and the bull smashes through the fence |
+| 8 | The rope bridge snaps mid-crossing; he swings into the cliff face and climbs up |
 
 ## 4. Adaptive difficulty
 
@@ -157,6 +178,7 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M2 | Profiles + persistence + trail map + level unlocks | Two kids with separate saved progress | ✅ |
 | M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer | ✅ |
 | M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | 🟡 `m4-cut-scenes` (scenes and pause built; the tablet check is still to do) |
+| M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | ⬜ |
 | M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ⬜ |
 | M6 | Adaptive difficulty + weak-fact weighting | Difficulty adjusts for each kid | ⬜ |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ⬜ |

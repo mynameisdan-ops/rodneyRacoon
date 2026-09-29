@@ -107,12 +107,12 @@ function Game() {
           profile={editing}
           takenColors={profiles.map((p) => p.color)}
           canCancel={profiles.length > 0}
-          onSave={(name, color) => {
+          onSave={(name, color, autoSubmit) => {
             if (editing) {
-              updateProfile(editing.id, { name, color });
+              updateProfile(editing.id, { name, color, autoSubmit });
               toProfiles();
             } else {
-              createProfile(name, color);
+              createProfile(name, color, autoSubmit);
               toMap();
             }
           }}
@@ -147,6 +147,7 @@ function Game() {
           key={current.attempt}
           level={level}
           avatar={avatarForProfile(profile!)}
+          autoSubmit={profile!.autoSubmit}
           onFinish={finish}
           onQuit={toMap}
         />

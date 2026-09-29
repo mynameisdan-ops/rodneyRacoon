@@ -14,6 +14,8 @@ import { TrailStrip } from '../ui/TrailStrip';
 interface Props {
   level: LevelDef;
   avatar: AvatarConfig;
+  /** Check answers once enough digits are typed, instead of waiting for Enter / ✓. */
+  autoSubmit: boolean;
   onFinish: (evaluation: PageEvaluation) => void;
   onQuit: () => void;
 }
@@ -52,13 +54,13 @@ export function PageScreen(props: Props) {
   return <TimedPage {...props} />;
 }
 
-function TimedPage({ level, avatar, onFinish, onQuit }: Props) {
+function TimedPage({ level, avatar, autoSubmit, onFinish, onQuit }: Props) {
   const [problems] = useState<Problem[]>(() =>
     generatePage(level.skill, level.problems, createRng(randomSeed()), level.difficulty),
   );
   const [startedAt] = useState(() => performance.now());
   const [state, dispatch] = useReducer(sessionReducer, startedAt, (t) =>
-    createSession(problems, t),
+    createSession(problems, t, { autoSubmit }),
   );
   const [secondsLeft, setSecondsLeft] = useState<number>(CONFIG.pageSeconds);
   const done = state.phase === 'done';

@@ -12,8 +12,8 @@ interface GameStore {
   activeProfileId: string | null;
 
   init(): Promise<void>;
-  createProfile(name: string, color: string): string;
-  updateProfile(id: string, patch: Partial<Pick<Profile, 'name' | 'color'>>): void;
+  createProfile(name: string, color: string, autoSubmit?: boolean): string;
+  updateProfile(id: string, patch: Partial<Pick<Profile, 'name' | 'color' | 'autoSubmit'>>): void;
   deleteProfile(id: string): void;
   selectProfile(id: string | null): void;
   recordResult(levelId: number, evaluation: PageEvaluation): void;
@@ -70,13 +70,14 @@ export const useGame = create<GameStore>()((set, get) => {
       }
     },
 
-    createProfile(name, color) {
+    createProfile(name, color, autoSubmit = false) {
       const id = newId();
       const profile: Profile = {
         id,
         name: cleanName(name),
         color,
         createdAt: Date.now(),
+        autoSubmit,
         progress: {},
       };
       commit((d) => ({ ...d, profiles: [...d.profiles, profile], lastProfileId: id }));

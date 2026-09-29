@@ -97,3 +97,17 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     that blended into the field, and a caption covering the ravine), the full flow page → results → scene →
     next level, and pause (button, background, resume). No console errors. 74 tests.
   - Not done: the tablet check. The repo is private, so GitHub Pages needs a paid plan or a public repo.
+
+- **2026-09-28: Playtest feedback → Enter to submit, M4b planned.** Feedback in `docs/feedback.txt`: answers
+  shouldn't be taken from the first thing typed; obstacles should be epic; the art should engage a 9-year-old
+  ("between Math Pirates and Zelda", not ABC Mouse).
+  - Built on `m4-cut-scenes`: `createSession(..., { autoSubmit })`, default off, so answers wait for Enter
+    / ✓. `Profile.autoSubmit` with `SAVE_VERSION = 2` (v1 saves load with Enter). An "Answers: Press to
+    check / Automatic" choice in the player editor, which moves to Settings in M10. The ✓ key never lights
+    up when the digit count matches, because that would give away the answer's length.
+  - Decided: a per-profile switch rather than removing auto-submit (the 6-year-old may prefer it). The art
+    stays code-drawn SVG, restyled cel-shaded, with no `filter`, for tablet performance. The hero becomes a
+    young adventurer. New milestone M4b (art direction + epic World 1) comes before M5, so the 32 new scenes
+    are made once in the new style. M4b starts with a style test for approval.
+  - To check in play: with Enter, 60s may be tight for the later World 1 levels; tune the counts in
+    `levels.ts` if so.

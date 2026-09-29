@@ -69,7 +69,8 @@ Play button). Use it to check art changes; it is left out of production builds.
 - Touch targets are **at least 72px**; the number pad is the main input and physical keyboard input is also supported.
 - Gameplay must never depend on reading ability. Captions are short and visuals carry the story.
 - Always encouraging: no "wrong!" or "game over" language. Failing a page means a gentle knock-back and a retry.
-- Auto-submit answers when the typed digit count matches the answer length.
+- Answers are checked on Enter / ✓ by default. A per-profile switch turns on auto-submit (checked as soon as
+  the typed digit count matches the answer length). Never hint at the answer's length (e.g. by lighting up ✓).
 - Respond instantly to input (under 100ms feedback). No layout shift while answering.
 - Keep the problem text very large and high-contrast.
 

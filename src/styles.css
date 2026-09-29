@@ -354,6 +354,40 @@ button {
   transform: scale(1.1);
 }
 
+.editor__label--gap {
+  margin-top: 36px;
+}
+
+.editor__submit {
+  display: flex;
+  gap: 20px;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 80px;
+  padding: 0 24px;
+  border: 6px solid #fff;
+  border-radius: 20px;
+  background: #fff;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 28px;
+  font-weight: 800;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.choice--on {
+  outline: 6px solid var(--ink);
+  color: var(--ink);
+}
+
+.choice__icon {
+  font-size: 36px;
+}
+
 .editor__actions {
   display: flex;
   gap: 28px;
@@ -712,6 +746,7 @@ button {
 .pad__key--enter {
   background: var(--accent);
   color: #fff;
+  font-size: 68px;
   box-shadow: 0 7px 0 var(--accent-dark);
 }
 

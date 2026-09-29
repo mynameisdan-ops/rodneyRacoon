@@ -12,7 +12,7 @@ interface Props {
   takenColors: string[];
   /** Hide Cancel when this is the very first player. */
   canCancel: boolean;
-  onSave: (name: string, color: string) => void;
+  onSave: (name: string, color: string, autoSubmit: boolean) => void;
   onDelete?: () => void;
   onCancel: () => void;
 }
@@ -31,6 +31,7 @@ export function ProfileEditor({
       profile?.color ??
       (PROFILE_COLORS.find((c) => !takenColors.includes(c.value)) ?? PROFILE_COLORS[0]).value,
   );
+  const [autoSubmit, setAutoSubmit] = useState(profile?.autoSubmit ?? false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const valid = cleanName(name).length > 0;
 
@@ -60,7 +61,7 @@ export function ProfileEditor({
       className="editor"
       onSubmit={(e) => {
         e.preventDefault();
-        if (valid) onSave(name, color);
+        if (valid) onSave(name, color, autoSubmit);
       }}
     >
       {/* Name sits at the top so a tablet's on-screen keyboard doesn't cover it. */}
@@ -98,6 +99,26 @@ export function ProfileEditor({
                 style={{ background: c.value }}
                 onClick={() => setColor(c.value)}
               />
+            ))}
+          </div>
+          {/* For the parent: whether answers wait for ✓ / Enter or are checked as soon as they're typed. */}
+          <div className="editor__label editor__label--gap">Answers</div>
+          <div className="editor__submit" role="radiogroup" aria-label="Answers">
+            {[
+              { auto: false, icon: '✓', text: 'Press to check' },
+              { auto: true, icon: '⚡', text: 'Automatic' },
+            ].map((o) => (
+              <button
+                key={o.text}
+                type="button"
+                role="radio"
+                aria-checked={autoSubmit === o.auto}
+                className={autoSubmit === o.auto ? 'choice choice--on' : 'choice'}
+                onClick={() => setAutoSubmit(o.auto)}
+              >
+                <span className="choice__icon">{o.icon}</span>
+                {o.text}
+              </button>
             ))}
           </div>
         </div>
