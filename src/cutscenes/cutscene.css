@@ -5,6 +5,11 @@
   overflow: hidden;
 }
 
+.scene__world {
+  position: absolute;
+  inset: 0;
+}
+
 .scene__caption {
   position: absolute;
   left: 50%;
@@ -12,11 +17,11 @@
   top: 28px;
   transform: translateX(-50%);
   padding: 16px 36px;
+  border: 4px solid #1a1220;
   border-radius: 28px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.12);
-  font-size: 44px;
-  font-weight: 900;
+  background: #fff8e8;
+  box-shadow: 0 6px 0 #1a1220;
+  font-size: 46px;
   white-space: nowrap;
   animation: scene-caption-in 400ms ease-out;
 }

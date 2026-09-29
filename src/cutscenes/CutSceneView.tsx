@@ -32,46 +32,61 @@ export function CutSceneView({ scene, timeline, worldId, avatar, caption, t }: P
     t,
     state: frame.propState,
     since: frame.propSince,
+    events: timeline.propEvents,
+    heroAt: (time: number) => {
+      const f = sampleTimeline(timeline, time);
+      return { x: f.x - scene.anchor, lift: f.lift };
+    },
     heroX: frame.x - scene.anchor,
     heroLift: frame.lift,
   };
   const obstacleAt = `translate(${scene.anchor - cam} ${SCENE_GROUND})`;
   const flip = frame.facing === 'left' ? -1 : 1;
+  const { shake } = frame;
+  const shaking = shake.x !== 0 || shake.y !== 0;
 
   return (
     <div className="scene">
-      <WorldBackdrop
-        worldId={worldId}
-        height={800}
-        horizon={330}
-        groundTop={470}
-        pathY={SCENE_GROUND}
-        scroll={cam}
-        smooth={false}
+      <div
+        className="scene__world"
+        // Zoom in a touch while shaking so the edges never show.
+        style={
+          shaking ? { transform: `translate(${shake.x}px, ${shake.y}px) scale(1.03)` } : undefined
+        }
       >
-        <g transform={obstacleAt}>
-          <art.back {...propArgs} />
-        </g>
-        {scene.sign && <Signpost x={scene.sign.x - cam} text={scene.sign.text} />}
-        {/* Shadow on the surface under him; it shrinks as he jumps higher. */}
-        <ellipse
-          cx={frame.x - cam}
-          cy={SCENE_GROUND - frame.floor + 2}
-          rx={52 * Math.max(0.4, 1 - (frame.lift - frame.floor) / 250)}
-          ry={9}
-          fill="rgba(0,0,0,0.18)"
-        />
-        <g
-          transform={`translate(${frame.x - cam} ${SCENE_GROUND - frame.lift}) scale(${flip} 1) translate(${-FEET_X} ${-FEET_Y})`}
+        <WorldBackdrop
+          worldId={worldId}
+          height={800}
+          horizon={330}
+          groundTop={470}
+          pathY={SCENE_GROUND}
+          scroll={cam}
+          smooth={false}
         >
-          <Hero avatar={avatar} pose={frame.pose} size={HERO_SIZE} shadow={false} />
-        </g>
-        {art.front && (
           <g transform={obstacleAt}>
-            <art.front {...propArgs} />
+            <art.back {...propArgs} />
           </g>
-        )}
-      </WorldBackdrop>
+          {scene.sign && <Signpost x={scene.sign.x - cam} text={scene.sign.text} />}
+          {/* Shadow on the surface under him; it shrinks as he jumps higher. */}
+          <ellipse
+            cx={frame.x - cam}
+            cy={SCENE_GROUND - frame.floor + 2}
+            rx={52 * Math.max(0.4, 1 - (frame.lift - frame.floor) / 250)}
+            ry={9}
+            fill="rgba(0,0,0,0.18)"
+          />
+          <g
+            transform={`translate(${frame.x - cam} ${SCENE_GROUND - frame.lift}) scale(${flip} 1) translate(${-FEET_X} ${-FEET_Y})`}
+          >
+            <Hero avatar={avatar} pose={frame.pose} size={HERO_SIZE} shadow={false} />
+          </g>
+          {art.front && (
+            <g transform={obstacleAt}>
+              <art.front {...propArgs} />
+            </g>
+          )}
+        </WorldBackdrop>
+      </div>
       {frame.showCaption && <div className="scene__caption">{caption}</div>}
     </div>
   );

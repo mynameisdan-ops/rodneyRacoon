@@ -111,3 +111,26 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     are made once in the new style. M4b starts with a style test for approval.
   - To check in play: with Enter, 60s may be tight for the later World 1 levels; tune the counts in
     `levels.ts` if so.
+
+- **2026-09-28: M4b style test.** World 1 became the **Old Mine Shaft** (the user's new level plan in PLAN §3:
+  cart race, cart jump, wall smash, rat swarm, and a mine-train escape over the canyon as the boss). Built the
+  style test on `m4b-art-direction` for approval:
+  - `src/art/style.ts`: ink outline, `mix`/`shade`/`tint`. Shading is done with overlay shapes; there are no
+    filters anywhere now (the old `brightness` filter on the back limbs is gone, which was a tablet suspect).
+  - The hero is redrawn as a young adventurer (tunic, cape, belt, satchel, bracers, boots) at about 4 heads
+    tall, with elbows and knees. Poses: run, leap, brace, ride, slide, swing, fall, alongside the old ones.
+    The feet stay at (52, 163) in the 100×170 view, so every screen that places him still works.
+  - Themes are `outdoor` | `mine`. The mine layers are a rock ceiling with stalactites, a hazy far cavern
+    with lanterns, timber frames with hanging lanterns and glowing crystals, and a rocky floor with rails.
+    Glows are stacked translucent circles, not blur. Backdrop tiles overlap by 1px to hide the seam.
+  - Timeline: `run`, `move` with `ease` (chained in/linear/out moves keep a steady speed), `jump` with a
+    pose, and `shake`, which the view applies as a transform. Props get the whole event schedule
+    (`eventTime`), so the boulder can be exactly over the pit when 'drop' fires.
+  - Level 1 "Cart race!": rumble, then the boulder crashes down, he braces, jumps in the cart and races with
+    the boulder rolling 300px behind. It smashes the trestle and drops into the pit, then the cart hits the
+    buffer and flings him into a leap and a cheer (7.4s).
+  - Not yet: levels 2–8 still use the meadow obstacles on the mine backdrop, UI chrome and font (B5), and
+    `zoom`/`fx`/`slowmo` steps (props draw their own effects so far). The page timer is still the sun,
+    which reads as a lantern glow in the mine.
+  - New feedback arrived in `docs/feedback.txt` (a parent menu for starting difficulty and detailed
+    settings). Not acted on yet; it fits M6/M10.

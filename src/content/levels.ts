@@ -21,7 +21,7 @@ export interface LevelDef {
   boss?: boolean;
 }
 
-export const WORLDS: WorldDef[] = [{ id: 1, name: 'Sunny Meadow' }];
+export const WORLDS: WorldDef[] = [{ id: 1, name: 'Old Mine Shaft' }];
 
 export const LEVELS: LevelDef[] = [
   {
@@ -30,8 +30,8 @@ export const LEVELS: LevelDef[] = [
     skill: 'add-within-5',
     problems: 10,
     difficulty: 0.2,
-    obstacle: 'Tall grass',
-    caption: 'Through the tall grass!',
+    obstacle: 'Cart race',
+    caption: 'Cart race!',
   },
   {
     id: 2,
@@ -39,8 +39,8 @@ export const LEVELS: LevelDef[] = [
     skill: 'add-within-10',
     problems: 10,
     difficulty: 0.2,
-    obstacle: 'Muddy puddle',
-    caption: 'Splash! Over the puddle.',
+    obstacle: 'Cart jump',
+    caption: 'Jump the gap!',
   },
   {
     id: 3,
@@ -48,8 +48,8 @@ export const LEVELS: LevelDef[] = [
     skill: 'add-within-10',
     problems: 12,
     difficulty: 0.7,
-    obstacle: 'Fence stile',
-    caption: 'Up and over the fence.',
+    obstacle: 'Wall smash',
+    caption: 'Smash through!',
   },
   {
     id: 4,
@@ -57,8 +57,8 @@ export const LEVELS: LevelDef[] = [
     skill: 'doubles',
     problems: 12,
     difficulty: 0.5,
-    obstacle: 'Bee swarm',
-    caption: 'Tiptoe past the bees…',
+    obstacle: 'Rat swarm',
+    caption: 'Swing over the rats!',
   },
   {
     id: 5,
@@ -66,8 +66,8 @@ export const LEVELS: LevelDef[] = [
     skill: 'make-10',
     problems: 12,
     difficulty: 0.5,
-    obstacle: 'Stepping logs',
-    caption: 'Hop, hop, hop across!',
+    obstacle: 'Crystal cavern',
+    caption: 'Hop the crystals!',
   },
   {
     id: 6,
@@ -75,8 +75,8 @@ export const LEVELS: LevelDef[] = [
     skill: 'add-within-20',
     problems: 14,
     difficulty: 0.2,
-    obstacle: 'Windy hill',
-    caption: 'Whoosh! What a wind!',
+    obstacle: 'Bat storm',
+    caption: 'Slide under!',
   },
   {
     id: 7,
@@ -84,8 +84,8 @@ export const LEVELS: LevelDef[] = [
     skill: 'add-within-20',
     problems: 15,
     difficulty: 0.8,
-    obstacle: 'Sleepy bull',
-    caption: 'Shh… sneak past the bull.',
+    obstacle: 'Runaway lift',
+    caption: 'Grab the chain!',
   },
   {
     id: 8,
@@ -93,8 +93,8 @@ export const LEVELS: LevelDef[] = [
     skill: 'world1-review',
     problems: 16,
     difficulty: 0.6,
-    obstacle: 'Rope bridge over the ravine',
-    caption: 'Across the wobbly rope bridge!',
+    obstacle: 'Escape the mine',
+    caption: 'Jump the canyon!',
     boss: true,
   },
 ];

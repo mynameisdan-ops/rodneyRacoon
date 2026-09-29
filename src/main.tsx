@@ -2,6 +2,7 @@ import { StrictMode, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { Stage } from './ui/Stage';
+import '@fontsource/lilita-one/latin-400.css';
 import './styles.css';
 
 const rootEl = document.getElementById('root');

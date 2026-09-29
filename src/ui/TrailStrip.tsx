@@ -3,6 +3,7 @@ import type { AvatarConfig } from '../art/hero/avatar';
 import { Hero, type HeroPose } from '../art/hero/Hero';
 import { OBSTACLES } from '../art/obstacles/registry';
 import type { ObstacleId } from '../art/obstacles/types';
+import { getTheme } from '../art/worlds/themes';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 import { CONFIG } from '../game/config';
 import type { SessionState } from '../game/session';
@@ -77,7 +78,7 @@ export function TrailStrip({
         <Goal obstacle={obstacle} />
       </WorldBackdrop>
       <div
-        className="trail__sun"
+        className={getTheme(worldId).kind === 'mine' ? 'trail__sun trail__sun--mine' : 'trail__sun'}
         style={{
           animationDuration: `${CONFIG.pageSeconds}s`,
           animationPlayState: running ? 'running' : 'paused',
@@ -112,7 +113,15 @@ function Goal({ obstacle }: { obstacle?: ObstacleId }) {
     );
   }
   const art = OBSTACLES[obstacle];
-  const still = { t: 0, state: 'idle', since: 0, heroX: -1000, heroLift: 0 };
+  const still = {
+    t: 0,
+    state: 'idle',
+    since: 0,
+    events: [],
+    heroX: -1000,
+    heroLift: 0,
+    heroAt: () => ({ x: -1000, lift: 0 }),
+  };
   return (
     <g transform={`translate(${TRAIL_END + 80} ${PATH_Y}) scale(${GOAL_SCALE})`}>
       <art.back {...still} />

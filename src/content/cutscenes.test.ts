@@ -2,14 +2,28 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { OBSTACLES } from '../art/obstacles/registry';
-import { OBSTACLE_IDS } from '../art/obstacles/types';
+import { OBSTACLE_IDS, type ObstacleProps } from '../art/obstacles/types';
 import { buildTimeline, cameraFor, sampleTimeline } from '../cutscenes/timeline';
 import { CUT_SCENES } from './cutscenes';
 import { LEVELS } from './levels';
 
+function draw(id: (typeof OBSTACLE_IDS)[number], props: ObstacleProps): string {
+  const art = OBSTACLES[id];
+  return renderToStaticMarkup(
+    createElement(
+      'svg',
+      null,
+      createElement(art.back, props),
+      art.front && createElement(art.front, props),
+    ),
+  );
+}
+
 describe('cut scenes', () => {
-  it('every level has one', () => {
+  it('every level has one, and every obstacle is used', () => {
     for (const level of LEVELS) expect(CUT_SCENES[level.id], `level ${level.id}`).toBeDefined();
+    const used = new Set(Object.values(CUT_SCENES).map((s) => s.obstacle));
+    for (const id of OBSTACLE_IDS) expect(used.has(id), id).toBe(true);
   });
 
   it.each(Object.entries(CUT_SCENES))('level %s: timing, placement and camera', (_, scene) => {
@@ -21,9 +35,9 @@ describe('cut scenes', () => {
 
     const end = sampleTimeline(tl, tl.duration);
     const art = OBSTACLES[scene.obstacle];
-    // He ends past the obstacle, on the ground, and on screen.
+    // He ends past the obstacle, standing on something (not mid-jump), and on screen.
     expect(end.x).toBeGreaterThan(scene.anchor + art.width);
-    expect(end.lift).toBe(0);
+    expect(end.lift).toBe(end.floor);
     expect(end.x).toBeLessThan(scene.width - 60);
     expect(end.pose === 'cheer' || end.pose === 'idle').toBe(true);
 
@@ -31,24 +45,41 @@ describe('cut scenes', () => {
     expect(scene.width).toBeGreaterThanOrEqual(1280);
     expect(cameraFor(end.x, scene.width)).toBeLessThan(1280);
   });
-});
 
-describe('obstacle art', () => {
-  it.each(OBSTACLE_IDS)('%s renders in every state without errors', (id) => {
-    const art = OBSTACLES[id];
-    for (const state of ['idle', 'rustle', 'splash', 'curious', 'home', 'gust', 'peek', 'wobble']) {
-      for (const heroX of [-200, 50, art.width / 2, art.width + 100]) {
-        const props = { t: 1234, state, since: 1000, heroX, heroLift: -20 };
-        const svg = renderToStaticMarkup(
-          createElement(
-            'svg',
-            null,
-            createElement(art.back, props),
-            art.front && createElement(art.front, props),
-          ),
-        );
-        expect(svg).not.toContain('NaN');
-      }
+  it.each(Object.entries(CUT_SCENES))('level %s: every frame draws without errors', (_, scene) => {
+    const tl = buildTimeline(scene.script);
+    const heroAt = (time: number) => {
+      const f = sampleTimeline(tl, time);
+      return { x: f.x - scene.anchor, lift: f.lift };
+    };
+    for (let t = 0; t <= tl.duration + 500; t += 97) {
+      const f = sampleTimeline(tl, t);
+      const svg = draw(scene.obstacle, {
+        t,
+        state: f.propState,
+        since: f.propSince,
+        events: tl.propEvents,
+        heroX: f.x - scene.anchor,
+        heroLift: f.lift,
+        heroAt,
+      });
+      expect(svg, `t=${t}`).not.toContain('NaN');
+      expect(svg, `t=${t}`).not.toContain('Infinity');
+    }
+  });
+
+  it('draws a still preview for the page strip', () => {
+    for (const id of OBSTACLE_IDS) {
+      const svg = draw(id, {
+        t: 0,
+        state: 'idle',
+        since: 0,
+        events: [],
+        heroX: -1000,
+        heroLift: 0,
+        heroAt: () => ({ x: -1000, lift: 0 }),
+      });
+      expect(svg, id).not.toContain('NaN');
     }
   });
 });

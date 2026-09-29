@@ -59,6 +59,11 @@ Play button). Use it to check art changes; it is left out of production builds.
   `src/cutscenes/timeline.ts` and drawn by one `CutSceneView`, using reusable obstacle art from
   `src/art/obstacles/` (registered in `registry.ts`). Don't write one-off animation code for each
   level; obstacle motion is computed from scene time, not CSS, so any frame can be drawn exactly.
+- Art uses the style kit in `src/art/style.ts`: the `INK` outline on every object, and shading as flat overlay
+  shapes made with `shade()` / `tint()`. **No CSS or SVG `filter`** (slow on tablets). A theme's `kind` picks the
+  backdrop layers (`outdoor`, or `mine` in `src/art/worlds/mine.tsx`).
+- Obstacle art gets the scene's whole prop schedule (`events`); use `eventTime()` to time a motion to a later
+  event. Shared positions go in a layout module (e.g. `mineLayout.ts`) so art and scripts agree.
 - One `<Hero>` component renders the avatar everywhere (map, page strip, cut scenes, shop),
   driven by the avatar config and a `pose` prop.
 - The design canvas is 1280×800 (16:10), scaled to fit the screen. Lay out in design units, not raw viewport pixels.

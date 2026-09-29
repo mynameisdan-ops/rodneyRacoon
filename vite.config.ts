@@ -9,6 +9,8 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['icon.svg'],
+      // Precache the bundled font too, so titles look right offline.
+      workbox: { globPatterns: ['**/*.{js,css,html,svg,woff2}'] },
       manifest: {
         name: 'The Long Way Home',
         short_name: 'Long Way Home',

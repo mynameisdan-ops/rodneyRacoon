@@ -1,14 +1,15 @@
 import type { FC } from 'react';
+import type { PropEvent } from '../../cutscenes/timeline';
 
 export const OBSTACLE_IDS = [
-  'tall-grass',
-  'puddle',
-  'fence-stile',
-  'bees',
-  'stepping-logs',
-  'windy-hill',
-  'sleeping-bull',
-  'rope-bridge',
+  'cart-race',
+  'cart-jump',
+  'wall-smash',
+  'rat-swarm',
+  'crystal-cavern',
+  'bat-storm',
+  'runaway-lift',
+  'mine-train',
 ] as const;
 export type ObstacleId = (typeof OBSTACLE_IDS)[number];
 
@@ -23,9 +24,16 @@ export interface ObstacleProps {
   state: string;
   /** When `state` began, ms. */
   since: number;
+  /**
+   * The scene's whole prop schedule, including states still to come, so a prop can
+   * time a motion to end exactly when a later event happens (see `eventTime`).
+   */
+  events: readonly PropEvent[];
   /** Hero feet position relative to the anchor (x px, lift px up). */
   heroX: number;
   heroLift: number;
+  /** Where the hero's feet are at any scene time (same local coordinates), e.g. where he was when something began. */
+  heroAt: (t: number) => { x: number; lift: number };
 }
 
 export interface ObstacleArt {
@@ -35,4 +43,9 @@ export interface ObstacleArt {
   front?: FC<ObstacleProps>;
   /** Width from the anchor, px (used to place the page-strip preview). */
   width: number;
+}
+
+/** When the scene reaches prop `state` (ms), or Infinity if it never does. */
+export function eventTime(events: readonly PropEvent[], state: string): number {
+  return events.find((e) => e.state === state)?.at ?? Infinity;
 }
