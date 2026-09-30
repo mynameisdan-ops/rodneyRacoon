@@ -635,7 +635,7 @@ button {
 
 @keyframes sun-arc {
   0% {
-    transform: translate(300px, 84px);
+    transform: translate(380px, 84px);
   }
   50% {
     transform: translate(700px, 18px);

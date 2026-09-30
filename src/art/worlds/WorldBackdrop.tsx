@@ -1,6 +1,10 @@
 import { useId, useMemo, type ReactNode } from 'react';
 import { createRng } from '../../game/rng';
+import { CanyonFar, CanyonMid, CanyonNear, CanyonSky } from './canyon';
+import { ForestCanopy, ForestFar, ForestMid, ForestNear } from './forest';
 import { MineCeiling, MineFar, MineMid, MineNear } from './mine';
+import { MountainClouds, MountainFar, MountainMid, MountainNear } from './mountain';
+import { RiverClouds, RiverFar, RiverMid, RiverNear } from './river';
 import { getTheme, type OutdoorTheme } from './themes';
 import './backdrop.css';
 
@@ -27,6 +31,9 @@ interface Props {
   children?: ReactNode;
 }
 
+/** Kinds whose top layer is clouds that drift on their own. */
+const DRIFTING = new Set(['outdoor', 'river', 'mountain']);
+
 /** Parallax speed of each layer relative to `scroll`. Must keep scroll × factor < 1280. */
 const PARALLAX = { clouds: 0.05, far: 0.15, mid: 0.4, near: 1 };
 
@@ -50,14 +57,53 @@ export function WorldBackdrop({
   const theme = getTheme(worldId);
   const skyId = useId();
   const layers = useMemo(() => {
-    if (theme.kind === 'mine') {
-      const p = { theme, horizon, groundTop, height, pathY, k: detail, seed: worldId };
-      return {
-        clouds: <MineCeiling {...p} />,
-        far: <MineFar {...p} />,
-        mid: <MineMid {...p} />,
-        near: <MineNear {...p} />,
-      };
+    const base = { horizon, groundTop, height, pathY, k: detail, seed: worldId };
+    switch (theme.kind) {
+      case 'mine': {
+        const p = { ...base, theme };
+        return {
+          clouds: <MineCeiling {...p} />,
+          far: <MineFar {...p} />,
+          mid: <MineMid {...p} />,
+          near: <MineNear {...p} />,
+        };
+      }
+      case 'forest': {
+        const p = { ...base, theme };
+        return {
+          clouds: <ForestCanopy {...p} />,
+          far: <ForestFar {...p} />,
+          mid: <ForestMid {...p} />,
+          near: <ForestNear {...p} />,
+        };
+      }
+      case 'river': {
+        const p = { ...base, theme };
+        return {
+          clouds: <RiverClouds {...p} />,
+          far: <RiverFar {...p} />,
+          mid: <RiverMid {...p} />,
+          near: <RiverNear {...p} />,
+        };
+      }
+      case 'mountain': {
+        const p = { ...base, theme };
+        return {
+          clouds: <MountainClouds {...p} />,
+          far: <MountainFar {...p} />,
+          mid: <MountainMid {...p} />,
+          near: <MountainNear {...p} />,
+        };
+      }
+      case 'canyon': {
+        const p = { ...base, theme };
+        return {
+          clouds: <CanyonSky {...p} />,
+          far: <CanyonFar {...p} />,
+          mid: <CanyonMid {...p} />,
+          near: <CanyonNear {...p} />,
+        };
+      }
     }
     return {
       clouds: <Clouds theme={theme} horizon={horizon} k={detail} seed={worldId} />,
@@ -101,7 +147,7 @@ export function WorldBackdrop({
       <rect width={W} height={height} fill={`url(#${skyId})`} />
       <Layer
         offset={scroll * speed.clouds}
-        className={theme.kind === 'outdoor' ? 'backdrop__clouds' : undefined}
+        className={DRIFTING.has(theme.kind) ? 'backdrop__clouds' : undefined}
       >
         {layers.clouds}
       </Layer>
