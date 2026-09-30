@@ -10,6 +10,42 @@ export const OBSTACLE_IDS = [
   'bat-storm',
   'runaway-lift',
   'mine-train',
+  // World 2: the forest.
+  'log-roll',
+  'bramble-vault',
+  'root-slide',
+  'vine-swing',
+  'boar-charge',
+  'mushroom-bounce',
+  'falling-bridge',
+  'fireflies',
+  // World 3: the river.
+  'stepping-stones',
+  'beaver-dam',
+  'rapids',
+  'rope-bridge',
+  'geyser',
+  'waterfall-slide',
+  'rising-water',
+  'raft',
+  // World 4: the mountains.
+  'rock-slide',
+  'crumbling-ledge',
+  'avalanche',
+  'goat-ride',
+  'ice-bridge',
+  'icicle-cave',
+  'ice-wall',
+  'peak',
+  // World 5: the canyon, and home.
+  'flash-flood',
+  'zip-line',
+  'dune-surf',
+  'tumbleweeds',
+  'crumbling-arch',
+  'canyon-train',
+  'last-hill',
+  'home',
 ] as const;
 export type ObstacleId = (typeof OBSTACLE_IDS)[number];
 
@@ -41,8 +77,10 @@ export interface ObstacleArt {
   back: FC<ObstacleProps>;
   /** Drawn in front of the hero (grass blades, near rope). */
   front?: FC<ObstacleProps>;
-  /** Width from the anchor, px (used to place the page-strip preview). */
+  /** Width from the anchor, px (the hero ends a scene past it). */
   width: number;
+  /** Local x of the part to show in the page-strip preview (default 0, the anchor). */
+  focus?: number;
 }
 
 /** When the scene reaches prop `state` (ms), or Infinity if it never does. */

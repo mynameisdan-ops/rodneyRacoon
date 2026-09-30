@@ -66,9 +66,27 @@ describe('world backdrops', () => {
     expect(render(1)).not.toContain('NaN');
   });
 
-  it('falls back to the meadow for worlds without a theme yet', () => {
-    expect(getTheme(5)).toBe(MEADOW);
-    expect(render(5)).not.toContain('NaN');
+  it.each([2, 3, 4, 5])('draws World %s in its own style, cleanly', (worldId) => {
+    const kinds = { 2: 'forest', 3: 'river', 4: 'mountain', 5: 'canyon' } as const;
+    expect(getTheme(worldId).kind).toBe(kinds[worldId as keyof typeof kinds]);
+    for (const [height, horizon, groundTop, pathY] of [
+      [240, 120, 168, 206],
+      [800, 330, 470, 640],
+      [800, 190, 290, undefined],
+    ] as const) {
+      for (const scroll of [0, 700]) {
+        const svg = renderToStaticMarkup(
+          createElement(WorldBackdrop, { worldId, height, horizon, groundTop, pathY, scroll }),
+        );
+        expect(svg).not.toContain('NaN');
+        expect(svg).not.toContain('filter');
+      }
+    }
+  });
+
+  it('falls back to the meadow for unknown worlds', () => {
+    expect(getTheme(99)).toBe(MEADOW);
+    expect(render(99)).not.toContain('NaN');
   });
 });
 

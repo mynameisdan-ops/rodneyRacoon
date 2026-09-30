@@ -63,9 +63,12 @@ Play button). Use it to check art changes; it is left out of production builds.
   level; obstacle motion is computed from scene time, not CSS, so any frame can be drawn exactly.
 - Art uses the style kit in `src/art/style.ts`: the `INK` outline on every object, and shading as flat overlay
   shapes made with `shade()` / `tint()`. **No CSS or SVG `filter`** (slow on tablets). A theme's `kind` picks the
-  backdrop layers (`outdoor`, or `mine` in `src/art/worlds/mine.tsx`).
+  backdrop layers (`mine`, `forest`, `river`, `mountain`, `canyon`, each in its own file in `src/art/worlds/`;
+  shared tiling helpers in `sceneryKit.ts`). Backdrop layers are 1280px tiles: ridges must start and end at the same height.
 - Obstacle art gets the scene's whole prop schedule (`events`); use `eventTime()` to time a motion to a later
-  event. Shared positions go in a layout module (e.g. `mineLayout.ts`) so art and scripts agree.
+  event. Shared positions go in a layout module per world (`mineLayout.ts` … `canyonLayout.ts`) so art and
+  scripts agree; small motion helpers are in `sceneKit.ts`. An obstacle's `focus` picks what the page-strip preview shows.
+- Only about 160px of a cut scene shows below the ground line, so put the action at or above it.
 - One `<Hero>` component renders the avatar everywhere (map, page strip, cut scenes, shop),
   driven by the avatar config and a `pose` prop.
 - The design canvas is 1280×800 (16:10), scaled to fit the screen. Lay out in design units, not raw viewport pixels.

@@ -105,6 +105,18 @@ describe('migrate', () => {
             fact({ result: 6 }),
             fact({ skill: 'world1-review' }),
             fact({ a: -1 }),
+            fact({ a: 7, op: '×', b: 8, result: 56, answer: 56, key: '7×8', skill: 'mul-6-9' }),
+            fact({ a: 7, op: '×', b: 8, result: 54, answer: 54, key: '7×8', skill: 'mul-6-9' }),
+            fact({ a: 56, op: '÷', b: 8, result: 7, answer: 7, key: '56÷8', skill: 'div-6-9' }),
+            fact({
+              a: 13,
+              op: '−',
+              b: 5,
+              result: 9,
+              answer: 9,
+              key: '13−5',
+              skill: 'sub-within-20',
+            }),
             null,
           ],
         },
@@ -113,7 +125,7 @@ describe('migrate', () => {
     const [p] = out.profiles;
     expect(p!.age).toBeNull();
     expect(p!.ratings).toEqual({ doubles: 1, 'add-within-10': 0.25 });
-    expect(p!.weakFacts.map((w) => w.problem.key)).toEqual(['2+3']);
+    expect(p!.weakFacts.map((w) => w.problem.key)).toEqual(['2+3', '7×8', '56÷8']);
   });
 
   it('drops damaged profiles and progress entries', () => {

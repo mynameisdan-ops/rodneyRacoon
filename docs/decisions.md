@@ -179,3 +179,38 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     a slow one sees it close in, but it never gets closer than 55px to his heels (`ui/trailLayout.ts`,
     tested). After a passed page it falls back and fades. Motion is CSS only. The trail now starts
     at x = 190 so the chaser is on screen from the start, and the timer sun starts to the right of him.
+
+- **2026-09-30: M5, Worlds 2–5** (`m5-worlds`, not merged yet).
+  - **Skills and generators** (`game/problems.ts`): 15 new base skills (− within 10 and 20, missing
+    addend, ± whole tens, 2-digit + and − with and without regrouping, × 0/1/2/10, × 5, × 3/4, × 6–9,
+    ÷ by 1/2/5/10, ÷ 3/4, ÷ 6–9) and 7 mixes. `MIXES` replaces the one hard-coded review: each mix
+    lists the base skills it draws from, and facts keep their own skill, so a missed fact comes back
+    on its own level and on every mix that includes it. Tests cover operand ranges, correct answers,
+    no negatives or remainders, carrying/borrowing always (or never) happening, and difficulty moving
+    the ranges. Times facts come in both orders (3 × 7 and 7 × 3); × 0 and × 8/9 join only at higher
+    difficulty. Every answer is at most 100.
+  - **Levels 9–40** (`content/levels.ts`) with problem ranges (fewer problems for 2-digit mental
+    math, 8–13, than for table facts, 10–18) and bands; two levels on one skill split the band.
+    Skill ages in `content/skills.ts` run from 6 to 10. Loading a save now accepts −, × and ÷ facts
+    and checks that they hold; no save-format change was needed (new skill ids only widen what loads).
+  - **Backdrops**: forest (canopy, light shafts, misty tree rows, big trunks, fireflies), river (hills
+    with a far waterfall, the river behind the bank), mountains (snowy peaks, pines, snowfield) and
+    canyon (low sun, mesas, striped cliffs, cacti). Shared helpers in `art/worlds/sceneryKit.ts`
+    (seamless ridges, spots) and `scenery.tsx` (clouds, ground, path, stones).
+  - **32 cut scenes**, each with a threat, an escalation, a hero action and a triumph (PLAN §3 lists
+    them). Layouts per world (`forestLayout.ts` … `canyonLayout.ts`) keep art and scripts in step;
+    motion helpers in `obstacles/sceneKit.ts`. Things that must meet (the log under his feet, the
+    tumbleweed under the top of his jump, the train's flatcar when he lands) are computed from
+    `heroAt()` and the prop schedule rather than tuned by hand. Every scene passes the existing test
+    (4–14s, a caption, he ends past the obstacle, on something solid, on screen; every frame draws
+    with no NaN). Each was checked frame by frame in headless Chrome.
+  - Found in checking: only ~160px of a scene shows below the ground line, so pits and gorges stay
+    shallow and the action happens at or above the ground. The train is drawn behind him (it had
+    looked like it ran through him). Page-strip previews showed empty ground because each scene's
+    key object sits away from its anchor; obstacles now have a `focus` and the preview is clipped
+    to the end of the trail.
+  - Also: the answer box has a fixed two-digit width (it used to grow as digits were typed, a small
+    layout shift and a hint at the length); a third digit shrinks the text instead. Problems showing
+    4+ digits use 104px type so `100 ÷ 10` fits. The last scene ends with "You made it home!".
+  - **To check in play:** whether 8–13 two-digit problems a minute is right for the 9-year-old;
+    how the busier scenes run on the tablet.
