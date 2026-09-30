@@ -1,6 +1,6 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Sep 30, 2026 (M5 merged to main; world overview and unlock switch from feedback).
+Last updated: Sep 30, 2026 (M7 rewards built on `m7-rewards`, waiting for a play-through before merging).
 milestone: `docs/decisions.md`.
 
 ## Goals
@@ -30,7 +30,11 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 - **Feedback fixes (merged):** an overview map of all five worlds (after a boss, "Next world ▶"
   goes there and the hero walks on; the trail map has a map button for it), and a per-player
   "Levels: one by one / all open" switch in the player editor (save format v4).
-- **Checks:** 304 unit tests, lint and build pass on `main`; CI runs them on every push.
+- **M7 built on `m7-rewards` (pushed, not merged):** coins (right answers, combo bursts, time left,
+  first pass, new stars) with a results tally; an avatar shop of 21 hats, capes, packs and pets worn
+  on the hero; a sticker book of 40 stickers (stills from each level's cut scene with the child's own
+  hero). Save format v5. Map dock buttons open the book and the shop.
+- **Checks:** 323 unit tests, lint and build pass on `m7-rewards`; CI runs them on every push.
 - **Known gaps:** the parent controls for adaptive difficulty (and the unlock switch's final home)
   wait for Settings in M10; PNG icons
   and the Pages `base` path (M10).
@@ -38,17 +42,18 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 
 ## Next steps
 
-1. The user plays Worlds 2–5 (PC with `npm run dev`, tablet with the LAN preview: `npm run build`,
-   then `npm run preview -- --host`). To jump ahead, set "Levels: all open" in the player editor (✎).
-   Feedback goes in `docs/feedback.md`.
-2. M7 (rewards: coins, stars, combos, shop, sticker book), then M8–M10 as `docs/PLAN.md` §9 lists.
+1. The user plays `m7-rewards` (and Worlds 2–5 if not done yet): PC with `npm run dev`, tablet with
+   the LAN preview (`npm run build`, then `npm run preview -- --host`). Worth a look: coin pace vs
+   prices, whether the pets and gear read well at tablet size, and how the sticker book runs on the
+   tablet (each page draws 8 scene stills). Feedback goes in `docs/feedback.md`.
+2. Merge `m7-rewards` to `main` after that check, then M8 (avatar builder + photo face), M9, M10.
 
 ## Handoff
 
-- **Branch:** `main`, pushed, with `m5-worlds` and `fb-world-progress` merged; nothing uncommitted
+- **Branch:** `m7-rewards`, pushed; `main` has M0–M6 and M5's feedback fixes. Nothing uncommitted
   except the user's own `handover.md`. In the dev console, the store module is imported as
   `/src/state/store.ts?t=…` (see the page's resource list) to seed test progress.
-- **Waiting on the user:** a play-through of Worlds 2–5 (and a tablet look at the busier scenes).
+- **Waiting on the user:** a play-through of the rewards (and of Worlds 2–5), then the go-ahead to merge.
 - **Gotchas:** in a hidden browser pane `requestAnimationFrame` stops and `document.hidden` is true, so
   pages auto-pause and scenes don't advance; scrub scenes with the gallery slider. The dev server's file
   watcher sometimes misses edits made by tools; `touch` the file. Long Bash heredocs fail on Windows;

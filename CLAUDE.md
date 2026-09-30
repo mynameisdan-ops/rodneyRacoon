@@ -41,7 +41,9 @@ npm run lint
 npm run format     # prettier --write
 ```
 
-In a dev build, open `http://localhost:5173/#gallery` for the art gallery (every hero pose,
+In a dev build, `http://localhost:5173/#moments-1-4` is a contact sheet of levels 1–4's scenes at
+several moments (for picking sticker moments; screenshot it with headless Chrome at 2480px wide).
+Open `http://localhost:5173/#gallery` for the art gallery (every hero pose, every shop item, every sticker,
 hair style and skin tone, plus every cut scene with a scrub slider to inspect any moment and a
 Play button). Use it to check art changes; it is left out of production builds.
 

@@ -16,6 +16,22 @@ export const CONFIG = {
     /** 3 stars: every problem right on the first try, with at least this many seconds left. */
     threeStarSecondsLeft: 10,
   },
+  /** Coins, spent in the shop. A page pays for its right answers even when it's a retry. */
+  coins: {
+    /** For each problem answered right (first or second try). */
+    perCorrect: 1,
+    /** A combo burst every this many right-first-try answers in a row... */
+    comboEvery: 5,
+    /** ...paying these bonuses at 5, 10, 15 in a row (the last repeats beyond). */
+    comboBonus: [2, 3, 5],
+    /** On a passed page, 1 coin for every this many whole seconds left. */
+    secondsPerTimeCoin: 5,
+    /** The first time a level is passed (a world's boss pays more). */
+    firstPass: 10,
+    firstPassBoss: 25,
+    /** For each star above the level's best so far. */
+    perNewStar: 5,
+  },
   /** Adaptive difficulty: a rating from 0 (easiest) to 1 (hardest) for each skill. */
   adaptive: {
     /** How the skill's rating moves after a page. */

@@ -1,8 +1,11 @@
 import { create } from 'zustand';
 import type { LevelDef } from '../content/levels';
 import { applyPage, type Answer } from '../game/adaptive';
+import { getItem } from '../content/shop';
 import { recordPlay } from '../game/progress';
+import { pageCoins, type CoinReward } from '../game/rewards';
 import type { PageEvaluation } from '../game/scoring';
+import { buy, toggleWear } from '../game/shop';
 import { loadSave, requestPersistentStorage, writeSave } from './persistence';
 import { emptySave, MAX_NAME_LENGTH, NewerSaveError, type Profile, type SaveData } from './schema';
 
@@ -24,7 +27,16 @@ interface GameStore {
   updateProfile(id: string, patch: Partial<ProfileFields>): void;
   deleteProfile(id: string): void;
   selectProfile(id: string | null): void;
-  recordResult(level: LevelDef, evaluation: PageEvaluation, answers: readonly Answer[]): void;
+  /** Records a finished page and pays its coins; returns what it paid (undefined if no player). */
+  recordResult(
+    level: LevelDef,
+    evaluation: PageEvaluation,
+    answers: readonly Answer[],
+  ): CoinReward | undefined;
+  /** Buys a shop item for the active player and puts it on (if they have the coins). */
+  buyItem(itemId: string): void;
+  /** Puts an owned item on, or takes it off. */
+  toggleItem(itemId: string): void;
 }
 
 function newId(): string {
@@ -91,6 +103,9 @@ export const useGame = create<GameStore>()((set, get) => {
         ratings: {},
         weakFacts: [],
         progress: {},
+        coins: 0,
+        owned: [],
+        gear: {},
       };
       commit((d) => ({ ...d, profiles: [...d.profiles, profile], lastProfileId: id }));
       set({ activeProfileId: id });
@@ -125,16 +140,32 @@ export const useGame = create<GameStore>()((set, get) => {
 
     recordResult(level, evaluation, answers) {
       const id = get().activeProfileId;
-      if (!id) return;
+      const profile = get().data.profiles.find((p) => p.id === id);
+      if (!id || !profile) return undefined;
       const now = Date.now();
+      const reward = pageCoins(answers, evaluation, profile.progress[level.id], level.boss);
       updateProfiles(
         (p) => ({
           ...p,
           ...applyPage(p, level, evaluation, answers, now),
           progress: recordPlay(p.progress, level.id, evaluation, now),
+          coins: p.coins + reward.total,
         }),
         id,
       );
+      return reward;
+    },
+
+    buyItem(itemId) {
+      const id = get().activeProfileId;
+      const item = getItem(itemId);
+      if (id && item) updateProfiles((p) => buy(p, item), id);
+    },
+
+    toggleItem(itemId) {
+      const id = get().activeProfileId;
+      const item = getItem(itemId);
+      if (id && item) updateProfiles((p) => toggleWear(p, item), id);
     },
   };
 });

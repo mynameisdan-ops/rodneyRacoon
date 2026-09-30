@@ -37,6 +37,7 @@ const evaluation = (passed: boolean, stars: PageEvaluation['stars']): PageEvalua
   total: 10,
   accuracy: 0,
   answeredAll: true,
+  secondsLeft: 0,
 });
 const answer = (problem: Problem, correct: boolean, tries: number, ms: number): Answer => ({
   problem,

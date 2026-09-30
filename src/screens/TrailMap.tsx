@@ -6,6 +6,7 @@ import { avatarForProfile } from '../art/hero/avatar';
 import { Hero } from '../art/hero/Hero';
 import { getTheme } from '../art/worlds/themes';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
+import { BagIcon, BookIcon, Coin } from '../ui/icons';
 import { Stars } from '../ui/Stars';
 
 interface Props {
@@ -16,6 +17,9 @@ interface Props {
   onPlay: (levelId: number) => void;
   /** Open the overview of all the worlds. */
   onWorlds: () => void;
+  /** Open the shop or the sticker book (they come back to this world). */
+  onShop: (worldId: number) => void;
+  onStickers: (worldId: number) => void;
   onSwitchPlayer: () => void;
 }
 
@@ -58,6 +62,8 @@ export function TrailMap({
   saveFailed,
   onPlay,
   onWorlds,
+  onShop,
+  onStickers,
   onSwitchPlayer,
 }: Props) {
   const here = currentLevel(profile.progress, ALL_IDS);
@@ -169,6 +175,27 @@ export function TrailMap({
           </div>
         );
       })}
+
+      <div className="map__dock">
+        <button
+          type="button"
+          className="dock-button"
+          aria-label="Sticker book"
+          onClick={() => onStickers(world.id)}
+        >
+          <BookIcon size={56} />
+        </button>
+        <button
+          type="button"
+          className="dock-button"
+          aria-label={`Shop, ${profile.coins} coins`}
+          onClick={() => onShop(world.id)}
+        >
+          <BagIcon size={56} />
+          <Coin size={40} />
+          {profile.coins}
+        </button>
+      </div>
 
       {saveFailed && (
         <div className="save-warning">Progress can't be saved on this device right now.</div>

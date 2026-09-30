@@ -15,7 +15,7 @@ describe('migrate', () => {
 
   it('keeps valid data unchanged', () => {
     const save = {
-      version: 4,
+      version: 5,
       lastProfileId: 'a',
       profiles: [
         {
@@ -45,6 +45,9 @@ describe('migrate', () => {
             },
           ],
           progress: { 1: { bestStars: 2, plays: 3, passes: 1, lastPlayedAt: 9 } },
+          coins: 42,
+          owned: ['bandana', 'puppy'],
+          gear: { hat: 'bandana', pet: 'puppy' },
         },
       ],
     };
@@ -85,6 +88,34 @@ describe('migrate', () => {
     });
     expect(out.version).toBe(SAVE_VERSION);
     expect(out.profiles[0]).toMatchObject({ autoSubmit: true, age: 6, unlockAll: false });
+  });
+
+  it('migrates a v4 save: no coins, nothing bought or worn', () => {
+    const out = migrate({
+      version: 4,
+      lastProfileId: null,
+      profiles: [{ id: 'a', name: 'Sam', unlockAll: true, progress: {} }],
+    });
+    expect(out.profiles[0]).toMatchObject({ unlockAll: true, coins: 0, owned: [], gear: {} });
+  });
+
+  it('drops bad coins, unknown items, and gear that is not owned or in the wrong slot', () => {
+    const out = migrate({
+      version: 5,
+      profiles: [
+        {
+          id: 'a',
+          name: 'Sam',
+          coins: 12.8,
+          owned: ['bandana', 'bandana', 'jetski', 7, 'puppy'],
+          gear: { hat: 'puppy', cape: 'star-cape', pet: 'puppy', pack: 'jetski' },
+        },
+        { id: 'b', name: 'Kim', coins: -5, owned: 'bandana', gear: 'x' },
+      ],
+    });
+    const [a, b] = out.profiles;
+    expect(a).toMatchObject({ coins: 12, owned: ['bandana', 'puppy'], gear: { pet: 'puppy' } });
+    expect(b).toMatchObject({ coins: 0, owned: [], gear: {} });
   });
 
   it('drops bad ages, ratings and weak facts', () => {

@@ -18,7 +18,8 @@ interface Props {
   timeline: Timeline;
   worldId: number;
   avatar: AvatarConfig;
-  caption: string;
+  /** Left out for a still (a sticker), which shows no caption. */
+  caption?: string;
   /** Scene time, ms. */
   t: number;
 }
@@ -78,7 +79,7 @@ export function CutSceneView({ scene, timeline, worldId, avatar, caption, t }: P
           <g
             transform={`translate(${frame.x - cam} ${SCENE_GROUND - frame.lift}) scale(${flip} 1) translate(${-FEET_X} ${-FEET_Y})`}
           >
-            <Hero avatar={avatar} pose={frame.pose} size={HERO_SIZE} shadow={false} />
+            <Hero avatar={avatar} pose={frame.pose} size={HERO_SIZE} shadow={false} pet={false} />
           </g>
           {art.front && (
             <g transform={obstacleAt}>
@@ -87,7 +88,7 @@ export function CutSceneView({ scene, timeline, worldId, avatar, caption, t }: P
           )}
         </WorldBackdrop>
       </div>
-      {frame.showCaption && <div className="scene__caption">{caption}</div>}
+      {frame.showCaption && caption && <div className="scene__caption">{caption}</div>}
     </div>
   );
 }

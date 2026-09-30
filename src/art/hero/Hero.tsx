@@ -1,6 +1,8 @@
 import type { HairStyle } from '../../content/avatar';
+import { wornItem } from '../../content/shop';
 import { ink, mix, shade, tint } from '../style';
 import type { AvatarConfig } from './avatar';
+import { Cape, Hat, Pack, Pet } from './gear';
 import type { HeroPose } from './poses';
 import './hero.css';
 
@@ -14,6 +16,8 @@ interface Props {
   size?: number;
   /** Draw the ground shadow under the feet (off when a scene draws its own). */
   shadow?: boolean;
+  /** Draw his pet, if he has one (off in cut scenes, where he leaps and swings). */
+  pet?: boolean;
   className?: string;
 }
 
@@ -37,10 +41,14 @@ export function Hero({
   facing = 'right',
   size = 120,
   shadow = true,
+  pet = true,
   className,
 }: Props) {
-  const { skin, shirt, pants, shoes, hairColor, hairStyle } = avatar;
+  const { skin, shirt, pants, shoes, hairColor, hairStyle, gear } = avatar;
   const cape = mix(shade(shirt, 0.45), '#2a1f4a', 0.35);
+  const hat = wornItem(gear, 'hat');
+  const pack = wornItem(gear, 'pack');
+  const petItem = pet ? wornItem(gear, 'pet') : undefined;
   return (
     <svg
       className={['hero-svg', `hero-svg--${pose}`, className].filter(Boolean).join(' ')}
@@ -63,13 +71,9 @@ export function Hero({
       <g className="hero-body">
         {/* Cape, hanging from the shoulders behind everything. */}
         <g className="hero-cape">
-          <path
-            d="M52 56 Q40 58 35 78 Q31 96 25 116 Q34 112 38 116 Q42 110 47 112 Q46 84 56 60 Z"
-            fill={cape}
-            {...ink(LW)}
-          />
-          <path d="M44 62 Q38 80 33 106 L38 108 Q40 84 48 62 Z" fill={shade(cape, 0.3)} />
+          <Cape color={cape} item={wornItem(gear, 'cape')} />
         </g>
+        {pack && <Pack item={pack} />}
 
         <g transform="translate(46 61)">
           <Arm side="back" sleeve={shade(shirt, 0.28)} skin={shade(skin, 0.25)} />
@@ -107,12 +111,14 @@ export function Hero({
 
         <g className="hero-head">
           <Head skin={skin} hairColor={hairColor} hairStyle={hairStyle} />
+          {hat && <Hat item={hat} />}
         </g>
 
         <g transform="translate(62 61)">
           <Arm side="front" sleeve={shirt} skin={skin} />
         </g>
       </g>
+      {petItem && <Pet item={petItem} />}
     </svg>
   );
 }

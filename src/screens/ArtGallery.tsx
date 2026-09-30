@@ -5,6 +5,9 @@ import { Hero } from '../art/hero/Hero';
 import { HERO_POSES, type HeroPose } from '../art/hero/poses';
 import { getCutScene } from '../content/cutscenes';
 import { getLevel, LEVELS } from '../content/levels';
+import { SHOP_ITEMS } from '../content/shop';
+import { STICKERS } from '../content/stickers';
+import { Sticker } from '../ui/Sticker';
 import { ScenePreview } from './ScenePreview';
 
 /** Dev-only page (open with #gallery in a dev build) for checking art at a glance. */
@@ -30,6 +33,21 @@ export function ArtGallery() {
           </button>
         ))}
       </div>
+      <h1>Stickers</h1>
+      <div className="gallery__row">
+        {STICKERS.map((s) => (
+          <figure key={s.level}>
+            <Sticker
+              levelId={s.level}
+              avatar={{ ...DEFAULT_AVATAR, gear: { hat: 'explorer-hat', cape: 'star-cape' } }}
+              width={280}
+            />
+            <figcaption>
+              {s.level}. {s.name}
+            </figcaption>
+          </figure>
+        ))}
+      </div>
       <h1>Hero poses</h1>
       <div className="gallery__row">
         {HERO_POSES.map((pose: HeroPose) => (
@@ -41,6 +59,32 @@ export function ArtGallery() {
               size={260}
             />
             <figcaption>{pose}</figcaption>
+          </figure>
+        ))}
+      </div>
+      <h1>Shop gear</h1>
+      <div className="gallery__row">
+        {SHOP_ITEMS.map((item) => (
+          <figure key={item.id}>
+            <Hero
+              avatar={{ ...DEFAULT_AVATAR, gear: { [item.slot]: item.id } }}
+              pose={item.slot === 'pet' ? 'walk' : 'idle'}
+              size={200}
+            />
+            <figcaption>{item.name}</figcaption>
+          </figure>
+        ))}
+        {HERO_POSES.map((pose) => (
+          <figure key={pose}>
+            <Hero
+              avatar={{
+                ...DEFAULT_AVATAR,
+                gear: { hat: 'viking-helmet', cape: 'flame-cape', pack: 'bedroll', pet: 'fox' },
+              }}
+              pose={pose}
+              size={200}
+            />
+            <figcaption>all: {pose}</figcaption>
           </figure>
         ))}
       </div>
@@ -63,6 +107,29 @@ export function ArtGallery() {
           </figure>
         ))}
       </div>
+    </div>
+  );
+}
+
+/**
+ * Dev-only contact sheet for picking sticker moments: open `#moments-1-4` for levels 1 to 4,
+ * each shown at several moments of its scene.
+ */
+export function StickerMoments({ from, to }: { from: number; to: number }) {
+  return (
+    <div className="moments">
+      {LEVELS.filter((l) => l.id >= from && l.id <= to).map((l) => (
+        <div key={l.id} className="moments__row">
+          {[0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9].map((m) => (
+            <figure key={m}>
+              <Sticker levelId={l.id} avatar={DEFAULT_AVATAR} width={300} tilt={false} moment={m} />
+              <figcaption>
+                {l.id}: {m}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      ))}
     </div>
   );
 }

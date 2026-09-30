@@ -15,6 +15,8 @@ export interface PageEvaluation {
   total: number;
   accuracy: number;
   answeredAll: boolean;
+  /** Whole seconds left on the clock when the page ended. */
+  secondsLeft: number;
 }
 
 export function evaluatePage(
@@ -34,5 +36,13 @@ export function evaluatePage(
     else if (accuracy >= CONFIG.stars.twoStarAccuracy) stars = 2;
     else stars = 1;
   }
-  return { passed, stars, correct, total, accuracy, answeredAll };
+  return {
+    passed,
+    stars,
+    correct,
+    total,
+    accuracy,
+    answeredAll,
+    secondsLeft: Math.max(0, Math.floor(secondsLeft)),
+  };
 }

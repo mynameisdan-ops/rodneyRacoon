@@ -19,6 +19,12 @@ if (import.meta.env.DEV && location.hash === '#gallery') {
       </Stage>,
     ),
   );
+} else if (import.meta.env.DEV && location.hash.startsWith('#moments')) {
+  // Dev-only contact sheet for picking sticker moments, e.g. #moments-1-4.
+  const [from = 1, to = from] = location.hash.split('-').slice(1).map(Number);
+  void import('./screens/ArtGallery').then(({ StickerMoments }) =>
+    render(<StickerMoments from={from} to={to} />),
+  );
 } else {
   render(<App />);
 }
