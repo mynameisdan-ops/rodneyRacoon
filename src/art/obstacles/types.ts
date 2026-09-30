@@ -28,6 +28,15 @@ export const OBSTACLE_IDS = [
   'waterfall-slide',
   'rising-water',
   'raft',
+  // World 4: the mountains.
+  'rock-slide',
+  'crumbling-ledge',
+  'avalanche',
+  'goat-ride',
+  'ice-bridge',
+  'icicle-cave',
+  'ice-wall',
+  'peak',
 ] as const;
 export type ObstacleId = (typeof OBSTACLE_IDS)[number];
 

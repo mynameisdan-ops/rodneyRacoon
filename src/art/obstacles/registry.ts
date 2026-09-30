@@ -64,6 +64,30 @@ import {
   SteppingStonesBack,
   SteppingStonesFront,
 } from './riverScenes';
+import {
+  AVALANCHE,
+  GOAT,
+  ICE_BRIDGE,
+  ICE_WALL,
+  ICICLES,
+  LEDGE,
+  PEAK,
+  ROCK_SLIDE,
+} from './mountainLayout';
+import {
+  AvalancheBack,
+  AvalancheFront,
+  GoatBack,
+  GoatFront,
+  IceBridgeBack,
+  IceWallBack,
+  IcicleCaveBack,
+  LedgeBack,
+  PeakBack,
+  PeakFront,
+  RockSlideBack,
+  RockSlideFront,
+} from './mountainScenes';
 import type { ObstacleArt, ObstacleId } from './types';
 
 export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
@@ -95,4 +119,12 @@ export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
   'waterfall-slide': { back: FallsBack, width: FALLS.width },
   'rising-water': { back: RisingBack, width: RISING.width },
   raft: { back: RaftBack, front: RaftFront, width: RAFT.width },
+  'rock-slide': { back: RockSlideBack, front: RockSlideFront, width: ROCK_SLIDE.width },
+  'crumbling-ledge': { back: LedgeBack, width: LEDGE.width },
+  avalanche: { back: AvalancheBack, front: AvalancheFront, width: AVALANCHE.width },
+  'goat-ride': { back: GoatBack, front: GoatFront, width: GOAT.width },
+  'ice-bridge': { back: IceBridgeBack, width: ICE_BRIDGE.width },
+  'icicle-cave': { back: IcicleCaveBack, width: ICICLES.width },
+  'ice-wall': { back: IceWallBack, width: ICE_WALL.width },
+  peak: { back: PeakBack, front: PeakFront, width: PEAK.width },
 };
