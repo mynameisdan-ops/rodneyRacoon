@@ -7,8 +7,10 @@ import { CONFIG } from '../game/config';
 import type { Answer, PagePlan } from '../game/adaptive';
 import { generatePage, type Problem } from '../game/problems';
 import { createRng, randomSeed } from '../game/rng';
+import { comboBonus } from '../game/rewards';
 import { evaluatePage, type PageEvaluation } from '../game/scoring';
 import { createSession, currentProblem, sessionReducer, type SessionState } from '../game/session';
+import { Coin } from '../ui/icons';
 import { NumberPad, type PadKey } from '../ui/NumberPad';
 import { TrailStrip } from '../ui/TrailStrip';
 
@@ -197,12 +199,25 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
       ) : (
         <ProblemView state={state} />
       )}
-      {state.combo >= 3 && !done && !paused && (
-        <div className="combo" key={`combo-${state.combo}`}>
-          {state.combo} in a row!
-        </div>
-      )}
+      {state.combo >= 3 && !done && !paused && <ComboBadge combo={state.combo} />}
     </PageLayout>
+  );
+}
+
+/** "N in a row!", and at 5, 10, 15 in a row a burst that pays coins. */
+function ComboBadge({ combo }: { combo: number }) {
+  const bonus = comboBonus(combo);
+  if (bonus === 0) {
+    return (
+      <div className="combo" key={`combo-${combo}`}>
+        {combo} in a row!
+      </div>
+    );
+  }
+  return (
+    <div className="combo combo--burst" key={`combo-${combo}`}>
+      {combo} in a row! +{bonus} <Coin size={40} />
+    </div>
   );
 }
 

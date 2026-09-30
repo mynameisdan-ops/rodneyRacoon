@@ -5,12 +5,15 @@ import { getLevel } from './content/levels';
 import { planPage, type Answer, type PagePlan } from './game/adaptive';
 import { isUnlocked } from './game/progress';
 import { createRng, randomSeed } from './game/rng';
+import type { CoinReward } from './game/rewards';
 import type { PageEvaluation } from './game/scoring';
 import { CutSceneScreen } from './screens/CutSceneScreen';
 import { PageScreen } from './screens/PageScreen';
 import { ProfileEditor } from './screens/ProfileEditor';
 import { ProfileSelect } from './screens/ProfileSelect';
 import { ResultsScreen } from './screens/ResultsScreen';
+import { ShopScreen } from './screens/ShopScreen';
+import { StickerBook } from './screens/StickerBook';
 import { TrailMap } from './screens/TrailMap';
 import { WorldsMap } from './screens/WorldsMap';
 import { useActiveProfile, useGame } from './state/store';
@@ -26,8 +29,18 @@ type Screen =
   | { name: 'worlds'; from?: number }
   /** `attempt` remounts the page so a retry gets fresh problems. */
   | { name: 'page'; levelId: number; attempt: number; plan: PagePlan }
-  | { name: 'results'; levelId: number; evaluation: PageEvaluation }
-  | { name: 'scene'; levelId: number };
+  | {
+      name: 'results';
+      levelId: number;
+      evaluation: PageEvaluation;
+      reward: CoinReward;
+      /** The page was the level's first pass (its sticker is new). */
+      newSticker: boolean;
+    }
+  | { name: 'scene'; levelId: number }
+  /** The shop and the sticker book go back to the trail map of `worldId`. */
+  | { name: 'shop'; worldId: number }
+  | { name: 'stickers'; worldId: number };
 
 export function App() {
   const status = useGame((s) => s.status);
@@ -59,6 +72,8 @@ function Game() {
   const deleteProfile = useGame((s) => s.deleteProfile);
   const selectProfile = useGame((s) => s.selectProfile);
   const recordResult = useGame((s) => s.recordResult);
+  const buyItem = useGame((s) => s.buyItem);
+  const toggleItem = useGame((s) => s.toggleItem);
   const profile = useActiveProfile();
 
   const [screen, setScreen] = useState<Screen>(() =>
@@ -81,11 +96,13 @@ function Game() {
   const finish = useCallback(
     (evaluation: PageEvaluation, answers: Answer[]) => {
       const level = levelId === undefined ? undefined : getLevel(levelId);
-      if (!level) return;
-      recordResult(level, evaluation, answers);
-      setScreen({ name: 'results', levelId: level.id, evaluation });
+      if (!level || !profile) return;
+      const newSticker = evaluation.passed && (profile.progress[level.id]?.passes ?? 0) === 0;
+      const reward = recordResult(level, evaluation, answers);
+      if (!reward) return;
+      setScreen({ name: 'results', levelId: level.id, evaluation, reward, newSticker });
     },
-    [levelId, recordResult],
+    [levelId, profile, recordResult],
   );
 
   // Everything past player selection needs an active player.
@@ -94,7 +111,9 @@ function Game() {
     screen.name === 'worlds' ||
     screen.name === 'page' ||
     screen.name === 'results' ||
-    screen.name === 'scene';
+    screen.name === 'scene' ||
+    screen.name === 'shop' ||
+    screen.name === 'stickers';
   const current: Screen = needsPlayer && !profile ? { name: 'profiles' } : screen;
 
   switch (current.name) {
@@ -152,7 +171,28 @@ function Game() {
           saveFailed={saveFailed}
           onPlay={play}
           onWorlds={() => setScreen({ name: 'worlds' })}
+          onShop={(worldId) => setScreen({ name: 'shop', worldId })}
+          onStickers={(worldId) => setScreen({ name: 'stickers', worldId })}
           onSwitchPlayer={() => setScreen({ name: 'profiles' })}
+        />
+      );
+
+    case 'shop':
+      return (
+        <ShopScreen
+          profile={profile!}
+          onBuy={buyItem}
+          onToggle={toggleItem}
+          onBack={() => setScreen({ name: 'map', worldId: current.worldId })}
+        />
+      );
+
+    case 'stickers':
+      return (
+        <StickerBook
+          profile={profile!}
+          initialWorld={current.worldId}
+          onBack={() => setScreen({ name: 'map', worldId: current.worldId })}
         />
       );
 
@@ -191,6 +231,8 @@ function Game() {
           level={level}
           avatar={avatarForProfile(profile!)}
           evaluation={current.evaluation}
+          reward={current.reward}
+          newSticker={current.newSticker}
           onContinue={() => (hasScene ? setScreen({ name: 'scene', levelId: level.id }) : toMap())}
           onRetry={() => play(level.id)}
           onMap={toMap}

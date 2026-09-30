@@ -1,4 +1,5 @@
 import { HAIR_COLORS, SKIN_TONES, type HairStyle } from '../../content/avatar';
+import type { Gear } from '../../content/shop';
 
 export interface AvatarConfig {
   skin: string;
@@ -7,6 +8,8 @@ export interface AvatarConfig {
   shirt: string;
   pants: string;
   shoes: string;
+  /** Shop items worn (hat, cape, pack, pet). */
+  gear?: Gear;
 }
 
 export const DEFAULT_AVATAR: AvatarConfig = {
@@ -18,7 +21,10 @@ export const DEFAULT_AVATAR: AvatarConfig = {
   shoes: '#3b2a20',
 };
 
-/** Until the avatar builder (M8) stores a full config, a player's shirt color is their avatar. */
-export function avatarForProfile(profile: { color: string }): AvatarConfig {
-  return { ...DEFAULT_AVATAR, shirt: profile.color };
+/**
+ * Until the avatar builder (M8) stores a full config, a player's shirt color is their avatar,
+ * plus whatever they wear from the shop.
+ */
+export function avatarForProfile(profile: { color: string; gear?: Gear }): AvatarConfig {
+  return { ...DEFAULT_AVATAR, shirt: profile.color, gear: profile.gear };
 }

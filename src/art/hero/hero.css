@@ -715,3 +715,118 @@
     transform: rotate(155deg);
   }
 }
+
+/* ---- shop gear: pets and the rocket pack ---- */
+
+.hero-pet,
+.hero-pet__body,
+.pet-tail,
+.pet-wing,
+.pet-leg {
+  transform-box: view-box;
+}
+
+.hero-pet__body {
+  transform-origin: 96px 163px;
+  animation: pet-breathe 2.2s ease-in-out infinite;
+}
+
+.pet-tail {
+  transform-origin: 86px 146px;
+  animation: pet-wag 0.5s ease-in-out infinite alternate;
+}
+
+.hero-pet--fly .pet-tail {
+  transform-origin: 88px 120px;
+}
+
+.pet-wing {
+  transform-origin: 98px 114px;
+  animation: pet-flap 0.32s ease-in-out infinite alternate;
+}
+
+.pet-wing--back {
+  transform-origin: 92px 116px;
+}
+
+.hero-pet--fly .hero-pet__body {
+  animation: pet-hover 1.4s ease-in-out infinite alternate;
+}
+
+/* Walking and running: the pet bounds along beside him. */
+.hero-svg--walk .hero-pet:not(.hero-pet--fly) .hero-pet__body,
+.hero-svg--run .hero-pet:not(.hero-pet--fly) .hero-pet__body {
+  animation: pet-hop 0.28s ease-in-out infinite alternate;
+}
+
+.hero-svg--cheer .hero-pet:not(.hero-pet--fly) .hero-pet__body {
+  animation: pet-jump 0.7s ease-in-out infinite;
+}
+
+.gear-flame {
+  transform-box: view-box;
+  transform-origin: 33px 92px;
+  animation: gear-flicker 0.12s linear infinite alternate;
+}
+
+@keyframes pet-breathe {
+  to {
+    transform: scaleY(1.04);
+  }
+}
+
+@keyframes pet-wag {
+  from {
+    transform: rotate(-12deg);
+  }
+  to {
+    transform: rotate(14deg);
+  }
+}
+
+@keyframes pet-flap {
+  from {
+    transform: scaleY(1);
+  }
+  to {
+    transform: scaleY(0.45);
+  }
+}
+
+@keyframes pet-hover {
+  from {
+    transform: translateY(-3px);
+  }
+  to {
+    transform: translateY(3px);
+  }
+}
+
+@keyframes pet-hop {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-5px) rotate(-4deg);
+  }
+}
+
+@keyframes pet-jump {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-12px);
+  }
+}
+
+@keyframes gear-flicker {
+  from {
+    transform: scaleY(0.8);
+  }
+  to {
+    transform: scaleY(1.15);
+  }
+}

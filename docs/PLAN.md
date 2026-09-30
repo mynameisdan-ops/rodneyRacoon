@@ -1,6 +1,6 @@
 # Project Plan — "The Long Way Home" (working title)
 
-Last updated Sep 30, 2026 (tablet check passed; feedback fixes merged; M5 built on `m5-worlds`). This is the forward plan: design, milestones with their status, and open
+Last updated Sep 30, 2026 (M7 rewards built on `m7-rewards`). This is the forward plan: design, milestones with their status, and open
 questions. Update it whenever a design decision changes or a milestone moves (see the end-of-session
 checklist in `CLAUDE.md`). Current state in a few lines: `STATUS.md`. Session history: `docs/decisions.md`.
 
@@ -150,12 +150,27 @@ from 6 (− within 10) to 10 (÷ 6–9 and the final mixes).
 
 ## 6. Rewards
 
-- **Coins**: +1 per correct answer, plus combo bonuses (5, 10 and 15 in a row) and a bonus for
-  time left over. Spent in the **Avatar Shop**.
+Built in M7 (numbers in `CONFIG.coins`, logic in `game/rewards.ts` and `game/shop.ts`):
+
+- **Coins**: +1 per right answer (even on a page that needs a retry, so trying always pays), combo
+  bonuses at 5, 10 and 15 right first try in a row (+2, +3, +5), and on a passed page +1 per 5 seconds
+  left, +10 for a level's first pass (+25 for a boss) and +5 for each star above the level's best.
+  Replays pay too: replaying is practice. A great first page pays about 50 coins.
+- **Results tally**: after a page, each kind of coin is a row with an icon (✓, bolt, sun, flag,
+  star) that pops in, then the total counts up; a first pass also shows the new sticker.
+- **Avatar Shop** (`content/shop.ts`, data only): 21 items in four slots (6 hats, 5 capes, 4 packs,
+  6 pets) from 20 to 350 coins, cheapest first. Tapping an item tries it on the big hero; buying
+  puts it straight on; owned items can be worn or taken off. Items are layers on `<Hero>`
+  (`art/hero/gear.tsx`): hats ride on the head, shop capes are longer than the default one so they
+  show from the side, packs sit on his back, and the pet trots (or flies) just ahead of him. Pets
+  are left out of cut scenes, where he leaps and swings.
 - **Stars**: 1–3 per level, shown on the map. Replaying keeps the best result.
-- **Combo streaks**: visual bursts and a rising chime pitch at 5, 10 and 15 correct in a row.
-- **Journey sticker book**: one sticker per level (such as the rope bridge or the river otter),
-  collected when the level is passed, and shown by world.
+- **Combo streaks**: "N in a row!" from 3; at 5, 10 and 15 a gold burst shows the coin bonus.
+  The rising chime comes with audio in M9.
+- **Journey sticker book**: one sticker per level (`content/stickers.ts`: a name and a moment),
+  collected on the first pass and shown by world, 8 to a page. A sticker is a still from the
+  level's cut scene at its best moment, with the player's own hero (and gear) in it; tap one to
+  see it large. Moments are picked with the dev contact sheet (`#moments-1-4`).
 
 ## 7. Settings (includes the parent tools)
 
@@ -214,7 +229,7 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | ✅ merged Sep 28, 2026 at the user's request, before the tablet check (now a known gap, below) |
 | M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ✅ merged Sep 30, 2026 at the user's request; the world overview and the unlock switch followed from feedback |
 | M6 | Adaptive difficulty + weak-fact weighting, and an age setting for the starting point | Difficulty adjusts for each kid | ✅ merged; the parent controls (see the ratings, pin, turn off) come with Settings in M10 |
-| M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ⬜ |
+| M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | 🟡 built on `m7-rewards` Sep 30, 2026 |
 | M8 | Avatar builder + photo-face crop | Kids play as themselves | ⬜ |
 | M9 | Audio: synthesized SFX + music loops | Sound on | ⬜ |
 | M10 | Settings/stats (moving the unlock-all switch there), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing | Installed on PC and tablet | ⬜ |

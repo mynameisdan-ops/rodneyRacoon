@@ -2,11 +2,12 @@ import type { AdaptiveState, WeakFact } from '../game/adaptive';
 import { isMix, SKILL_IDS, type BaseSkillId, type Problem, type SkillId } from '../game/problems';
 import type { LevelProgress, ProgressMap } from '../game/progress';
 import { AGES } from '../content/skills';
+import { GEAR_SLOTS, getItem, type Gear } from '../content/shop';
 
 /**
  * Save format. Bump SAVE_VERSION and add a step to `migrate` whenever this shape changes.
  */
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 
 /** A player. The adaptive fields (`age`, `ratings`, `weakFacts`) were added in v3. */
 export interface Profile extends AdaptiveState {
@@ -20,6 +21,12 @@ export interface Profile extends AdaptiveState {
   /** A parent setting: every level is open, not just the next one (added in v4). */
   unlockAll: boolean;
   progress: ProgressMap;
+  /** Coins to spend in the shop (added in v5). */
+  coins: number;
+  /** Shop item ids bought (added in v5). */
+  owned: string[];
+  /** What the hero wears, from `owned` (added in v5). */
+  gear: Gear;
 }
 
 export interface SaveData {
@@ -53,7 +60,7 @@ export function migrate(raw: unknown): SaveData {
 
   // Each version only added fields, and sanitizing fills in their defaults: v2 added
   // `autoSubmit` (Enter), v3 added `age` (not set), `ratings` and `weakFacts` (empty),
-  // v4 added `unlockAll` (off).
+  // v4 added `unlockAll` (off), v5 added `coins` (0), `owned` and `gear` (none).
   const profiles = Array.isArray(raw.profiles)
     ? raw.profiles.map(sanitizeProfile).filter((p): p is Profile => p !== null)
     : [];
@@ -87,7 +94,29 @@ function sanitizeProfile(raw: unknown): Profile | null {
       ? raw.weakFacts.map(sanitizeWeakFact).filter((w): w is WeakFact => w !== null)
       : [],
     progress,
+    ...sanitizeShop(raw),
   };
+}
+
+/** Coins, owned items and gear. Unknown items are dropped, and only owned items can be worn. */
+function sanitizeShop(raw: Record<string, unknown>): Pick<Profile, 'coins' | 'owned' | 'gear'> {
+  const coins =
+    typeof raw.coins === 'number' && Number.isFinite(raw.coins) && raw.coins > 0
+      ? Math.floor(raw.coins)
+      : 0;
+  const owned = Array.isArray(raw.owned)
+    ? [...new Set(raw.owned.filter((id): id is string => typeof id === 'string' && !!getItem(id)))]
+    : [];
+  const gear: Gear = {};
+  if (isObject(raw.gear)) {
+    for (const slot of GEAR_SLOTS) {
+      const id = raw.gear[slot];
+      if (typeof id === 'string' && owned.includes(id) && getItem(id)?.slot === slot) {
+        gear[slot] = id;
+      }
+    }
+  }
+  return { coins, owned, gear };
 }
 
 function sanitizeAge(raw: unknown): number | null {

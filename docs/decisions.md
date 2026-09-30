@@ -232,3 +232,33 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
   - Checked in the browser at 1280×800 and 915×412: the editor fits; all-open unlocks every stop and
     world; a real play of level 8 → "Old Mine Shaft complete!" → "Next world ▶" → the hero walks to
     World 2 → its trail map with level 9 current.
+
+- **2026-09-30: M7, rewards** (`m7-rewards`, not merged yet).
+  - **Coins** (`game/rewards.ts`, `CONFIG.coins`, tested): +1 per right answer, combo bursts at 5,
+    10, 15 right first try in a row (+2, +3, +5; the streak rule matches the page's combo counter),
+    and on a pass +1 per 5 s left, +10 first pass (+25 boss), +5 per new star. Decided: a page that
+    needs a retry still pays for its right answers (always encouraging), and replays pay too
+    (replaying is practice, which is the point). A great first page pays about 50; the shop's
+    21 items total about 2,800, so a child buys something after the first level or two and the
+    last pets and the crown take real play. `PageEvaluation` now carries `secondsLeft`.
+  - **Save format v5**: `coins`, `owned` and `gear` per player (old saves start at 0 and nothing).
+    Loading drops unknown items and gear that isn't owned or is in the wrong slot.
+  - **Shop** (`content/shop.ts` data, `game/shop.ts` buy/wear logic, `ShopScreen`): hats, capes,
+    packs and pets drawn as `<Hero>` layers in `art/hero/gear.tsx`, and alone as `ItemIcon` (each
+    slot has a viewBox around where it sits on the hero). Shop capes use a longer shape than the
+    default cape, which hardly showed from the side. Pets stand just ahead of the hero (behind him
+    the page's chaser would run into them) and hop when he walks; `pet={false}` in cut scenes.
+    Tapping an item tries it on (a little hop), one more tap buys it and puts it on; "Need N more"
+    when short. Try-on uses the idle pose: the cheer pose's arm covered the face.
+  - **Sticker book**: stickers are stills of each level's cut scene with the player's own hero,
+    cropped around him (`ui/Sticker.tsx`), so 40 stickers needed no new art and change with his
+    gear. Each moment was picked from a contact sheet (`#moments-1-4`, a dev page) screenshotted
+    with headless Chrome. The book shows a world per page with its count, empty slots show the
+    level number, and a sticker opens large on tap.
+  - **Results screen**: a tally of coin rows with icons that pop in, a counting total, and the
+    new sticker on a first pass. **Map**: a dock at the bottom right opens the sticker book and
+    the shop (with the coin count). **Page**: the combo badge turns into a gold burst with the
+    bonus at 5, 10, 15.
+  - Checked in the browser at 1280×800 and 915×412: a real page of level 9 paid 54 (14 + 5 + 10 +
+    10 + 15, as the tally showed), bursts at 5 and 10, the new sticker; buying and wearing in the
+    shop, a pet on the map and the page strip, the book and the large view.
