@@ -579,10 +579,6 @@ export function IcicleCaveBack(p: ObstacleProps) {
                 color="#e8f6ff"
               />
             )}
-                pieces={debrisPieces(i + 3, 4)}
-                color={ICE}
-              />
-            )}
           </g>
         );
       })}
