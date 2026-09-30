@@ -1,6 +1,6 @@
 # Project Plan — "The Long Way Home" (working title)
 
-Last updated Sep 30, 2026 (M7 rewards built on `m7-rewards`). This is the forward plan: design, milestones with their status, and open
+Last updated Sep 30, 2026 (M7 rewards merged). This is the forward plan: design, milestones with their status, and open
 questions. Update it whenever a design decision changes or a milestone moves (see the end-of-session
 checklist in `CLAUDE.md`). Current state in a few lines: `STATUS.md`. Session history: `docs/decisions.md`.
 
@@ -229,7 +229,7 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | ✅ merged Sep 28, 2026 at the user's request, before the tablet check (now a known gap, below) |
 | M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ✅ merged Sep 30, 2026 at the user's request; the world overview and the unlock switch followed from feedback |
 | M6 | Adaptive difficulty + weak-fact weighting, and an age setting for the starting point | Difficulty adjusts for each kid | ✅ merged; the parent controls (see the ratings, pin, turn off) come with Settings in M10 |
-| M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | 🟡 built on `m7-rewards` Sep 30, 2026 |
+| M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ✅ merged Sep 30, 2026 at the user's request, before their play-through |
 | M8 | Avatar builder + photo-face crop | Kids play as themselves | ⬜ |
 | M9 | Audio: synthesized SFX + music loops | Sound on | ⬜ |
 | M10 | Settings/stats (moving the unlock-all switch there), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing | Installed on PC and tablet | ⬜ |

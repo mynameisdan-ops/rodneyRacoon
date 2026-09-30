@@ -233,7 +233,7 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     world; a real play of level 8 → "Old Mine Shaft complete!" → "Next world ▶" → the hero walks to
     World 2 → its trail map with level 9 current.
 
-- **2026-09-30: M7, rewards** (`m7-rewards`, not merged yet).
+- **2026-09-30: M7, rewards** (`m7-rewards`, merged to `main` the same day at the user's request).
   - **Coins** (`game/rewards.ts`, `CONFIG.coins`, tested): +1 per right answer, combo bursts at 5,
     10, 15 right first try in a row (+2, +3, +5; the streak rule matches the page's combo counter),
     and on a pass +1 per 5 s left, +10 first pass (+25 boss), +5 per new star. Decided: a page that
