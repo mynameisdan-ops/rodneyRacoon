@@ -19,6 +19,15 @@ export const OBSTACLE_IDS = [
   'mushroom-bounce',
   'falling-bridge',
   'fireflies',
+  // World 3: the river.
+  'stepping-stones',
+  'beaver-dam',
+  'rapids',
+  'rope-bridge',
+  'geyser',
+  'waterfall-slide',
+  'rising-water',
+  'raft',
 ] as const;
 export type ObstacleId = (typeof OBSTACLE_IDS)[number];
 

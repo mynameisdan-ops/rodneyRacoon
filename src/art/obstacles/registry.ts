@@ -50,6 +50,20 @@ import {
   RootSlideBack,
   VineSwingBack,
 } from './forestScenes';
+import { DAM, FALLS, GEYSER, RAFT, RAPIDS, RISING, ROPE_BRIDGE, STONES } from './riverLayout';
+import {
+  BeaverDamBack,
+  FallsBack,
+  GeyserBack,
+  RaftBack,
+  RaftFront,
+  RapidsBack,
+  RapidsFront,
+  RisingBack,
+  RopeBridgeBack,
+  SteppingStonesBack,
+  SteppingStonesFront,
+} from './riverScenes';
 import type { ObstacleArt, ObstacleId } from './types';
 
 export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
@@ -69,4 +83,16 @@ export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
   'mushroom-bounce': { back: MushroomBounceBack, width: MUSHROOMS.width },
   'falling-bridge': { back: FallingBridgeBack, width: FALLING_BRIDGE.width },
   fireflies: { back: FirefliesBack, front: FirefliesFront, width: FIREFLIES.width },
+  'stepping-stones': {
+    back: SteppingStonesBack,
+    front: SteppingStonesFront,
+    width: STONES.width,
+  },
+  'beaver-dam': { back: BeaverDamBack, width: DAM.width },
+  rapids: { back: RapidsBack, front: RapidsFront, width: RAPIDS.width },
+  'rope-bridge': { back: RopeBridgeBack, width: ROPE_BRIDGE.width },
+  geyser: { back: GeyserBack, width: GEYSER.width },
+  'waterfall-slide': { back: FallsBack, width: FALLS.width },
+  'rising-water': { back: RisingBack, width: RISING.width },
+  raft: { back: RaftBack, front: RaftFront, width: RAFT.width },
 };
