@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import { CHASER_BOX } from '../art/chaserData';
 import { Chaser } from '../art/chasers';
 import type { AvatarConfig } from '../art/hero/avatar';
@@ -122,6 +122,7 @@ export function TrailStrip({
 
 /** A small, still preview of the obstacle ahead, so kids can see where they're heading. */
 function Goal({ obstacle }: { obstacle?: ObstacleId }) {
+  const clipId = useId();
   if (!obstacle) {
     return (
       <g transform={`translate(${TRAIL_END + 110} ${PATH_Y - 92})`}>
@@ -140,10 +141,19 @@ function Goal({ obstacle }: { obstacle?: ObstacleId }) {
     heroLift: 0,
     heroAt: () => ({ x: -1000, lift: 0 }),
   };
+  // Show the obstacle from its focus point on, clipped to the end of the trail.
+  const x = TRAIL_END + 80 - (art.focus ?? 0) * GOAL_SCALE;
   return (
-    <g transform={`translate(${TRAIL_END + 80} ${PATH_Y}) scale(${GOAL_SCALE})`}>
-      <art.back {...still} />
-      {art.front && <art.front {...still} />}
+    <g clipPath={`url(#${clipId})`}>
+      <defs>
+        <clipPath id={clipId}>
+          <rect x={TRAIL_END + 40} y={0} width={400} height={HEIGHT} />
+        </clipPath>
+      </defs>
+      <g transform={`translate(${x} ${PATH_Y}) scale(${GOAL_SCALE})`}>
+        <art.back {...still} />
+        {art.front && <art.front {...still} />}
+      </g>
     </g>
   );
 }

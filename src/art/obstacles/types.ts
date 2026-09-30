@@ -77,8 +77,10 @@ export interface ObstacleArt {
   back: FC<ObstacleProps>;
   /** Drawn in front of the hero (grass blades, near rope). */
   front?: FC<ObstacleProps>;
-  /** Width from the anchor, px (used to place the page-strip preview). */
+  /** Width from the anchor, px (the hero ends a scene past it). */
   width: number;
+  /** Local x of the part to show in the page-strip preview (default 0, the anchor). */
+  focus?: number;
 }
 
 /** When the scene reaches prop `state` (ms), or Infinity if it never does. */

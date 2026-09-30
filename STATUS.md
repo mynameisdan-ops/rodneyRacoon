@@ -1,6 +1,6 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Sep 28, 2026 (M4, M4b and M6 merged to main).
+Last updated: Sep 30, 2026 (feedback fixes merged to main; M5 built on `m5-worlds`).
 milestone: `docs/decisions.md`.
 
 ## Goals
@@ -21,34 +21,35 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 
 ## Current state
 
-- **On `main` (pushed):** M0–M4b and M6. World 1 is the **Old Mine Shaft**: 8 timed levels
-  (addition), each followed by an epic cut scene (cart race, cart jump, wall smash, rat swarm, crystal
-  cavern, bat storm, runaway lift, mine-train boss). Also on `main`:
-  - the cel-shaded adventurer hero, the mine backdrop and the UI chrome;
-  - pause, and Enter / ✓ to answer (a per-player "Automatic" switch);
-  - adaptive difficulty (ratings per skill, missed facts brought back) with an **age** picker (5–10+)
-    in the player editor that sets the starting point. Save format v3.
-- **Checks:** 121 unit tests, lint and build pass on `main`; CI runs them on every push.
-- **Not yet done:** the tablet check (performance of scenes and glows, and whether the difficulty
-  feels right for each child). It's scheduled before M5 in `docs/PLAN.md`.
-- **Known gaps:** the parent controls for adaptive difficulty (see the ratings, pin, turn off) wait
-  for Settings in M10; PNG icons and the Pages `base` path (M10).
+- **On `main` (pushed):** M0–M4b and M6, plus the Sep 30 feedback fixes: a danger chases the hero
+  along the page strip (one per world), and older players get slightly harder pages (the band's top
+  and the problem count rise a little per year past a skill's typical age). World 1 is the Old Mine
+  Shaft. The tablet play-through went fine (no bugs, no stutter).
+- **On `m5-worlds` (pushed, not merged):** M5. All 40 levels are playable: Worlds 2–5 skills and
+  generators (subtraction, missing addends, 2-digit ±, times tables, division, mixed), 32 level
+  definitions, skill ages, four new backdrops (forest, river, mountains, canyon) and 32 cut scenes
+  that follow the scene recipe, ending at home with the family and fireworks.
+- **Checks:** 302 unit tests, lint and build pass on `m5-worlds`; CI runs them on every push.
+- **Known gaps:** the parent controls for adaptive difficulty wait for Settings in M10; PNG icons
+  and the Pages `base` path (M10).
 - **Still open:** the final title and story opening; what comes after level 40.
 
 ## Next steps
 
-1. The user plays World 1 on the PC (`npm run dev`) and on the tablet (LAN preview: `npm run build`,
-   then `npm run preview -- --host`, open the "Network" address). Fix any stutter or difficulty feedback.
-2. **M5:** Worlds 2–5: skills and generators (with tests), 32 levels with problem ranges and bands,
-   skill ages in `content/skills.ts`, world backdrops, and scenes that follow the scene recipe in
-   PLAN §3. Branch `m5-worlds`.
-3. M7–M10 in the order `docs/PLAN.md` §9 lists them.
+1. The user plays Worlds 2–5 on `m5-worlds` (PC with `npm run dev`, tablet with the LAN preview:
+   `npm run build`, then `npm run preview -- --host`). To jump ahead, a parent can play through, or
+   wait for the "unlock any level" switch in M10. Feedback goes in `docs/feedback.md`.
+2. Merge `m5-worlds` into `main` after that check.
+3. M7 (rewards: coins, stars, combos, shop, sticker book), then M8–M10 as `docs/PLAN.md` §9 lists.
 
 ## Handoff
 
-- **Branch:** `main` at the merge of M6, pushed, nothing uncommitted. The milestone branches are merged.
-- **Waiting on the user:** their play-through and tablet report; any feedback goes in `docs/feedback.md`.
+- **Branch:** `m5-worlds`, pushed, nothing uncommitted except the user's own `handover.md`. `main` has
+  the feedback fixes (merged from `fb-older-kids-chaser`).
+- **Waiting on the user:** a play-through of Worlds 2–5 (and a tablet look at the busier scenes).
 - **Gotchas:** in a hidden browser pane `requestAnimationFrame` stops and `document.hidden` is true, so
   pages auto-pause and scenes don't advance; scrub scenes with the gallery slider. The dev server's file
   watcher sometimes misses edits made by tools; `touch` the file. Long Bash heredocs fail on Windows;
-  write a script file to the scratchpad and run it.
+  write a script file to the scratchpad and run it. Python edits need `encoding='utf-8'` (the files
+  have −, × and ÷). Headless Chrome over CDP works for screenshots when the Chrome extension isn't
+  connected (start Chrome with `--remote-debugging-port` from the shell, not from Node).

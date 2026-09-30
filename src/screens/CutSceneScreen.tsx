@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import type { AvatarConfig } from '../art/hero/avatar';
 import type { CutScene } from '../content/cutscenes';
-import { getWorld, type LevelDef } from '../content/levels';
+import { getWorld, LEVELS, type LevelDef } from '../content/levels';
 import { CutSceneView } from '../cutscenes/CutSceneView';
 import { buildTimeline } from '../cutscenes/timeline';
 import { useSceneClock } from '../cutscenes/useSceneClock';
@@ -38,7 +38,11 @@ export function CutSceneScreen({ level, scene, avatar, hasNext, onNext, onMap }:
       {over && (
         <div className="scene-screen__end">
           {level.boss && (
-            <div className="scene-screen__banner">{getWorld(level.world)?.name} complete!</div>
+            <div className="scene-screen__banner">
+              {level.id === LEVELS[LEVELS.length - 1]!.id
+                ? 'You made it home!'
+                : `${getWorld(level.world)?.name} complete!`}
+            </div>
           )}
           <div className="scene-screen__actions">
             <button type="button" className="big-button big-button--quiet" onClick={onMap}>

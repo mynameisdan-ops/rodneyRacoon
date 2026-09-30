@@ -1,6 +1,6 @@
 # Project Plan — "The Long Way Home" (working title)
 
-Last updated Sep 28, 2026 (M4, M4b and M6 merged to main; the tablet check is still to do). This is the forward plan: design, milestones with their status, and open
+Last updated Sep 30, 2026 (tablet check passed; feedback fixes merged; M5 built on `m5-worlds`). This is the forward plan: design, milestones with their status, and open
 questions. Update it whenever a design decision changes or a milestone moves (see the end-of-session
 checklist in `CLAUDE.md`). Current state in a few lines: `STATUS.md`. Session history: `docs/decisions.md`.
 
@@ -44,7 +44,10 @@ Profile select → Trail map → Level intro (3-2-1)
 **Page screen layout (landscape):**
 - **Top strip (about 30%)**: the world scene. The hero walks toward the obstacle a step for
   every correct answer and stumbles on a wrong one. The timer is a sun moving across the sky,
-  with a small numeric countdown next to it.
+  with a small numeric countdown next to it. A **danger chases him** from behind (a boulder, a bee
+  swarm, a flood wave, a snowball, a dust devil: one per world). It moves at 85% of the pace that
+  finishes the page right at time's up, so a child on pace pulls away and a slow one sees it close
+  in, but it never reaches him; after a passed page it falls back and fades (from the Sep 30 feedback).
 - **Center**: the current problem in very large type (`7 × 8 = __`), with a small "3 / 15" progress count.
 - **Bottom/right**: a big on-screen number pad (buttons at least 72px) with ⌫. A physical
   keyboard works too (digits, Backspace, Enter).
@@ -80,7 +83,7 @@ The full list of 40 obstacles, captions and sticker names goes in `src/content/l
 **Scene recipe (from the M4 playtest: obstacles must be epic).** Every cut scene has a *threat*, an
 *escalation*, a *hero action* and a *triumph*: not "hop over a puddle" but "the gully floods and he swings
 across on a vine". Thrilling but never scary for a 6-year-old: nobody gets hurt, animals run off, and it
-ends in a cheer. The sample obstacles above get upgraded to this recipe in M5.
+ends in a cheer. Every scene in Worlds 2–5 follows it (built in M5; the lineup is below).
 
 World 1 became the **Old Mine Shaft** (decided Sep 28, 2026, replacing the Sunny Meadow). Its lineup for
 M4b; levels 2–7 are proposals built around the samples above:
@@ -96,6 +99,18 @@ M4b; levels 2–7 are proposals built around the samples above:
 | 7 | **Runaway lift**: the mine lift's rope snaps; he grabs the chain and climbs out as it drops away |
 | 8 | **Boss: escape the mine**: rockfall chases the mine train out of the tunnel mouth, and it jumps the canyon to the far side |
 
+Worlds 2–5 as built in M5 (skills per level in `content/levels.ts`, scenes in `content/cutscenes.ts`):
+
+| World | Skills (levels) | Scenes |
+|---|---|---|
+| 2. Whispering Forest | − within 10 (9–10), − within 20 (11–12), mixed +/− within 20 (13), missing addend (14–15), review (16) | log roll, bramble vault on a sapling pole, root slide, vine swing over a flooding gully, boar charge (up a tree), mushroom bounce over mud, falling bridge; **boss**: night falls and fireflies lead him over, under and across rising roots |
+| 3. Rushing River | ± whole tens (17), 2-digit + and − without regrouping (18–19), with regrouping (20–23), review (24) | stepping stones ahead of a wave, bursting beaver dam, rapids ride on a log, hand over hand along a rope bridge, geyser launch, waterfall slide, climbing away from rising water; **boss**: he builds a raft and surfs a giant wave |
+| 4. Misty Mountains | × 0/1/2/10 (25), × 5 (26), × 3/4 (27–28), × 6–9 (29–30), mixed tables (31–32) | rock slide (dive under an overhang), crumbling ledge, avalanche (hang from a branch), goat ride up the ledges, ice bridge slide, icicle cave dash, ice wall climb; **boss**: up the peak in a storm and down on a sled over a crevasse |
+| 5. Canyon to Home | ÷ by 1/2/5/10 (33), ÷ 3/4 (34), ÷ 6–9 (35–36), mixed × and ÷ (37), all four operations (38–40) | flash flood (up the rock steps), zip line, dune surf in a sandstorm, tumbleweeds, crumbling arch, hopping a canyon train, the last hill into the wind (home in sight); **boss**: a twister clears, and his family waves from the porch with fireworks |
+
+World 3 puts ± tens first (easier than 2-digit sums), and the typical ages in `content/skills.ts` run
+from 6 (− within 10) to 10 (÷ 6–9 and the final mixes).
+
 ## 4. Adaptive difficulty
 
 - Each profile keeps a rating (0–1) for each **skill**. A level turns that rating into concrete
@@ -106,6 +121,10 @@ M4b; levels 2–7 are proposals built around the samples above:
   age (`content/skills.ts`), plus 0.25 for each year older, minus 0.25 for each year younger.
   Changing a player's age restarts their ratings from the new age. Players saved before
   ages existed use age 7 until a parent picks one.
+- **Older players reach further** (from the Sep 30 feedback): for each year a player is older than a
+  skill's typical age, the level's band top rises 0.1 (at most 0.3) and the page gets one more
+  problem (at most 3). It scales with the rating, so a struggling older child still starts easy.
+  Numbers in `CONFIG.adaptive.olderReach`.
 - After each page: 3 stars → rating up a step; pass → up a small step; fail → rating down.
   The 60-second timer never changes by default. A setting can override the time for a
   profile (for example 90s for a 6-year-old just starting out).
@@ -191,7 +210,7 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer | ✅ |
 | M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | ✅ merged Sep 28, 2026 at the user's request, before the tablet check (now a known gap, below) |
 | M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | ✅ merged Sep 28, 2026 at the user's request, before the tablet check (now a known gap, below) |
-| M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ⬜ |
+| M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | 🟡 built on `m5-worlds` Sep 30, 2026; waiting for the user's play-through |
 | M6 | Adaptive difficulty + weak-fact weighting, and an age setting for the starting point | Difficulty adjusts for each kid | ✅ merged; the parent controls (see the ratings, pin, turn off) come with Settings in M10 |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ⬜ |
 | M8 | Avatar builder + photo-face crop | Kids play as themselves | ⬜ |
@@ -203,7 +222,7 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | Gap | Where it gets fixed |
 |---|---|
 | ~~No pause~~ Done in M4: a ⏸ button, auto-pause on `visibilitychange` and portrait, problem hidden, Continue to resume. | ✅ M4 |
-| Tablet performance is untested (the CSS `filter` is gone since M4b; still to watch: scenery elements, glows, cut scenes re-rendering the SVG every frame). The repo is **private**, so GitHub Pages needs a paid plan or a public repo; the quickest check is the LAN preview (`npm run build`, then `npm run preview -- --host`, and open the PC's address on the tablet over home Wi-Fi). | Before M5 (was M4's closing step; M4/M4b were merged without it) |
+| ~~Tablet performance is untested.~~ The user played World 1 on the tablet (LAN preview): no bugs, no stutter. Worth a second look with the busier World 2–5 scenes. | ✅ Sep 30, 2026 |
 | ~~Leaving a page with ✕ records nothing.~~ Decided in M6: it stays that way (quitting shouldn't lower a rating). | ✅ M6 |
 | PNG icons (192/512) for the best Android install; GitHub Pages `base` path. | M10 (the path is needed earlier for the M4 preview) |
 
