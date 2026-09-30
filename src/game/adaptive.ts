@@ -51,6 +51,16 @@ export function startRating(skill: SkillId, age: number | null): number {
   return clamp01(startAtTypicalAge + ((age ?? DEFAULT_AGE) - SKILL_AGE[skill]) * startPerYear);
 }
 
+/** How far past a level's top an older player reaches on a skill (none at or below its age). */
+export function olderReach(skill: SkillId, age: number | null): { band: number; problems: number } {
+  const { bandPerYear, maxBand, problemsPerYear, maxProblems } = CONFIG.adaptive.olderReach;
+  const years = Math.max(0, (age ?? DEFAULT_AGE) - SKILL_AGE[skill]);
+  return {
+    band: Math.min(maxBand, years * bandPerYear),
+    problems: Math.min(maxProblems, Math.round(years * problemsPerYear)),
+  };
+}
+
 export function skillRating(state: AdaptiveState, skill: SkillId): number {
   return state.ratings[skill] ?? startRating(skill, state.age);
 }
@@ -65,8 +75,10 @@ export function weakFactsFor(state: AdaptiveState, skill: SkillId): WeakFact[] {
 /** The page a player gets on a level: size and difficulty from their rating, plus weak facts. */
 export function planPage(level: LevelDef, state: AdaptiveState, rng: Rng): PagePlan {
   const rating = skillRating(state, level.skill);
-  const count = Math.round(lerp(level.problems[0], level.problems[1], rating));
-  const difficulty = lerp(level.band[0], level.band[1], rating);
+  // The rating runs from the level's easy end to its top, raised for older players.
+  const reach = olderReach(level.skill, state.age);
+  const count = Math.round(lerp(level.problems[0], level.problems[1] + reach.problems, rating));
+  const difficulty = lerp(level.band[0], Math.min(1, level.band[1] + reach.band), rating);
   const room = Math.floor(count * CONFIG.adaptive.weakShare);
   // Take the top candidates, with a little shuffle so the same few don't always win.
   const weak = weakFactsFor(state, level.skill)

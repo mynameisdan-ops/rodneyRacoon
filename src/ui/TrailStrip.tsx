@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { CHASER_BOX } from '../art/chaserData';
+import { Chaser } from '../art/chasers';
 import type { AvatarConfig } from '../art/hero/avatar';
 import { Hero, type HeroPose } from '../art/hero/Hero';
 import { OBSTACLES } from '../art/obstacles/registry';
@@ -7,6 +9,7 @@ import { getTheme } from '../art/worlds/themes';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 import { CONFIG } from '../game/config';
 import type { SessionState } from '../game/session';
+import { chaserFront, heroX as trailX, TRAIL_END } from './trailLayout';
 
 interface Props {
   worldId: number;
@@ -15,6 +18,8 @@ interface Props {
   avatar: AvatarConfig;
   /** 0..1, how far along the trail the hero is. */
   progress: number;
+  /** 0..1, how much of the page time has gone (moves the danger behind him). */
+  elapsed: number;
   /** The latest answer feedback; each new `seq` triggers a walk or stumble. */
   feedback?: SessionState['feedback'];
   /** Whether the sun (the page timer) is moving. */
@@ -26,14 +31,13 @@ interface Props {
 const HEIGHT = 240;
 const PATH_Y = 206;
 const HERO_SIZE = 116;
-const TRAIL_START = 70;
-const TRAIL_END = 1030;
 /** How far the far scenery drifts over a whole page. */
 const CAMERA_TRAVEL = 700;
 /** The obstacle preview is drawn at the same scale as the strip's hero (116px vs 200px). */
 const GOAL_SCALE = 0.58;
 /** How long a walk step or stumble plays, in ms. */
 const MOVE_MS = { correct: 560, wrong: 650, reveal: 650 } as const;
+const CHASER_SCALE = 0.85;
 
 /**
  * The scene at the top of the page. The hero walks toward the obstacle a step
@@ -44,6 +48,7 @@ export function TrailStrip({
   obstacle,
   avatar,
   progress,
+  elapsed,
   feedback,
   running,
   endPose,
@@ -62,7 +67,7 @@ export function TrailStrip({
   else if (moving) pose = 'stumble';
   else if (endPose) pose = endPose;
 
-  const heroX = TRAIL_START + (TRAIL_END - TRAIL_START) * progress;
+  const heroX = trailX(progress);
   return (
     <div className="trail">
       <WorldBackdrop
@@ -84,6 +89,19 @@ export function TrailStrip({
           animationPlayState: running ? 'running' : 'paused',
         }}
       />
+      <div
+        className={[
+          'trail__chaser',
+          running ? '' : 'chaser--still',
+          endPose === 'cheer' ? 'trail__chaser--gone' : '',
+        ].join(' ')}
+        style={{
+          transform: `translateX(${chaserFront(progress, elapsed) - CHASER_BOX.w * CHASER_SCALE}px)`,
+          top: PATH_Y + 6 - CHASER_BOX.ground * CHASER_SCALE,
+        }}
+      >
+        <Chaser worldId={worldId} scale={CHASER_SCALE} />
+      </div>
       <div
         className="trail__hero"
         style={{
