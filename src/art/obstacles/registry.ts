@@ -88,6 +88,22 @@ import {
   RockSlideBack,
   RockSlideFront,
 } from './mountainScenes';
+import { ARCH, DUNE, FLASH_FLOOD, HILL, HOME, TRAIN, TUMBLEWEEDS, ZIP } from './canyonLayout';
+import {
+  ArchBack,
+  DuneBack,
+  DuneFront,
+  FlashFloodBack,
+  HillBack,
+  HomeBack,
+  HomeFront,
+  TrainBack,
+  TrainFront,
+  TumbleweedsBack,
+  TumbleweedsFront,
+  ZipLineBack,
+  ZipLineFront,
+} from './canyonScenes';
 import type { ObstacleArt, ObstacleId } from './types';
 
 export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
@@ -127,4 +143,12 @@ export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
   'icicle-cave': { back: IcicleCaveBack, width: ICICLES.width },
   'ice-wall': { back: IceWallBack, width: ICE_WALL.width },
   peak: { back: PeakBack, front: PeakFront, width: PEAK.width },
+  'flash-flood': { back: FlashFloodBack, width: FLASH_FLOOD.width },
+  'zip-line': { back: ZipLineBack, front: ZipLineFront, width: ZIP.width },
+  'dune-surf': { back: DuneBack, front: DuneFront, width: DUNE.width },
+  tumbleweeds: { back: TumbleweedsBack, front: TumbleweedsFront, width: TUMBLEWEEDS.width },
+  'crumbling-arch': { back: ArchBack, width: ARCH.width },
+  'canyon-train': { back: TrainBack, front: TrainFront, width: TRAIN.width },
+  'last-hill': { back: HillBack, width: HILL.width },
+  home: { back: HomeBack, front: HomeFront, width: HOME.width },
 };

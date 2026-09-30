@@ -37,6 +37,15 @@ export const OBSTACLE_IDS = [
   'icicle-cave',
   'ice-wall',
   'peak',
+  // World 5: the canyon, and home.
+  'flash-flood',
+  'zip-line',
+  'dune-surf',
+  'tumbleweeds',
+  'crumbling-arch',
+  'canyon-train',
+  'last-hill',
+  'home',
 ] as const;
 export type ObstacleId = (typeof OBSTACLE_IDS)[number];
 
