@@ -24,6 +24,11 @@ export const CONFIG = {
     startAtTypicalAge: 0.5,
     /** ...plus this for each year older (minus for each year younger). */
     startPerYear: 0.25,
+    /**
+     * Players older than a skill's typical age reach past a level's top, a little per year:
+     * the band's top rises and the page gets extra problems (from the M5 tablet feedback).
+     */
+    olderReach: { bandPerYear: 0.1, maxBand: 0.3, problemsPerYear: 1, maxProblems: 3 },
     /** At most this share of a page is made of facts the player missed before. */
     weakShare: 0.3,
     /** A weak fact is "answered quickly" when right first try within this many ms. */

@@ -1,0 +1,86 @@
+/* Page-strip chasers (see chasers.tsx). Paused along with the page via .chaser--still. */
+
+.chaser__spin {
+  animation: chaser-spin 1.1s linear infinite;
+}
+
+.chaser__buzz {
+  animation: chaser-buzz 0.5s ease-in-out infinite alternate;
+}
+
+.chaser__bob {
+  animation: chaser-bob 0.9s ease-in-out infinite alternate;
+}
+
+.chaser__sway {
+  animation: chaser-sway 0.8s ease-in-out infinite alternate;
+}
+
+.chaser__whirl {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: chaser-whirl 0.35s ease-in-out infinite alternate;
+}
+
+.chaser__puff {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: chaser-puff 0.6s ease-out infinite;
+}
+
+.chaser--still * {
+  animation-play-state: paused !important;
+}
+
+@keyframes chaser-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes chaser-buzz {
+  from {
+    transform: translate(-4px, 3px);
+  }
+  to {
+    transform: translate(5px, -5px);
+  }
+}
+
+@keyframes chaser-bob {
+  from {
+    transform: translateY(4px) skewX(-3deg);
+  }
+  to {
+    transform: translateY(-6px) skewX(3deg);
+  }
+}
+
+@keyframes chaser-sway {
+  from {
+    transform: rotate(-5deg);
+  }
+  to {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes chaser-whirl {
+  from {
+    transform: translateX(-6px);
+  }
+  to {
+    transform: translateX(6px);
+  }
+}
+
+@keyframes chaser-puff {
+  from {
+    transform: translate(0, 0) scale(0.4);
+    opacity: 0.9;
+  }
+  to {
+    transform: translate(-40px, -18px) scale(1.4);
+    opacity: 0;
+  }
+}

@@ -4,6 +4,7 @@ import { AGES, DEFAULT_AGE, SKILL_AGE } from '../content/skills';
 import {
   applyPage,
   nextRating,
+  olderReach,
   planPage,
   skillRating,
   startRating,
@@ -78,18 +79,44 @@ describe('starting point from age', () => {
 
 describe('planPage', () => {
   it.each(LEVELS.map((l) => [l.id, l] as const))(
-    'level %s stays inside its problem range and band',
+    'level %s stays inside its problem range and band (plus the older reach)',
     (_, level) => {
-      for (const rating of [0, 0.3, 0.7, 1]) {
-        const state: AdaptiveState = { ...fresh(), ratings: { [level.skill]: rating } };
-        const plan = planPage(level, state, createRng(3));
-        expect(plan.count).toBeGreaterThanOrEqual(level.problems[0]);
-        expect(plan.count).toBeLessThanOrEqual(level.problems[1]);
-        expect(plan.difficulty).toBeGreaterThanOrEqual(level.band[0]);
-        expect(plan.difficulty).toBeLessThanOrEqual(level.band[1]);
+      for (const age of AGES) {
+        const reach = olderReach(level.skill, age);
+        for (const rating of [0, 0.3, 0.7, 1]) {
+          const state: AdaptiveState = { ...fresh(age), ratings: { [level.skill]: rating } };
+          const plan = planPage(level, state, createRng(3));
+          expect(plan.count).toBeGreaterThanOrEqual(level.problems[0]);
+          expect(plan.count).toBeLessThanOrEqual(level.problems[1] + reach.problems);
+          expect(plan.difficulty).toBeGreaterThanOrEqual(level.band[0]);
+          expect(plan.difficulty).toBeLessThanOrEqual(Math.min(1, level.band[1] + reach.band));
+        }
       }
     },
   );
+
+  it('lets older players reach a little past the top, never younger or typical-age ones', () => {
+    const { olderReach: cap } = CONFIG.adaptive;
+    expect(olderReach('add-within-20', SKILL_AGE['add-within-20'])).toEqual({
+      band: 0,
+      problems: 0,
+    });
+    expect(olderReach('add-within-20', 5)).toEqual({ band: 0, problems: 0 });
+    const nine = olderReach('add-within-20', 9);
+    expect(nine.band).toBeCloseTo(2 * cap.bandPerYear);
+    expect(nine.problems).toBe(2 * cap.problemsPerYear);
+    expect(olderReach('add-within-5', 10)).toEqual({
+      band: cap.maxBand,
+      problems: cap.maxProblems,
+    });
+
+    // A 9-year-old at the top rating gets more problems than a 7-year-old at the top.
+    const level = getLevel(6)!; // add-within-20, band [0, 0.5]
+    const top = (age: number) =>
+      planPage(level, { ...fresh(age), ratings: { 'add-within-20': 1 } }, createRng(1));
+    expect(top(9).count).toBeGreaterThan(top(7).count);
+    expect(top(9).difficulty).toBeGreaterThan(top(7).difficulty);
+  });
 
   it('the same rating plays harder on a later level of the same skill', () => {
     const state: AdaptiveState = { ...fresh(), ratings: { 'add-within-10': 0.5 } };

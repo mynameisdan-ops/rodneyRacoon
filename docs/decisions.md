@@ -165,3 +165,17 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
   m6-adaptive-difficulty); the branches were stacked, so there were no conflicts. `main` now matches
   `m6-adaptive-difficulty`. Lint, 121 tests and the build pass on `main`. The tablet check that was
   meant to close M4 hasn't happened; it's now scheduled before M5 in PLAN's known gaps.
+
+- **2026-09-30: Tablet report and feedback** (`fb-older-kids-chaser`). The tablet play-through went
+  fine with no bugs, so no stutter fixes were needed. From `docs/feedback.md`:
+  - *Slightly harder for older kids.* A 9-year-old was already at the top rating for every World 1
+    skill, so ratings alone couldn't go higher. New `olderReach` in `game/adaptive.ts`: for each year
+    a player is older than a skill's typical age, the level's band top rises 0.1 (at most 0.3) and
+    the page gets 1 more problem (at most 3). It scales with the rating, so a struggling older
+    child still starts from the level's easy end. Numbers in `CONFIG.adaptive.olderReach`.
+  - *A danger he escapes from on the page.* A chaser runs behind the hero on the page strip, one
+    per world (boulder, bee swarm, flood wave, snowball, dust devil; `art/chasers.tsx`). It moves
+    at 85% of the pace that finishes the page right at time's up, so a child on pace pulls away and
+    a slow one sees it close in, but it never gets closer than 55px to his heels (`ui/trailLayout.ts`,
+    tested). After a passed page it falls back and fades. Motion is CSS only. The trail now starts
+    at x = 190 so the chaser is on screen from the start, and the timer sun starts to the right of him.

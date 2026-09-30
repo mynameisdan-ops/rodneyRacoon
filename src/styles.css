@@ -635,14 +635,31 @@ button {
 
 @keyframes sun-arc {
   0% {
-    transform: translate(120px, 92px);
+    transform: translate(300px, 84px);
   }
   50% {
-    transform: translate(608px, 18px);
+    transform: translate(700px, 18px);
   }
   100% {
     transform: translate(1096px, 92px);
   }
+}
+
+.trail__chaser {
+  position: absolute;
+  left: 0;
+  transition:
+    transform 300ms linear,
+    opacity 300ms;
+}
+
+/* After a passed page the danger falls back and fades away. */
+.trail__chaser--gone {
+  opacity: 0;
+  transition:
+    transform 1200ms ease-in,
+    opacity 1200ms ease-in;
+  translate: -260px 0;
 }
 
 .trail__hero {

@@ -281,6 +281,7 @@ function PageLayout({
         obstacle={getCutScene(level.id)?.obstacle}
         avatar={avatar}
         progress={progress}
+        elapsed={1 - secondsLeft / CONFIG.pageSeconds}
         feedback={feedback}
         running={running}
         endPose={endPose}
