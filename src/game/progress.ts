@@ -10,9 +10,12 @@ export interface LevelProgress {
 /** Progress per level id. Levels never played have no entry. */
 export type ProgressMap = Record<number, LevelProgress>;
 
-/** Levels unlock strictly in order: level 1 is always open, then pass a level to open the next. */
-export function isUnlocked(progress: ProgressMap, levelId: number): boolean {
-  return levelId <= 1 || (progress[levelId - 1]?.passes ?? 0) > 0;
+/**
+ * Levels unlock strictly in order: level 1 is always open, then pass a level to open the next.
+ * `unlockAll` (a parent setting) opens every level.
+ */
+export function isUnlocked(progress: ProgressMap, levelId: number, unlockAll = false): boolean {
+  return unlockAll || levelId <= 1 || (progress[levelId - 1]?.passes ?? 0) > 0;
 }
 
 export function isPassed(progress: ProgressMap, levelId: number): boolean {

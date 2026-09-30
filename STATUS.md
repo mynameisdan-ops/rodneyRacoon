@@ -1,6 +1,6 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Sep 30, 2026 (feedback fixes merged to main; M5 built on `m5-worlds`).
+Last updated: Sep 30, 2026 (M5 merged to main; world overview and unlock switch from feedback).
 milestone: `docs/decisions.md`.
 
 ## Goals
@@ -25,27 +25,29 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
   along the page strip (one per world), and older players get slightly harder pages (the band's top
   and the problem count rise a little per year past a skill's typical age). World 1 is the Old Mine
   Shaft. The tablet play-through went fine (no bugs, no stutter).
-- **On `m5-worlds` (pushed, not merged):** M5. All 40 levels are playable: Worlds 2–5 skills and
-  generators (subtraction, missing addends, 2-digit ±, times tables, division, mixed), 32 level
-  definitions, skill ages, four new backdrops (forest, river, mountains, canyon) and 32 cut scenes
-  that follow the scene recipe, ending at home with the family and fireworks.
-- **Checks:** 302 unit tests, lint and build pass on `m5-worlds`; CI runs them on every push.
-- **Known gaps:** the parent controls for adaptive difficulty wait for Settings in M10; PNG icons
+- **M5 merged to `main`:** all 40 levels are playable: Worlds 2–5 skills and generators, 32 level
+  definitions, skill ages, four new backdrops and 32 cut scenes, ending at home.
+- **Feedback fixes (merged):** an overview map of all five worlds (after a boss, "Next world ▶"
+  goes there and the hero walks on; the trail map has a map button for it), and a per-player
+  "Levels: one by one / all open" switch in the player editor (save format v4).
+- **Checks:** 304 unit tests, lint and build pass on `main`; CI runs them on every push.
+- **Known gaps:** the parent controls for adaptive difficulty (and the unlock switch's final home)
+  wait for Settings in M10; PNG icons
   and the Pages `base` path (M10).
 - **Still open:** the final title and story opening; what comes after level 40.
 
 ## Next steps
 
-1. The user plays Worlds 2–5 on `m5-worlds` (PC with `npm run dev`, tablet with the LAN preview:
-   `npm run build`, then `npm run preview -- --host`). To jump ahead, a parent can play through, or
-   wait for the "unlock any level" switch in M10. Feedback goes in `docs/feedback.md`.
-2. Merge `m5-worlds` into `main` after that check.
-3. M7 (rewards: coins, stars, combos, shop, sticker book), then M8–M10 as `docs/PLAN.md` §9 lists.
+1. The user plays Worlds 2–5 (PC with `npm run dev`, tablet with the LAN preview: `npm run build`,
+   then `npm run preview -- --host`). To jump ahead, set "Levels: all open" in the player editor (✎).
+   Feedback goes in `docs/feedback.md`.
+2. M7 (rewards: coins, stars, combos, shop, sticker book), then M8–M10 as `docs/PLAN.md` §9 lists.
 
 ## Handoff
 
-- **Branch:** `m5-worlds`, pushed, nothing uncommitted except the user's own `handover.md`. `main` has
-  the feedback fixes (merged from `fb-older-kids-chaser`).
+- **Branch:** `main`, pushed, with `m5-worlds` and `fb-world-progress` merged; nothing uncommitted
+  except the user's own `handover.md`. In the dev console, the store module is imported as
+  `/src/state/store.ts?t=…` (see the page's resource list) to seed test progress.
 - **Waiting on the user:** a play-through of Worlds 2–5 (and a tablet look at the busier scenes).
 - **Gotchas:** in a hidden browser pane `requestAnimationFrame` stops and `document.hidden` is true, so
   pages auto-pause and scenes don't advance; scrub scenes with the gallery slider. The dev server's file

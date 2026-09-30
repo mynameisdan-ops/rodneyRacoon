@@ -6,6 +6,11 @@ import type { PageEvaluation } from '../game/scoring';
 import { loadSave, requestPersistentStorage, writeSave } from './persistence';
 import { emptySave, MAX_NAME_LENGTH, NewerSaveError, type Profile, type SaveData } from './schema';
 
+/** The per-player settings a parent picks in the player editor. */
+export type ProfileSettings = Pick<Profile, 'autoSubmit' | 'age' | 'unlockAll'>;
+/** Everything the player editor can change. */
+export type ProfileFields = Pick<Profile, 'name' | 'color'> & ProfileSettings;
+
 interface GameStore {
   status: 'loading' | 'ready' | 'blocked';
   /** Set when the last write failed (e.g. private browsing); gameplay continues in memory. */
@@ -14,12 +19,9 @@ interface GameStore {
   activeProfileId: string | null;
 
   init(): Promise<void>;
-  createProfile(name: string, color: string, autoSubmit?: boolean, age?: number | null): string;
+  createProfile(name: string, color: string, settings?: Partial<ProfileSettings>): string;
   /** Changing `age` restarts the skill ratings from the new age (weak facts are kept). */
-  updateProfile(
-    id: string,
-    patch: Partial<Pick<Profile, 'name' | 'color' | 'autoSubmit' | 'age'>>,
-  ): void;
+  updateProfile(id: string, patch: Partial<ProfileFields>): void;
   deleteProfile(id: string): void;
   selectProfile(id: string | null): void;
   recordResult(level: LevelDef, evaluation: PageEvaluation, answers: readonly Answer[]): void;
@@ -76,15 +78,16 @@ export const useGame = create<GameStore>()((set, get) => {
       }
     },
 
-    createProfile(name, color, autoSubmit = false, age = null) {
+    createProfile(name, color, settings = {}) {
       const id = newId();
       const profile: Profile = {
         id,
         name: cleanName(name),
         color,
         createdAt: Date.now(),
-        autoSubmit,
-        age,
+        autoSubmit: settings.autoSubmit ?? false,
+        age: settings.age ?? null,
+        unlockAll: settings.unlockAll ?? false,
         ratings: {},
         weakFacts: [],
         progress: {},

@@ -27,6 +27,11 @@ describe('progress', () => {
     expect(isUnlocked(p, 3)).toBe(false);
   });
 
+  it('opens every level when unlockAll is on', () => {
+    expect(isUnlocked({}, 40, true)).toBe(true);
+    expect(isUnlocked({}, 40, false)).toBe(false);
+  });
+
   it('keeps the best stars and counts plays and passes', () => {
     let p: ProgressMap = {};
     p = recordPlay(p, 1, evalOf(true, 3), 1);

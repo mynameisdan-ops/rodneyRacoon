@@ -12,6 +12,7 @@ import { ProfileEditor } from './screens/ProfileEditor';
 import { ProfileSelect } from './screens/ProfileSelect';
 import { ResultsScreen } from './screens/ResultsScreen';
 import { TrailMap } from './screens/TrailMap';
+import { WorldsMap } from './screens/WorldsMap';
 import { useActiveProfile, useGame } from './state/store';
 import { Stage } from './ui/Stage';
 
@@ -19,7 +20,10 @@ type Screen =
   | { name: 'profiles' }
   /** `profileId` undefined = creating a new player. */
   | { name: 'editProfile'; profileId?: string }
-  | { name: 'map' }
+  /** One world's trail; `worldId` undefined = the world the player is up to. */
+  | { name: 'map'; worldId?: number }
+  /** The overview of all worlds; `from` = the world just finished (the hero walks on from it). */
+  | { name: 'worlds'; from?: number }
   /** `attempt` remounts the page so a retry gets fresh problems. */
   | { name: 'page'; levelId: number; attempt: number; plan: PagePlan }
   | { name: 'results'; levelId: number; evaluation: PageEvaluation }
@@ -87,6 +91,7 @@ function Game() {
   // Everything past player selection needs an active player.
   const needsPlayer =
     screen.name === 'map' ||
+    screen.name === 'worlds' ||
     screen.name === 'page' ||
     screen.name === 'results' ||
     screen.name === 'scene';
@@ -116,12 +121,13 @@ function Game() {
           profile={editing}
           takenColors={profiles.map((p) => p.color)}
           canCancel={profiles.length > 0}
-          onSave={(name, color, autoSubmit, age) => {
+          onSave={(fields) => {
             if (editing) {
-              updateProfile(editing.id, { name, color, autoSubmit, age });
+              updateProfile(editing.id, fields);
               toProfiles();
             } else {
-              createProfile(name, color, autoSubmit, age);
+              const { name, color, ...settings } = fields;
+              createProfile(name, color, settings);
               toMap();
             }
           }}
@@ -142,8 +148,20 @@ function Game() {
       return (
         <TrailMap
           profile={profile!}
+          initialWorld={current.worldId}
           saveFailed={saveFailed}
           onPlay={play}
+          onWorlds={() => setScreen({ name: 'worlds' })}
+          onSwitchPlayer={() => setScreen({ name: 'profiles' })}
+        />
+      );
+
+    case 'worlds':
+      return (
+        <WorldsMap
+          profile={profile!}
+          from={current.from}
+          onOpenWorld={(worldId) => setScreen({ name: 'map', worldId })}
           onSwitchPlayer={() => setScreen({ name: 'profiles' })}
         />
       );
@@ -185,15 +203,21 @@ function Game() {
       const scene = getCutScene(current.levelId);
       if (!level || !scene) return null;
       const next = getLevel(level.id + 1);
-      const nextOpen = next !== undefined && isUnlocked(profile!.progress, next.id);
+      const nextOpen =
+        next !== undefined && isUnlocked(profile!.progress, next.id, profile!.unlockAll);
+      // After a world's last level, the overview shows the hero walking on to the next world.
+      const newWorld = next !== undefined && next.world !== level.world;
       return (
         <CutSceneScreen
           level={level}
           scene={scene}
           avatar={avatarForProfile(profile!)}
           hasNext={nextOpen}
-          onNext={() => next && play(next.id)}
-          onMap={toMap}
+          nextLabel={newWorld ? 'Next world ▶' : 'Next level ▶'}
+          onNext={() =>
+            newWorld ? setScreen({ name: 'worlds', from: level.world }) : next && play(next.id)
+          }
+          onMap={() => setScreen({ name: 'map', worldId: level.world })}
         />
       );
     }

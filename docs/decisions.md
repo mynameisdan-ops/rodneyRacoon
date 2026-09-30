@@ -214,3 +214,21 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     4+ digits use 104px type so `100 ÷ 10` fits. The last scene ends with "You made it home!".
   - **To check in play:** whether 8–13 two-digit problems a minute is right for the 9-year-old;
     how the busier scenes run on the tablet.
+
+- **2026-09-30: M5 merged; world overview and the unlock switch (feedback).**
+  - Merged `m5-worlds` into `main` at the user's request (lint, 302 tests and build passed).
+  - Feedback: "at the end of World 1 there was no way on; return to an overview map." (Played before
+    M5, when World 2 didn't exist.) New `WorldsMap` screen: the five worlds as cards (a scaled-down
+    backdrop, number badge, name, stars) on a paper map with a trail ending at the family's house.
+    Locked worlds are greyed with a lock; a finished world's badge turns green. After a boss scene
+    the button reads "Next world ▶" and opens the overview, where the hero walks from the old world
+    to the new one (a CSS transition started by a timer, since requestAnimationFrame stops in a
+    hidden window); tapping a world opens its trail map. The trail map has a folded-map button to
+    open the overview any time, and the scene's "Map" button opens the world just played.
+  - Feedback: "unlock levels in settings." Pulled forward from M10 as a per-player switch in the
+    player editor ("Levels: 🔒 one by one / 🔓 all open"), since that editor is where the parent
+    settings live until the Settings screen. Save format v4 adds `unlockAll` (off for old saves);
+    `isUnlocked()` takes it. The color swatches went to one row so the editor still fits 800px.
+  - Checked in the browser at 1280×800 and 915×412: the editor fits; all-open unlocks every stop and
+    world; a real play of level 8 → "Old Mine Shaft complete!" → "Next world ▶" → the hero walks to
+    World 2 → its trail map with level 9 current.

@@ -333,8 +333,8 @@ button {
 
 .editor__colors {
   display: grid;
-  grid-template-columns: repeat(4, 80px);
-  gap: 18px;
+  grid-template-columns: repeat(8, 80px);
+  gap: 16px;
 }
 
 .swatch {
@@ -477,6 +477,18 @@ button {
   font-size: 40px;
 }
 
+.map__right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.map__worlds-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .map__stars {
   min-width: 120px;
   padding: 10px 22px;
@@ -594,6 +606,124 @@ button {
   background: #fff3cd;
   font-size: 22px;
   font-weight: 700;
+}
+
+/* ---------- World overview ---------- */
+
+.worlds {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.worlds__paper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.world-card {
+  position: absolute;
+  padding: 0;
+  border: none;
+  background: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.world-card__thumb {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border: 5px solid var(--ink);
+  border-radius: 22px;
+  box-shadow: 0 7px 0 var(--ink);
+}
+
+.world-card:active:not(:disabled) .world-card__thumb {
+  transform: translateY(5px);
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+.world-card__art {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 800px;
+  transform-origin: 0 0;
+}
+
+.world-card__number {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  width: 52px;
+  height: 52px;
+  border: 4px solid var(--ink);
+  border-radius: 50%;
+  background: var(--warm);
+  color: #fff;
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 44px;
+  text-align: center;
+}
+
+.world-card--done .world-card__number {
+  background: var(--good);
+}
+
+.world-card--locked .world-card__art {
+  opacity: 0.35;
+}
+
+.world-card--locked .world-card__thumb {
+  background: #b8b2a3;
+}
+
+.world-card--locked .world-card__number {
+  background: #b8b2a3;
+}
+
+.world-card__lock {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 56px;
+}
+
+.world-card--here .world-card__thumb {
+  animation: here-pulse 1.4s ease-in-out infinite;
+}
+
+.world-card__name {
+  padding: 4px 14px;
+  border: 3px solid var(--ink);
+  border-radius: 14px;
+  background: var(--chip);
+  font-family: var(--font-display);
+  font-size: 24px;
+  white-space: nowrap;
+}
+
+.world-card__stars {
+  font-size: 24px;
+  font-weight: 900;
+  color: #c98a00;
+}
+
+.worlds__hero {
+  position: absolute;
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  transition: transform 1.8s ease-in-out;
 }
 
 /* ---------- Page ---------- */

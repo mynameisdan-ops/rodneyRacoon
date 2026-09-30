@@ -10,8 +10,12 @@ import { Stars } from '../ui/Stars';
 
 interface Props {
   profile: Profile;
+  /** The world to show first; defaults to the one the player is up to. */
+  initialWorld?: number;
   saveFailed: boolean;
   onPlay: (levelId: number) => void;
+  /** Open the overview of all the worlds. */
+  onWorlds: () => void;
   onSwitchPlayer: () => void;
 }
 
@@ -48,16 +52,25 @@ function smoothPath(points: readonly Point[]): string {
 
 const ALL_IDS = LEVELS.map((l) => l.id);
 
-export function TrailMap({ profile, saveFailed, onPlay, onSwitchPlayer }: Props) {
+export function TrailMap({
+  profile,
+  initialWorld,
+  saveFailed,
+  onPlay,
+  onWorlds,
+  onSwitchPlayer,
+}: Props) {
   const here = currentLevel(profile.progress, ALL_IDS);
-  const [worldId, setWorldId] = useState(() => getLevel(here)?.world ?? 1);
+  const [worldId, setWorldId] = useState(() => initialWorld ?? getLevel(here)?.world ?? 1);
   const world = WORLDS.find((w) => w.id === worldId) ?? WORLDS[0]!;
   const levels = LEVELS.filter((l) => l.world === world.id);
   const worldIndex = WORLDS.indexOf(world);
   const prevWorld = WORLDS[worldIndex - 1];
   const nextWorld = WORLDS[worldIndex + 1];
   const nextWorldFirst = LEVELS.find((l) => l.world === nextWorld?.id);
-  const canGoNext = nextWorldFirst !== undefined && isUnlocked(profile.progress, nextWorldFirst.id);
+  const canGoNext =
+    nextWorldFirst !== undefined &&
+    isUnlocked(profile.progress, nextWorldFirst.id, profile.unlockAll);
   const theme = getTheme(world.id);
 
   return (
@@ -110,12 +123,22 @@ export function TrailMap({ profile, saveFailed, onPlay, onSwitchPlayer }: Props)
             </button>
           )}
         </div>
-        <div className="map__stars">★ {totalStars(profile.progress)}</div>
+        <div className="map__right">
+          <button
+            type="button"
+            className="icon-button map__worlds-button"
+            aria-label="All the worlds"
+            onClick={onWorlds}
+          >
+            <WorldsIcon />
+          </button>
+          <div className="map__stars">★ {totalStars(profile.progress)}</div>
+        </div>
       </div>
 
       {levels.map((level, i) => {
         const [x, y] = STOPS[i] ?? STOPS[STOPS.length - 1]!;
-        const unlocked = isUnlocked(profile.progress, level.id);
+        const unlocked = isUnlocked(profile.progress, level.id, profile.unlockAll);
         const passed = isPassed(profile.progress, level.id);
         const isHere = level.id === here;
         const cls = [
@@ -151,6 +174,30 @@ export function TrailMap({ profile, saveFailed, onPlay, onSwitchPlayer }: Props)
         <div className="save-warning">Progress can't be saved on this device right now.</div>
       )}
     </div>
+  );
+}
+
+/** A folded paper map: opens the overview of all the worlds. */
+function WorldsIcon() {
+  return (
+    <svg width={44} height={40} viewBox="0 0 44 40" aria-hidden>
+      <path
+        d="M3 7 L15 3 L29 7 L41 3 V33 L29 37 L15 33 L3 37 Z"
+        fill="#f3e2b8"
+        stroke="currentColor"
+        strokeWidth={3}
+        strokeLinejoin="round"
+      />
+      <path d="M15 3 V33 M29 7 V37" stroke="currentColor" strokeWidth={3} />
+      <path
+        d="M8 28 Q 14 18 22 22 T 36 12"
+        fill="none"
+        stroke="#c8553d"
+        strokeWidth={3}
+        strokeDasharray="3 4"
+        strokeLinecap="round"
+      />
+    </svg>
   );
 }
 

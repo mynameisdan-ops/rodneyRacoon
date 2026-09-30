@@ -25,7 +25,7 @@ a big obstacle on his way home.
 | Rewards | Coins spent in an avatar shop, 1–3 stars per level, combo streaks, and journey stickers (one per level) |
 | Audio | Sound effects + music only (no voice). Cut scenes tell the story mostly through visuals, with very short captions |
 | Parent tools | Stats and difficulty settings live in the normal **Settings** screen (not locked) |
-| Unlocking | Levels unlock **strictly in order** (decided in M2). A parent "unlock any level" switch comes with Settings in M10 |
+| Unlocking | Levels unlock **strictly in order** (decided in M2). A per-player "Levels: one by one / all open" switch in the player editor opens every level (added Sep 30, 2026 from feedback; it moves into Settings in M10) |
 | Submitting | Enter / ✓ checks the answer; auto-submit is a per-profile switch (decided after the M4 playtest) |
 | Art style | **Cel-shaded adventure** ("between Math Pirates and Zelda"), still drawn in code as SVG: ink outlines, two-tone shading as overlay shapes (no `filter`), dramatic light. The target is engaging a 9-year-old, not a preschool look (M4b) |
 | Hero | A **young adventurer**: taller proportions, tunic in the player's color, satchel, boots, cape; still the child's own avatar (M4b) |
@@ -38,6 +38,8 @@ a big obstacle on his way home.
 Profile select → Trail map → Level intro (3-2-1)
   → Timed page (60s, N problems; the hero walks the trail strip at the top)
      ├─ pass → reward tally (coins, stars, sticker) → obstacle cut scene → map (next level unlocked)
+     │         (after a world's boss: "Next world ▶" → the overview of all worlds, where the hero
+     │          walks on to the next world; tap a world to open its trail map)
      └─ fail → "knocked back" mini scene + encouragement → retry (new problems)
 ```
 
@@ -210,12 +212,12 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M3 | Art system: `<Hero>` paper doll with poses, world backgrounds, trail strip on the page | The hero walks as you answer | ✅ |
 | M4 | Cut-scene player + obstacle templates + World 1 scenes; **pause** (see below); **a preview deploy to GitHub Pages and a first check on the real tablet** | Full World 1 experience end to end, smooth on the tablet | ✅ merged Sep 28, 2026 at the user's request, before the tablet check (now a known gap, below) |
 | M4b | Art direction: cel-shaded adventure style kit, young-adventurer hero with new poses, dramatic scene steps (run, swing, slide, shake, zoom, fx, slow-mo), UI chrome, and epic World 1 obstacles. Starts with a style test approved in `#gallery`; ends with a tablet check | World 1 looks and plays like an adventure | ✅ merged Sep 28, 2026 at the user's request, before the tablet check (now a known gap, below) |
-| M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | 🟡 built on `m5-worlds` Sep 30, 2026; waiting for the user's play-through |
+| M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ✅ merged Sep 30, 2026 at the user's request; the world overview and the unlock switch followed from feedback |
 | M6 | Adaptive difficulty + weak-fact weighting, and an age setting for the starting point | Difficulty adjusts for each kid | ✅ merged; the parent controls (see the ratings, pin, turn off) come with Settings in M10 |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ⬜ |
 | M8 | Avatar builder + photo-face crop | Kids play as themselves | ⬜ |
 | M9 | Audio: synthesized SFX + music loops | Sound on | ⬜ |
-| M10 | Settings/stats (incl. the unlock-any-level switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing | Installed on PC and tablet | ⬜ |
+| M10 | Settings/stats (moving the unlock-all switch there), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing | Installed on PC and tablet | ⬜ |
 
 ### Known gaps, scheduled
 
@@ -232,4 +234,4 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
   balloon ride carries him far from home).
 - Extensions after level 40 (fractions, money, time, bigger numbers, "endless" mode).
 
-Decided (no longer open): levels unlock strictly in order, with a parent switch in M10.
+Decided (no longer open): levels unlock strictly in order, with a per-player "all open" switch.
