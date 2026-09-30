@@ -10,6 +10,15 @@ export const OBSTACLE_IDS = [
   'bat-storm',
   'runaway-lift',
   'mine-train',
+  // World 2: the forest.
+  'log-roll',
+  'bramble-vault',
+  'root-slide',
+  'vine-swing',
+  'boar-charge',
+  'mushroom-bounce',
+  'falling-bridge',
+  'fireflies',
 ] as const;
 export type ObstacleId = (typeof OBSTACLE_IDS)[number];
 

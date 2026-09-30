@@ -26,6 +26,30 @@ import {
   RUNAWAY_LIFT,
   WALL_SMASH,
 } from './mineLayout';
+import {
+  BOAR,
+  BRAMBLE,
+  FALLING_BRIDGE,
+  FIREFLIES,
+  LOG_ROLL,
+  MUSHROOMS,
+  ROOT_SLIDE,
+  VINE_SWING,
+} from './forestLayout';
+import {
+  BoarChargeBack,
+  BoarChargeFront,
+  BrambleBack,
+  BrambleFront,
+  FallingBridgeBack,
+  FirefliesBack,
+  FirefliesFront,
+  LogRollBack,
+  LogRollFront,
+  MushroomBounceBack,
+  RootSlideBack,
+  VineSwingBack,
+} from './forestScenes';
 import type { ObstacleArt, ObstacleId } from './types';
 
 export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
@@ -37,4 +61,12 @@ export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
   'bat-storm': { back: BatStormBack, front: BatStormFront, width: BAT_STORM.width },
   'runaway-lift': { back: RunawayLiftBack, front: RunawayLiftFront, width: RUNAWAY_LIFT.width },
   'mine-train': { back: MineTrainBack, front: MineTrainFront, width: MINE_TRAIN.width },
+  'log-roll': { back: LogRollBack, front: LogRollFront, width: LOG_ROLL.width },
+  'bramble-vault': { back: BrambleBack, front: BrambleFront, width: BRAMBLE.width },
+  'root-slide': { back: RootSlideBack, width: ROOT_SLIDE.width },
+  'vine-swing': { back: VineSwingBack, width: VINE_SWING.width },
+  'boar-charge': { back: BoarChargeBack, front: BoarChargeFront, width: BOAR.width },
+  'mushroom-bounce': { back: MushroomBounceBack, width: MUSHROOMS.width },
+  'falling-bridge': { back: FallingBridgeBack, width: FALLING_BRIDGE.width },
+  fireflies: { back: FirefliesBack, front: FirefliesFront, width: FIREFLIES.width },
 };
