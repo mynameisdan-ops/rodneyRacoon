@@ -6,7 +6,7 @@ import { AGES } from '../content/skills';
 /**
  * Save format. Bump SAVE_VERSION and add a step to `migrate` whenever this shape changes.
  */
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
 
 /** A player. The adaptive fields (`age`, `ratings`, `weakFacts`) were added in v3. */
 export interface Profile extends AdaptiveState {
@@ -17,6 +17,8 @@ export interface Profile extends AdaptiveState {
   createdAt: number;
   /** Check answers as soon as enough digits are typed, instead of on Enter / ✓ (added in v2). */
   autoSubmit: boolean;
+  /** A parent setting: every level is open, not just the next one (added in v4). */
+  unlockAll: boolean;
   progress: ProgressMap;
 }
 
@@ -50,7 +52,8 @@ export function migrate(raw: unknown): SaveData {
   if (version < 1) return emptySave();
 
   // Each version only added fields, and sanitizing fills in their defaults: v2 added
-  // `autoSubmit` (Enter), v3 added `age` (not set), `ratings` and `weakFacts` (empty).
+  // `autoSubmit` (Enter), v3 added `age` (not set), `ratings` and `weakFacts` (empty),
+  // v4 added `unlockAll` (off).
   const profiles = Array.isArray(raw.profiles)
     ? raw.profiles.map(sanitizeProfile).filter((p): p is Profile => p !== null)
     : [];
@@ -77,6 +80,7 @@ function sanitizeProfile(raw: unknown): Profile | null {
     color: typeof raw.color === 'string' ? raw.color : '#e63946',
     createdAt: typeof raw.createdAt === 'number' ? raw.createdAt : 0,
     autoSubmit: raw.autoSubmit === true,
+    unlockAll: raw.unlockAll === true,
     age: sanitizeAge(raw.age),
     ratings: sanitizeRatings(raw.ratings),
     weakFacts: Array.isArray(raw.weakFacts)

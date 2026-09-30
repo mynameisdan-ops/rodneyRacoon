@@ -11,11 +11,13 @@ interface Props {
   scene: CutScene;
   avatar: AvatarConfig;
   hasNext: boolean;
+  /** Defaults to "Next level ▶". */
+  nextLabel?: string;
   onNext: () => void;
   onMap: () => void;
 }
 
-export function CutSceneScreen({ level, scene, avatar, hasNext, onNext, onMap }: Props) {
+export function CutSceneScreen({ level, scene, avatar, hasNext, nextLabel, onNext, onMap }: Props) {
   const timeline = useMemo(() => buildTimeline(scene.script), [scene]);
   const [t, skip] = useSceneClock(timeline.duration);
   const over = t >= timeline.duration;
@@ -50,7 +52,7 @@ export function CutSceneScreen({ level, scene, avatar, hasNext, onNext, onMap }:
             </button>
             {hasNext && (
               <button type="button" className="big-button" onClick={onNext}>
-                Next level ▶
+                {nextLabel}
               </button>
             )}
           </div>

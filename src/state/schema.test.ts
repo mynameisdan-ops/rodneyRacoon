@@ -15,7 +15,7 @@ describe('migrate', () => {
 
   it('keeps valid data unchanged', () => {
     const save = {
-      version: 3,
+      version: 4,
       lastProfileId: 'a',
       profiles: [
         {
@@ -24,6 +24,7 @@ describe('migrate', () => {
           color: '#123456',
           createdAt: 5,
           autoSubmit: true,
+          unlockAll: true,
           age: 9,
           ratings: { doubles: 0.4, 'add-within-5': 1 },
           weakFacts: [
@@ -60,6 +61,7 @@ describe('migrate', () => {
     expect(out.lastProfileId).toBe('a');
     expect(out.profiles[0]).toMatchObject({
       autoSubmit: false,
+      unlockAll: false,
       age: null,
       ratings: {},
       weakFacts: [],
@@ -73,6 +75,16 @@ describe('migrate', () => {
       profiles: [{ id: 'a', name: 'Sam', autoSubmit: true, progress: {} }],
     });
     expect(out.profiles[0]).toMatchObject({ autoSubmit: true, age: null, ratings: {} });
+  });
+
+  it('migrates a v3 save: levels still unlock in order', () => {
+    const out = migrate({
+      version: 3,
+      lastProfileId: null,
+      profiles: [{ id: 'a', name: 'Sam', autoSubmit: true, age: 6, progress: {} }],
+    });
+    expect(out.version).toBe(SAVE_VERSION);
+    expect(out.profiles[0]).toMatchObject({ autoSubmit: true, age: 6, unlockAll: false });
   });
 
   it('drops bad ages, ratings and weak facts', () => {

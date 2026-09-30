@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { PROFILE_COLORS } from '../content/profiles';
 import { AGES, DEFAULT_AGE } from '../content/skills';
 import { MAX_NAME_LENGTH, type Profile } from '../state/schema';
-import { cleanName } from '../state/store';
+import { cleanName, type ProfileFields } from '../state/store';
 import { avatarForProfile } from '../art/hero/avatar';
 import { Hero } from '../art/hero/Hero';
 
@@ -13,7 +13,7 @@ interface Props {
   takenColors: string[];
   /** Hide Cancel when this is the very first player. */
   canCancel: boolean;
-  onSave: (name: string, color: string, autoSubmit: boolean, age: number | null) => void;
+  onSave: (fields: ProfileFields) => void;
   onDelete?: () => void;
   onCancel: () => void;
 }
@@ -35,6 +35,7 @@ export function ProfileEditor({
   const [autoSubmit, setAutoSubmit] = useState(profile?.autoSubmit ?? false);
   // New players start at a middle age; players saved before ages existed show none picked.
   const [age, setAge] = useState<number | null>(profile ? profile.age : DEFAULT_AGE);
+  const [unlockAll, setUnlockAll] = useState(profile?.unlockAll ?? false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const valid = cleanName(name).length > 0;
 
@@ -64,7 +65,7 @@ export function ProfileEditor({
       className="editor"
       onSubmit={(e) => {
         e.preventDefault();
-        if (valid) onSave(name, color, autoSubmit, age);
+        if (valid) onSave({ name, color, autoSubmit, age, unlockAll });
       }}
     >
       {/* Name sits at the top so a tablet's on-screen keyboard doesn't cover it. */}
@@ -137,6 +138,26 @@ export function ProfileEditor({
                 onClick={() => setAge(a)}
               >
                 {i === AGES.length - 1 ? `${a}+` : a}
+              </button>
+            ))}
+          </div>
+          {/* For the parent: open every level, e.g. to jump ahead to the right difficulty. */}
+          <div className="editor__label editor__label--gap">Levels</div>
+          <div className="editor__submit" role="radiogroup" aria-label="Levels">
+            {[
+              { all: false, icon: '🔒', text: 'One by one' },
+              { all: true, icon: '🔓', text: 'All open' },
+            ].map((o) => (
+              <button
+                key={o.text}
+                type="button"
+                role="radio"
+                aria-checked={unlockAll === o.all}
+                className={unlockAll === o.all ? 'choice choice--on' : 'choice'}
+                onClick={() => setUnlockAll(o.all)}
+              >
+                <span className="choice__icon">{o.icon}</span>
+                {o.text}
               </button>
             ))}
           </div>
