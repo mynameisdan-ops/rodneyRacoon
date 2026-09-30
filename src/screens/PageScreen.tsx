@@ -214,7 +214,11 @@ function ProblemView({ state }: { state: SessionState }) {
     'answer-box',
     state.phase === 'revealing' ? 'answer-box--reveal' : '',
     fb?.kind === 'wrong' ? 'answer-box--wrong' : '',
+    state.input.length > 2 ? 'answer-box--3' : '',
   ].join(' ');
+  // Size by the numbers on show (never the hidden answer, so the size gives nothing away).
+  const shown = [problem.a, problem.unknown === 'b' ? problem.result : problem.b];
+  const long = shown.join('').length >= 4;
   const box = (
     <span key={fb?.seq ?? 0} className={boxClass}>
       {state.input || ' '}
@@ -223,7 +227,7 @@ function ProblemView({ state }: { state: SessionState }) {
 
   return (
     <div className="problem-area">
-      <div className="problem" key={`problem-${state.index}`}>
+      <div className={long ? 'problem problem--long' : 'problem'} key={`problem-${state.index}`}>
         <span>{problem.a}</span>
         <span className="problem__op">{problem.op}</span>
         {problem.unknown === 'b' ? box : <span>{problem.b}</span>}

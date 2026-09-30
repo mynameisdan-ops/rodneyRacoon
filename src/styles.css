@@ -813,12 +813,24 @@ button {
 
 .answer-box {
   display: inline-block;
-  min-width: 1.45em;
+  /* A fixed width that fits two digits, so the box never hints at the answer's length. */
+  width: 1.45em;
   padding: 0.06em 0.14em;
   border-radius: 0.16em;
   border: 6px dashed var(--ink-soft);
   background: #fffdf6;
   text-align: center;
+}
+
+/* A third digit (only 100 so far) shrinks the text, not the box: no layout shift. */
+.answer-box--3 {
+  width: calc(1.45em / 0.78);
+  font-size: 0.78em;
+}
+
+/* Problems with long numbers (27 + 47, 100 ÷ 10) get a slightly smaller size so they fit. */
+.problem--long {
+  font-size: 104px;
 }
 
 .answer-box--wrong {

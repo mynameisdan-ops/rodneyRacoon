@@ -1,5 +1,5 @@
 import type { AdaptiveState, WeakFact } from '../game/adaptive';
-import { SKILL_IDS, type BaseSkillId, type Problem, type SkillId } from '../game/problems';
+import { isMix, SKILL_IDS, type BaseSkillId, type Problem, type SkillId } from '../game/problems';
 import type { LevelProgress, ProgressMap } from '../game/progress';
 import { AGES } from '../content/skills';
 
@@ -104,6 +104,14 @@ function sanitizeRatings(raw: unknown): Partial<Record<SkillId, number>> {
   return out;
 }
 
+/** Whether `a op b = result` is true (so a corrupt fact never comes back with a wrong answer). */
+function factHolds(a: number, op: Problem['op'], b: number, result: number): boolean {
+  if (op === '+') return a + b === result;
+  if (op === '−') return a - b === result;
+  if (op === '×') return a * b === result;
+  return b !== 0 && a / b === result;
+}
+
 function sanitizeWeakFact(raw: unknown): WeakFact | null {
   if (!isObject(raw) || !isObject(raw.problem)) return null;
   const p = raw.problem;
@@ -111,9 +119,8 @@ function sanitizeWeakFact(raw: unknown): WeakFact | null {
   if (!nums.every((n) => typeof n === 'number' && Number.isInteger(n) && n >= 0)) return null;
   if (p.op !== '+' && p.op !== '−' && p.op !== '×' && p.op !== '÷') return null;
   if (p.unknown !== 'result' && p.unknown !== 'b') return null;
-  if (typeof p.key !== 'string' || !isSkill(p.skill) || p.skill === 'world1-review') return null;
-  // Only addition facts exist so far; check the sum adds up (later ops add their own checks).
-  if (p.op === '+' && (p.a as number) + (p.b as number) !== p.result) return null;
+  if (typeof p.key !== 'string' || !isSkill(p.skill) || isMix(p.skill)) return null;
+  if (!factHolds(p.a as number, p.op, p.b as number, p.result as number)) return null;
   if (p.answer !== (p.unknown === 'result' ? p.result : p.b)) return null;
   const count = (v: unknown) => (typeof v === 'number' && v >= 0 ? Math.floor(v) : 0);
   const problem: Problem = {
