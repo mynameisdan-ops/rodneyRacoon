@@ -1846,3 +1846,12 @@ button {
 .scene__world--layer {
   will-change: transform;
 }
+
+/* M7b test: the anime cut-in sits over the scene, outside the camera. */
+.cutin {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}

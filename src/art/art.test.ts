@@ -128,23 +128,45 @@ describe('hero', () => {
 });
 
 describe('style-test hero (M7b)', () => {
-  it.each(HERO_POSES)('draws the %s pose with every face, build and hair style', (pose) => {
-    for (const build of ['kid', 'lean'] as const) {
-      for (const expression of EXPRESSIONS) {
-        for (const hairStyle of HAIR_STYLES) {
-          const svg = renderToStaticMarkup(
-            createElement(ToonHero, {
-              avatar: { ...DEFAULT_AVATAR, hairStyle },
-              pose,
-              build,
-              expression,
-            }),
-          );
-          expect(svg).toContain(`hero-svg--${pose}`);
-          expect(svg).not.toContain('NaN');
-          expect(svg).not.toContain('filter');
+  it.each([...HERO_POSES, 'crouch' as const])(
+    'draws the %s pose with every face, build and hair style',
+    (pose) => {
+      for (const build of ['kid', 'lean'] as const) {
+        for (const expression of EXPRESSIONS) {
+          for (const hairStyle of HAIR_STYLES) {
+            const svg = renderToStaticMarkup(
+              createElement(ToonHero, {
+                avatar: { ...DEFAULT_AVATAR, hairStyle },
+                pose,
+                build,
+                expression,
+                wind: hairStyle === 'curly' ? 1 : 0.4,
+              }),
+            );
+            expect(svg).toContain(`hero-svg--${pose}`);
+            expect(svg).not.toContain('NaN');
+            expect(svg).not.toContain('filter');
+          }
         }
       }
+    },
+  );
+
+  it('draws the cut-in close-up through its whole slide', async () => {
+    const { CutIn } = await import('./toon/CutIn');
+    for (const dt of [0, 70, 400, 700, 790]) {
+      const svg = renderToStaticMarkup(
+        createElement(CutIn, {
+          dt,
+          ms: 800,
+          expr: 'determined',
+          avatar: DEFAULT_AVATAR,
+          build: 'lean',
+        }),
+      );
+      expect(svg).toContain('cutin');
+      expect(svg).not.toContain('NaN');
+      expect(svg).not.toContain('filter');
     }
   });
 });

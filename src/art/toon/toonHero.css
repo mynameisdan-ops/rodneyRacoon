@@ -102,3 +102,50 @@
     transform: rotate(50deg);
   }
 }
+
+/* Pose changes blend over a few frames instead of snapping (looping poses still loop). */
+.toon-hero .hero-body,
+.toon-hero .hero-arm,
+.toon-hero .hero-fore,
+.toon-hero .hero-leg,
+.toon-hero .hero-shin {
+  transition: transform 110ms ease-out;
+}
+
+/* ---- crouch: the wind-up before a jump, knees bent and arms swung back ---- */
+
+.toon-hero.hero-svg--crouch .hero-body {
+  transform: translateY(15px);
+}
+
+.toon-hero.hero-svg--crouch .hero-leg--front {
+  transform: rotate(-50deg);
+}
+
+.toon-hero.hero-svg--crouch .hero-shin--front {
+  transform: rotate(80deg);
+}
+
+.toon-hero.hero-svg--crouch .hero-leg--back {
+  transform: rotate(-35deg);
+}
+
+.toon-hero.hero-svg--crouch .hero-shin--back {
+  transform: rotate(75deg);
+}
+
+.toon-hero.hero-svg--crouch .hero-arm--front {
+  transform: rotate(52deg);
+}
+
+.toon-hero.hero-svg--crouch .hero-fore--front {
+  transform: rotate(-24deg);
+}
+
+.toon-hero.hero-svg--crouch .hero-arm--back {
+  transform: rotate(62deg);
+}
+
+.toon-hero.hero-svg--crouch .hero-cape {
+  transform: rotate(-8deg);
+}

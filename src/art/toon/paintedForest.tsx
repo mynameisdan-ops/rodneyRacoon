@@ -436,3 +436,37 @@ function Flower({ color }: { color: string }) {
     </g>
   );
 }
+
+/**
+ * Big dark leaves right in front of the camera at the bottom corners. They slide past faster
+ * than the ground (a separate, quicker parallax), which makes the scene feel deep.
+ */
+export function PaintedFront({ height, k }: P) {
+  return (
+    <g>
+      {[
+        { x: 60, s: 1.15, flip: 1 },
+        { x: 1190, s: 0.95, flip: -1 },
+      ].map((c, i) => (
+        <g
+          key={i}
+          transform={`translate(${c.x} ${height + 6}) scale(${c.s * c.flip * k} ${c.s * k})`}
+        >
+          <path d="M0 0 Q-30 -70 -96 -118 Q-40 -90 -8 -4 Z" fill="#0c2619" />
+          <path d="M6 0 Q10 -90 -14 -150 Q24 -100 22 0 Z" fill="#123222" />
+          <path d="M14 0 Q60 -60 120 -96 Q76 -48 30 4 Z" fill="#0c2619" />
+          <path d="M-8 -4 Q-40 -90 -96 -118 Q-60 -96 -34 -64 Z" fill="#1d4a30" opacity={0.8} />
+          <path
+            d="M-14 -150 Q8 -110 10 -40"
+            stroke="#2b6040"
+            strokeWidth={3}
+            fill="none"
+            opacity={0.7}
+          />
+          <ellipse cx={58} cy={-40} rx={46} ry={26} transform="rotate(-25 58 -40)" fill="#0f2e1e" />
+          <path d="M20 -24 Q58 -46 96 -58" stroke="#1d4a30" strokeWidth={3} fill="none" />
+        </g>
+      ))}
+    </g>
+  );
+}

@@ -5,7 +5,13 @@ import { ForestCanopy, ForestFar, ForestMid, ForestNear } from './forest';
 import { MineCeiling, MineFar, MineMid, MineNear } from './mine';
 import { MountainClouds, MountainFar, MountainMid, MountainNear } from './mountain';
 import { RiverClouds, RiverFar, RiverMid, RiverNear } from './river';
-import { PaintedCanopy, PaintedFar, PaintedMid, PaintedNear } from '../toon/paintedForest';
+import {
+  PaintedCanopy,
+  PaintedFar,
+  PaintedFront,
+  PaintedMid,
+  PaintedNear,
+} from '../toon/paintedForest';
 import { PAINTED_FOREST } from '../toon/paintedPalette';
 import { getTheme, type OutdoorTheme } from './themes';
 import './backdrop.css';
@@ -45,6 +51,8 @@ const DRIFTING = new Set(['outdoor', 'river', 'mountain']);
 
 /** Parallax speed of each layer relative to `scroll`. Must keep scroll × factor < 1280. */
 const PARALLAX = { clouds: 0.05, far: 0.15, mid: 0.4, near: 1 };
+/** The foreground (in front of the hero) slides faster than the ground; it wraps around its tile. */
+const FRONT_SPEED = 1.4;
 
 /**
  * A world's layered background. Each layer is a 1280px-wide tile drawn twice
@@ -67,7 +75,9 @@ export function WorldBackdrop({
   const speed = { ...PARALLAX, ...parallax };
   const theme = getTheme(worldId);
   const skyId = useId();
-  const layers = useMemo(() => {
+  const layers = useMemo((): Record<'clouds' | 'far' | 'mid' | 'near', ReactNode> & {
+    front?: ReactNode;
+  } => {
     const base = { horizon, groundTop, height, pathY, k: detail, seed: worldId };
     switch (theme.kind) {
       case 'mine': {
@@ -87,6 +97,7 @@ export function WorldBackdrop({
             far: <PaintedFar {...p} />,
             mid: <PaintedMid {...p} />,
             near: <PaintedNear {...p} />,
+            front: <PaintedFront {...p} />,
           };
         }
         return {
@@ -191,6 +202,11 @@ export function WorldBackdrop({
         {layers.near}
       </Layer>
       {children}
+      {layers.front && (
+        <Layer offset={(scroll * FRONT_SPEED) % (W - 1)} raster={raster} height={height}>
+          {layers.front}
+        </Layer>
+      )}
     </svg>
   );
 }

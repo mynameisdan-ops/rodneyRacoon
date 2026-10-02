@@ -295,3 +295,27 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
       image (`WorldBackdrop raster`) and the scene on its own compositor layer, ~16 ms. So the
       painted look should ship rasterized; the tablet check decides.
   - Waiting on the user: kid or lean, and whether the direction is right, before Phase B.
+
+- **2026-10-02 (later): Lean, and directing the scenes** (`m7b-cartoon-look`, not merged).
+  - The user picked the **lean** build and asked for the art to go further, starting with more
+    dynamic animation. What made the motion stiff: poses snapped, his body stayed upright, his cape
+    and hair ignored his speed, the camera only slid and shook, and the timing never changed.
+  - **Direction steps in the timeline** (pure, tested): `camera` (zoom and Dutch tilt, eased with a
+    small overshoot; a big zoom frames his face), `cutin` (the anime close-up panel), `slow` (slow
+    motion) and `freeze` (hit-stop). Slow motion and freezes are a time warp: the clock runs real
+    time to `realDuration` and `scriptTime()` maps it to scene time, so props and moves still count
+    in scene ms. The frame also reports `lean` (into a run, along a jump's arc, with a swing),
+    `crouch` (the wind-up before a jump) and `landing` (time since he touched down).
+  - **Hero:** a crouch pose (knees bent, arms back), pose changes that blend over ~110 ms instead
+    of snapping, and `wind` that swings his cape back and streams locks of hair. The head takes a
+    line weight, so the close-up keeps thin lines.
+  - **The view:** he tilts with `lean` (around his hands while hanging, so they stay on the vine);
+    a motion arc behind leaps and swings and afterimages when he really flies; dust on landing and
+    under a run; a foreground layer of big dark leaves that slides past faster than the ground.
+  - **Cut-in** (`art/toon/CutIn.tsx`): a slanted panel slams across with his face over a burst of
+    light and focus lines, a light sweep, and whips away. No words, so it works for non-readers.
+  - **The directed vine swing** (`#style-scene-dynamic`): the flood hits, the frame freezes on the
+    burst, the camera snaps to his surprised face, the cut-in, a crouch and a leap under a tilted
+    camera, the swing slows at the bottom of its arc, and the landing freezes with dust and sparkles.
+    Found in checking: a freeze must start a few frames after its impact, or it holds an empty burst.
+  - **Performance** (5× CPU throttle, warm runs): now ~14 ms a frame, v1 ~17 ms, directed ~18 ms.

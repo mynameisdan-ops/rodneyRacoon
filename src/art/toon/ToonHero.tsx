@@ -28,15 +28,20 @@ const BRASS = '#f0c050';
 const EYE = '#5a3620';
 const MOUTH = '#6a1d24';
 
+/** His poses, plus the crouch scenes show just before a jump. */
+export type ToonPose = HeroPose | 'crouch';
+
 interface Props {
   avatar: AvatarConfig;
-  pose?: HeroPose;
+  pose?: ToonPose;
   build?: Build;
   /** Overrides the pose's own expression. */
   expression?: Expression;
   facing?: 'left' | 'right';
   size?: number;
   shadow?: boolean;
+  /** 0..1: how hard the air rushes past him (his cape and hair stream back). */
+  wind?: number;
   className?: string;
 }
 
@@ -48,11 +53,12 @@ export function ToonHero({
   facing = 'right',
   size = 120,
   shadow = true,
+  wind = 0,
   className,
 }: Props) {
   const b = BUILDS[build];
   const { skin, shirt, pants, shoes } = avatar;
-  const expr = expression ?? POSE_EXPRESSION[pose];
+  const expr = expression ?? (pose === 'crouch' ? 'determined' : POSE_EXPRESSION[pose]);
   const cape = mix(shade(shirt, 0.45), '#2a1f4a', 0.35);
   // In a three-quarter view facing right, the near arm and leg (his right) hang on the left
   // of the body, in front; the far ones on the right, partly behind it.
@@ -81,8 +87,11 @@ export function ToonHero({
         />
       )}
       <g className="hero-body">
-        <g className="hero-cape" style={{ transformOrigin: `${CX - 4}px ${b.shoulderY - 2}px` }}>
-          <Cape b={b} color={cape} />
+        {/* The wind swings the cape back; the pose's own sway or flap plays inside. */}
+        <g transform={`rotate(${wind * 38} ${CX - 4} ${b.shoulderY - 2})`}>
+          <g className="hero-cape" style={{ transformOrigin: `${CX - 4}px ${b.shoulderY - 2}px` }}>
+            <Cape b={b} color={cape} />
+          </g>
         </g>
         <g transform={`translate(${farShoulder.x} ${farShoulder.y})`}>
           <Arm side="back" b={b} sleeve={shade(shirt, 0.3)} skin={shade(skin, 0.28)} />
@@ -113,6 +122,7 @@ export function ToonHero({
               hairStyle={avatar.hairStyle}
               expr={expr}
               s={b.head.s}
+              wind={wind}
             />
           </g>
         </g>
@@ -333,27 +343,55 @@ const FACE_SHADE =
 const NEAR_EYE = { x: 0, y: 2, w: 7, h: 9.6, outer: -1 } as const;
 const FAR_EYE = { x: 17.6, y: 2, w: 4.6, h: 9, outer: 1 } as const;
 
-function Head({
+/**
+ * His head, around the middle of the skull. `s` is the scale it's drawn at (lines are sized to
+ * match the body); `weight` thins or thickens every line (a close-up wants thinner ones), and
+ * `wind` streams locks of hair back.
+ */
+export function Head({
   skin,
   hairColor,
   hairStyle,
   expr,
   s,
+  weight = 1,
+  wind = 0,
 }: {
   skin: string;
   hairColor: string;
   hairStyle: HairStyle;
   expr: Expression;
   s: number;
+  weight?: number;
+  wind?: number;
 }) {
   const faceClip = useId();
   const hair = HAIR[hairStyle];
-  const line = ink(OUT / s);
+  const line = ink((OUT / s) * weight);
+  const wd = Math.max(0, Math.min(1, wind));
   return (
     <g>
       <clipPath id={faceClip}>
         <path d={FACE} />
       </clipPath>
+      {/* In the wind, locks of hair stream back from behind his head. */}
+      {wd > 0.05 &&
+        [
+          [-23, -24, 1],
+          [-26, -13, 1.25],
+          [-24, -2, 0.9],
+        ].map(([x, y, k], i) => {
+          const len = (8 + 24 * wd) * k!;
+          const lift = -7 * wd + i * 2;
+          return (
+            <path
+              key={i}
+              d={`M${x} ${y! - 3.6} Q${x! - len * 0.5} ${y! - 4.5 + lift * 0.5} ${x! - len} ${y! + lift} Q${x! - len * 0.45} ${y! + 1.5 + lift * 0.3} ${x} ${y! + 3.6} Z`}
+              fill={shade(hairColor, 0.15)}
+              {...line}
+            />
+          );
+        })}
       <path d={hair.back} fill={shade(hairColor, 0.3)} {...line} />
       <path d={FACE} fill={skin} {...line} />
       <g clipPath={`url(#${faceClip})`}>
@@ -366,36 +404,36 @@ function Head({
         d="M24.4 -2 C24.4 7 21.6 14 16 19.6"
         fill="none"
         stroke={tint(skin, 0.6)}
-        strokeWidth={1.8}
+        strokeWidth={1.8 * weight}
         strokeLinecap="round"
       />
       <ellipse cx={-1} cy={13} rx={5} ry={2.4} fill="#ff7d7d" opacity={0.28} />
       <ellipse cx={20} cy={12} rx={2.6} ry={2} fill="#ff7d7d" opacity={0.28} />
       <g className="toon-eyes">
-        <Eye eye={NEAR_EYE} expr={expr} skin={skin} s={s} />
-        <Eye eye={FAR_EYE} expr={expr} skin={skin} s={s} />
+        <Eye eye={NEAR_EYE} expr={expr} skin={skin} s={s} weight={weight} />
+        <Eye eye={FAR_EYE} expr={expr} skin={skin} s={s} weight={weight} />
       </g>
       {/* A small nose: just its shadow. */}
       <path d="M16.6 8.6 L18.6 12.2 L15.6 12.6 Z" fill={shade(skin, 0.3)} />
-      <Mouth expr={expr} />
+      <Mouth expr={expr} weight={weight} />
       {/* The ear on the near side of the head. */}
       <path
         d="M-17 -1 C-24 -5 -29 3 -25.5 10 C-23.5 14 -19.5 14.5 -16.5 12"
         fill={skin}
-        {...ink(OUT / s - 0.4)}
+        {...ink((OUT / s - 0.4) * weight)}
       />
       <path
         d="M-19 3 C-23 2 -23.5 7 -20.5 9.5"
         fill="none"
         stroke={shade(skin, 0.4)}
-        strokeWidth={1.4}
+        strokeWidth={1.4 * weight}
         strokeLinecap="round"
       />
-      <path d={hair.front} fill={hairColor} {...ink(1.6 / s)} />
+      <path d={hair.front} fill={hairColor} {...ink((1.6 / s) * weight)} />
       <path d={hair.shade} fill={shade(hairColor, 0.3)} />
       <path d={hair.shine} fill={tint(hairColor, 0.45)} />
       <path d={hair.crown} fill="none" {...line} />
-      <Brows expr={expr} color={shade(hairColor, 0.6)} />
+      <Brows expr={expr} color={shade(hairColor, 0.6)} weight={weight} />
     </g>
   );
 }
@@ -406,7 +444,19 @@ type EyeDef = { x: number; y: number; w: number; h: number; outer: -1 | 1 };
  * An anime eye: a white with a big iris, two highlights and a thick upper lid. The lid's slant
  * carries the expression: a low inner corner looks determined, a low outer corner worried.
  */
-function Eye({ eye, expr, skin, s }: { eye: EyeDef; expr: Expression; skin: string; s: number }) {
+function Eye({
+  eye,
+  expr,
+  skin,
+  s,
+  weight,
+}: {
+  eye: EyeDef;
+  expr: Expression;
+  skin: string;
+  s: number;
+  weight: number;
+}) {
   const clip = useId();
   const { x, y, w, h, outer } = eye;
   if (expr === 'happy') {
@@ -416,7 +466,7 @@ function Eye({ eye, expr, skin, s }: { eye: EyeDef; expr: Expression; skin: stri
         d={`M${x - w} ${y + 1} Q${x} ${y - h * 0.9} ${x + w} ${y + 1}`}
         fill="none"
         stroke={INK}
-        strokeWidth={2.6 / s}
+        strokeWidth={(2.6 / s) * weight}
         strokeLinecap="round"
       />
     );
@@ -466,28 +516,28 @@ function Eye({ eye, expr, skin, s }: { eye: EyeDef; expr: Expression; skin: stri
         d={`M${xo} ${yo} Q${x} ${Math.min(yo, yi) - h * 0.14} ${xi} ${yi}`}
         fill="none"
         stroke={INK}
-        strokeWidth={3 / s}
+        strokeWidth={(3 / s) * weight}
         strokeLinecap="round"
       />
       {/* A flick of lashes at the outer corner, and the lower lid. */}
       <path
         d={`M${xo} ${yo} l${outer * 2.4} ${-1.6}`}
         stroke={INK}
-        strokeWidth={2.2 / s}
+        strokeWidth={(2.2 / s) * weight}
         strokeLinecap="round"
       />
       <path
         d={`M${x + outer * w * 0.75} ${y + h * 0.78} Q${x + outer * w * 0.3} ${y + h * 1.02} ${x - outer * w * 0.1} ${y + h * 1.02}`}
         fill="none"
         stroke={INK}
-        strokeWidth={1.2 / s}
+        strokeWidth={(1.2 / s) * weight}
         strokeLinecap="round"
       />
     </g>
   );
 }
 
-function Brows({ expr, color }: { expr: Expression; color: string }) {
+function Brows({ expr, color, weight }: { expr: Expression; color: string; weight: number }) {
   // [outer y, inner y] of each brow.
   const pos: Record<Expression, [number, number]> = {
     calm: [-11, -11.5],
@@ -500,22 +550,22 @@ function Brows({ expr, color }: { expr: Expression; color: string }) {
   const [o, i] = pos[expr];
   const arch = expr === 'determined' || expr === 'shout' ? 0.6 : -1.6;
   return (
-    <g fill="none" stroke={color} strokeWidth={2.2} strokeLinecap="round">
+    <g fill="none" stroke={color} strokeWidth={2.2 * weight} strokeLinecap="round">
       <path d={`M-6.5 ${o} Q-0.5 ${(o + i) / 2 + arch} 5 ${i}`} />
       <path d={`M22.5 ${o + 0.4} Q18 ${(o + i) / 2 + arch} 14 ${i}`} />
     </g>
   );
 }
 
-function Mouth({ expr }: { expr: Expression }) {
+function Mouth({ expr, weight }: { expr: Expression; weight: number }) {
   switch (expr) {
     case 'calm':
-      return <path d="M5 16.4 Q10.5 19.8 15.4 15.4" fill="none" {...ink(1.7)} />;
+      return <path d="M5 16.4 Q10.5 19.8 15.4 15.4" fill="none" {...ink(1.7 * weight)} />;
     case 'determined':
       return (
         <g>
-          <path d="M4.5 17 Q10 18.6 15.6 14.6" fill="none" {...ink(1.8)} />
-          <path d="M15.6 14.6 l1.2 -1.6" fill="none" {...ink(1.4)} />
+          <path d="M4.5 17 Q10 18.6 15.6 14.6" fill="none" {...ink(1.8 * weight)} />
+          <path d="M15.6 14.6 l1.2 -1.6" fill="none" {...ink(1.4 * weight)} />
         </g>
       );
     case 'happy':
@@ -524,22 +574,24 @@ function Mouth({ expr }: { expr: Expression }) {
           <path
             d="M3.6 14.4 Q10 16.2 16.8 13.4 Q15.4 24 9.6 24 Q4.6 23.4 3.6 14.4 Z"
             fill={MOUTH}
-            {...ink(1.6)}
+            {...ink(1.6 * weight)}
           />
           <path d="M6 21 Q9.6 18.4 13.8 20.8 Q11.4 23.6 9.4 23.4 Q7.2 23 6 21 Z" fill="#ff7d7d" />
         </g>
       );
     case 'surprised':
-      return <ellipse cx={10.4} cy={19} rx={2.8} ry={3.6} fill={MOUTH} {...ink(1.5)} />;
+      return <ellipse cx={10.4} cy={19} rx={2.8} ry={3.6} fill={MOUTH} {...ink(1.5 * weight)} />;
     case 'worried':
-      return <path d="M5 18 Q7.6 15.8 10.2 18 Q12.8 20.2 15.2 17" fill="none" {...ink(1.7)} />;
+      return (
+        <path d="M5 18 Q7.6 15.8 10.2 18 Q12.8 20.2 15.2 17" fill="none" {...ink(1.7 * weight)} />
+      );
     case 'shout':
       return (
         <g>
           <path
             d="M3 13.2 Q10.4 12.8 17.4 12 Q16.4 25.4 10 25.4 Q4.4 24.8 3 13.2 Z"
             fill={MOUTH}
-            {...ink(1.6)}
+            {...ink(1.6 * weight)}
           />
           <path d="M3.6 13.6 Q10.4 13.2 16.8 12.6 L16.5 15 Q10.2 15.6 4 16 Z" fill="#fff" />
           <path d="M6.2 22.4 Q10 19.6 14.2 22 Q12 25 10 25 Q7.6 24.6 6.2 22.4 Z" fill="#ff7d7d" />

@@ -28,7 +28,7 @@ if (import.meta.env.DEV && location.hash === '#gallery') {
       render(
         <Stage>
           <StyleTestScene
-            initial={mode === 'now' || mode === 'lean' || mode === 'raster' ? mode : 'kid'}
+            initial={mode === 'now' || mode === 'v1' ? mode : 'dynamic'}
             still={still === undefined ? undefined : Number(still)}
           />
         </Stage>,

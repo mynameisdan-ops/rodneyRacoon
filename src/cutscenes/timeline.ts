@@ -43,7 +43,20 @@ export type SceneStep =
   /** Focus lines rush in around the hero for `ms`: the big moment. */
   | { do: 'action'; ms: number }
   /** A sign over his head: "!", a sweat drop, sparkles. */
-  | { do: 'emote'; emote: Emote };
+  | { do: 'emote'; emote: Emote }
+  /**
+   * The camera eases (with a little overshoot) to a zoom (1 = normal) and a tilt in degrees over
+   * `ms`, framing him; it holds there until the next camera step.
+   */
+  | { do: 'camera'; zoom: number; tilt?: number; ms: number }
+  /** An anime cut-in: a panel with a close-up of his face slams in for `ms`. */
+  | { do: 'cutin'; ms: number; expr?: Expression }
+  /**
+   * Slow motion: the next `ms` of the scene play at `rate` (0.5 = half speed). A freeze is a
+   * hit-stop: the scene holds still for `ms` of real time. Neither may overlap the next.
+   */
+  | { do: 'slow'; ms: number; rate: number }
+  | { do: 'freeze'; ms: number };
 
 export type Ease = 'linear' | 'in' | 'out' | 'inOut';
 
@@ -88,14 +101,36 @@ interface Impact {
   size: number;
 }
 
+interface CameraMove {
+  at: number;
+  ms: number;
+  zoom: number;
+  tilt: number;
+  /** Where the camera was when this move began. */
+  from: { zoom: number; tilt: number };
+}
+
+/** A stretch of scene time that plays slower (or not at all) in real time. */
+interface Warp {
+  at: number;
+  scriptMs: number;
+  realMs: number;
+}
+
 export interface Timeline {
+  /** Scene time, ms (what scripts and props count in). */
   duration: number;
+  /** How long the scene really plays, with its slow motion and freezes. */
+  realDuration: number;
   segments: Segment[];
   propEvents: PropEvent[];
   shakes: Shake[];
   impacts: Impact[];
   actions: { at: number; ms: number }[];
   emotes: { at: number; emote: Emote }[];
+  cameras: CameraMove[];
+  cutins: { at: number; ms: number; expr: Expression }[];
+  warps: Warp[];
   captionAt: number | null;
   startX: number;
 }
@@ -132,6 +167,18 @@ export interface SceneFrame {
   action: number;
   /** The emote over his head and the time since it began, or null. */
   emote: { emote: Emote; dt: number } | null;
+  /** In the moment before a jump, when he crouches to spring. */
+  crouch: boolean;
+  /**
+   * How far his body tilts forward, in degrees: into a run, along the arc of a jump (back on
+   * the way up, forward on the way down), with the swing of a vine.
+   */
+  lean: number;
+  /** Time since he landed on level footing (ms), for dust and settling; null otherwise. */
+  landing: number | null;
+  camera: { zoom: number; tilt: number };
+  /** The cut-in on screen, or null. */
+  cutin: { dt: number; ms: number; expr: Expression } | null;
 }
 
 export function buildTimeline(script: SceneScript): Timeline {
@@ -141,6 +188,9 @@ export function buildTimeline(script: SceneScript): Timeline {
   const impacts: Impact[] = [];
   const actions: Timeline['actions'] = [];
   const emotes: Timeline['emotes'] = [];
+  const cameras: CameraMove[] = [];
+  const cutins: Timeline['cutins'] = [];
+  const warps: Warp[] = [];
   let captionAt: number | null = null;
   let t = 0;
   let x = script.startX;
@@ -210,6 +260,21 @@ export function buildTimeline(script: SceneScript): Timeline {
       case 'emote':
         emotes.push({ at: t, emote: step.emote });
         break;
+      case 'camera': {
+        const prev = cameras[cameras.length - 1];
+        const from = prev ? cameraMove(prev, t) : { zoom: 1, tilt: 0 };
+        cameras.push({ at: t, ms: step.ms, zoom: step.zoom, tilt: step.tilt ?? 0, from });
+        break;
+      }
+      case 'cutin':
+        cutins.push({ at: t, ms: step.ms, expr: step.expr ?? 'determined' });
+        break;
+      case 'slow':
+        warps.push({ at: t, scriptMs: step.ms, realMs: step.ms / step.rate });
+        break;
+      case 'freeze':
+        warps.push({ at: t, scriptMs: 0, realMs: step.ms });
+        break;
       case 'prop':
         propEvents.push({ at: t, state: step.state });
         break;
@@ -223,14 +288,42 @@ export function buildTimeline(script: SceneScript): Timeline {
   }
   return {
     duration: t,
+    realDuration: t + warps.reduce((sum, w) => sum + w.realMs - w.scriptMs, 0),
     segments,
     propEvents,
     shakes,
     impacts,
     actions,
     emotes,
+    cameras,
+    cutins,
+    warps,
     captionAt,
     startX: script.startX,
+  };
+}
+
+/** Scene time at real time `real` (ms), through the scene's slow motion and freezes. */
+export function scriptTime(tl: Timeline, real: number): number {
+  let shift = 0; // how far real time has run ahead of scene time
+  for (const w of tl.warps) {
+    const start = w.at + shift;
+    if (real < start) break;
+    if (real < start + w.realMs) return w.at + ((real - start) * w.scriptMs) / w.realMs;
+    shift += w.realMs - w.scriptMs;
+  }
+  return Math.max(0, Math.min(tl.duration, real - shift));
+}
+
+/** A snappy ease that overshoots a touch and settles (for camera moves). */
+const backOut = (p: number) => 1 + 2.2 * (p - 1) ** 3 + 1.2 * (p - 1) ** 2;
+
+function cameraMove(c: CameraMove, time: number): { zoom: number; tilt: number } {
+  const p = Math.max(0, Math.min(1, (time - c.at) / Math.max(1, c.ms)));
+  const q = backOut(p);
+  return {
+    zoom: c.from.zoom + (c.zoom - c.from.zoom) * q,
+    tilt: c.from.tilt + (c.tilt - c.from.tilt) * q,
   };
 }
 
@@ -305,6 +398,32 @@ function squashAt(tl: Timeline, i: number, time: number): { sx: number; sy: numb
   return { sx: 1 + s * 0.7, sy: 1 - s };
 }
 
+/** The most his body tilts, degrees. */
+const LEAN_MAX = 22;
+
+/**
+ * How far his body tilts forward (degrees) from how he moves: into a run, along a jump's arc
+ * (fading out at take-off and landing, so he leaves and lands upright), with a swing or a ride.
+ */
+function leanAt(seg: Segment, time: number): number {
+  const dir = seg.facing === 'right' ? 1 : -1;
+  const now = place(seg, time);
+  const before = place(seg, time - 16);
+  const vx = ((now.x - before.x) / 16) * dir;
+  const vy = (now.lift - before.lift) / 16;
+  const clamp = (v: number) => Math.max(-LEAN_MAX, Math.min(LEAN_MAX, v));
+  if (seg.arc > 0) {
+    const span = Math.max(1, seg.end - seg.start);
+    const p = Math.max(0, Math.min(1, (time - seg.start) / span));
+    const travel = (Math.atan2(vy, Math.max(0.05, Math.abs(vx))) * 180) / Math.PI;
+    return clamp(-travel * 0.4 + vx * 8) * Math.sin(Math.PI * p);
+  }
+  if (seg.pose === 'run') return Math.min(14, vx * 16);
+  if (seg.pose === 'walk') return Math.min(5, vx * 10);
+  if (seg.fromX !== seg.toX || seg.fromLift !== seg.toLift) return clamp(vx * 18);
+  return 0;
+}
+
 /** The state of the scene at time `t` (ms). Clamps to the start and the end. */
 export function sampleTimeline(tl: Timeline, t: number): SceneFrame {
   const time = Math.max(0, Math.min(t, tl.duration));
@@ -331,7 +450,11 @@ export function sampleTimeline(tl: Timeline, t: number): SceneFrame {
   for (const e of tl.emotes) {
     if (time >= e.at && time < e.at + EMOTE_MS) emote = { emote: e.emote, dt: time - e.at };
   }
-  const extras = { impacts, action, emote };
+  const cam = [...tl.cameras].reverse().find((c) => time >= c.at);
+  const camera = cam ? cameraMove(cam, time) : { zoom: 1, tilt: 0 };
+  const shown = tl.cutins.find((c) => time >= c.at && time < c.at + c.ms);
+  const cutin = shown ? { dt: time - shown.at, ms: shown.ms, expr: shown.expr } : null;
+  const extras = { impacts, action, emote, camera, cutin };
 
   let i = tl.segments.findIndex((s) => time >= s.start && time < s.end);
   if (i < 0) i = tl.segments.length - 1;
@@ -350,6 +473,9 @@ export function sampleTimeline(tl: Timeline, t: number): SceneFrame {
       expr: POSE_EXPRESSION.idle,
       squash: { sx: 1, sy: 1 },
       speed: 0,
+      crouch: false,
+      lean: 0,
+      landing: null,
       ...extras,
     };
   }
@@ -359,6 +485,14 @@ export function sampleTimeline(tl: Timeline, t: number): SceneFrame {
   // Once the scene is over, a walk, run or jump settles into standing.
   const settled = t >= tl.duration && (seg.pose === 'walk' || seg.pose === 'run' || seg.arc > 0);
   const pose = settled ? 'idle' : seg.pose;
+  const next = tl.segments[i + 1];
+  const prev = tl.segments[i - 1];
+  const crouch =
+    !settled && seg.arc === 0 && !!next && next.arc > 0 && time > next.start - CROUCH_MS;
+  const landed =
+    !!prev && prev.arc > 0 && seg.arc === 0 && seg.fromLift === seg.toLift
+      ? time - seg.start
+      : null;
   return {
     x,
     lift,
@@ -372,6 +506,9 @@ export function sampleTimeline(tl: Timeline, t: number): SceneFrame {
     expr: settled ? POSE_EXPRESSION.idle : (seg.expr ?? POSE_EXPRESSION[pose]),
     squash: settled ? { sx: 1, sy: 1 } : squashAt(tl, i, time),
     speed: settled ? 0 : speed,
+    crouch,
+    lean: settled ? 0 : leanAt(seg, time),
+    landing: landed !== null && landed < 600 ? landed : null,
     ...extras,
   };
 }

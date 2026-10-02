@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EMOTE_MS, IMPACT_MS, buildTimeline, sampleTimeline } from './timeline';
+import { EMOTE_MS, IMPACT_MS, buildTimeline, sampleTimeline, scriptTime } from './timeline';
 
 /** The M7b cartoon beats: faces, squash and stretch, impacts, focus lines and emotes. */
 
@@ -106,5 +106,100 @@ describe('impacts, focus lines and emotes', () => {
   it('reports how fast he is moving', () => {
     const tl = buildTimeline({ startX: 0, steps: [{ do: 'run', x: 800, ms: 1000 }] });
     expect(sampleTimeline(tl, 500).speed).toBeCloseTo(0.8);
+  });
+});
+
+describe('direction: time, camera and cut-ins', () => {
+  const tl = buildTimeline({
+    startX: 0,
+    steps: [
+      { do: 'walk', x: 100, ms: 1000 },
+      { do: 'freeze', ms: 100 },
+      { do: 'cutin', ms: 600, expr: 'shout' },
+      { do: 'camera', zoom: 1.4, tilt: -4, ms: 300 },
+      { do: 'slow', ms: 400, rate: 0.5 },
+      { do: 'walk', x: 200, ms: 1000 },
+      { do: 'camera', zoom: 1, ms: 400 },
+      { do: 'hold', pose: 'cheer', ms: 600 },
+    ],
+  });
+
+  it('adds freezes and slow motion to the real running time', () => {
+    expect(tl.duration).toBe(2600);
+    expect(tl.realDuration).toBe(2600 + 100 + 400);
+  });
+
+  it('maps real time to scene time through a freeze and slow motion', () => {
+    expect(scriptTime(tl, 500)).toBe(500);
+    expect(scriptTime(tl, 1050)).toBe(1000); // frozen
+    expect(scriptTime(tl, 1100)).toBe(1000);
+    expect(scriptTime(tl, 1300)).toBe(1100); // half speed
+    expect(scriptTime(tl, 1900)).toBe(1400); // slow motion over
+    expect(scriptTime(tl, 2000)).toBe(1500);
+    expect(scriptTime(tl, 99999)).toBe(2600);
+  });
+
+  it('eases the camera in with a little overshoot, holds, and eases back', () => {
+    expect(sampleTimeline(tl, 900).camera).toEqual({ zoom: 1, tilt: 0 });
+    const mid = sampleTimeline(tl, 1150).camera;
+    expect(mid.zoom).toBeGreaterThan(1);
+    expect(mid.zoom).toBeLessThan(1.45);
+    const peak = Math.max(
+      ...[1200, 1220, 1250, 1280].map((t) => sampleTimeline(tl, t).camera.zoom),
+    );
+    expect(peak).toBeGreaterThan(1.4);
+    expect(sampleTimeline(tl, 1800).camera).toEqual({ zoom: 1.4, tilt: -4 });
+    expect(sampleTimeline(tl, 2600).camera.zoom).toBeCloseTo(1);
+  });
+
+  it('starts a camera move from wherever the last one had got to', () => {
+    const quick = buildTimeline({
+      startX: 0,
+      steps: [
+        { do: 'camera', zoom: 2, ms: 1000 },
+        { do: 'hold', pose: 'idle', ms: 100 },
+        { do: 'camera', zoom: 1, ms: 100 },
+        { do: 'hold', pose: 'idle', ms: 100 },
+      ],
+    });
+    const at100 = sampleTimeline(quick, 99.9).camera.zoom;
+    expect(sampleTimeline(quick, 100.1).camera.zoom).toBeCloseTo(at100, 1);
+  });
+
+  it('shows a cut-in for its time', () => {
+    expect(sampleTimeline(tl, 999).cutin).toBeNull();
+    expect(sampleTimeline(tl, 1200).cutin).toEqual({ dt: 200, ms: 600, expr: 'shout' });
+    expect(sampleTimeline(tl, 1600).cutin).toBeNull();
+  });
+});
+
+describe('body dynamics', () => {
+  const tl = buildTimeline({
+    startX: 0,
+    steps: [
+      { do: 'run', x: 800, ms: 1000 },
+      { do: 'jump', x: 1200, height: 150, ms: 600, pose: 'leap' },
+      { do: 'hold', pose: 'cheer', ms: 800 },
+    ],
+  });
+
+  it('leans into a run', () => {
+    expect(sampleTimeline(tl, 500).lean).toBeGreaterThan(8);
+  });
+
+  it('tilts back on the way up a jump, forward on the way down, upright at the ends', () => {
+    const up = sampleTimeline(tl, 1150).lean;
+    const down = sampleTimeline(tl, 1450).lean;
+    expect(down).toBeGreaterThan(up);
+    expect(Math.abs(sampleTimeline(tl, 1001).lean)).toBeLessThan(1);
+    expect(sampleTimeline(tl, 1700).lean).toBe(0);
+  });
+
+  it('crouches just before the jump and reports the landing', () => {
+    expect(sampleTimeline(tl, 800).crouch).toBe(false);
+    expect(sampleTimeline(tl, 950).crouch).toBe(true);
+    expect(sampleTimeline(tl, 1300).crouch).toBe(false);
+    expect(sampleTimeline(tl, 1650).landing).toBe(50);
+    expect(sampleTimeline(tl, 2300).landing).toBeNull();
   });
 });

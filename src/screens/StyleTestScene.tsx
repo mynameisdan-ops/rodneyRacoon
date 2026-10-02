@@ -1,19 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { DEFAULT_AVATAR } from '../art/hero/avatar';
 import { ToonSceneView } from '../art/toon/ToonSceneView';
-import type { Build } from '../art/toon/toonBuilds';
 import { getCutScene, type CutScene } from '../content/cutscenes';
 import { getLevel } from '../content/levels';
 import { CutSceneView } from '../cutscenes/CutSceneView';
-import { buildTimeline } from '../cutscenes/timeline';
+import { buildTimeline, scriptTime } from '../cutscenes/timeline';
+
+const LEVEL_12 = getCutScene(12)!;
 
 /**
- * Level 12 (the vine swing) with cartoon beats: the same moves and timing, plus his faces, a "!"
- * when the gully floods, an impact as the water crashes in, focus lines while he swings, and
- * sparkles when he lands.
+ * v1 (the first style test): level 12 with faces, a "!", an impact, focus lines and sparkles,
+ * on the same moves and timing as the game's scene.
  */
-const TOON_VINE: CutScene = {
-  ...getCutScene(12)!,
+const V1: CutScene = {
+  ...LEVEL_12,
   script: {
     startX: 150,
     steps: [
@@ -39,18 +39,69 @@ const TOON_VINE: CutScene = {
   },
 };
 
-type Mode = 'now' | Build | 'raster';
+/**
+ * Dynamic: the same scene directed like a Saturday-morning cartoon. The crash freezes for a
+ * beat and the camera snaps to his surprised face; a cut-in of his determined face slams across;
+ * he crouches and leaps under a tilted camera; the swing slows down at the bottom of its arc;
+ * the landing freezes, kicks up dust and sparkles as the camera eases back.
+ */
+const DYNAMIC: CutScene = {
+  ...LEVEL_12,
+  script: {
+    startX: 150,
+    steps: [
+      { do: 'walk', x: 500, ms: 1000 },
+      { do: 'prop', state: 'flood' },
+      { do: 'impact', x: 750, lift: 40, size: 1.2 },
+      { do: 'hold', pose: 'brace', ms: 70 },
+      { do: 'freeze', ms: 120 },
+      { do: 'shake', ms: 700, amp: 12 },
+      { do: 'emote', emote: 'alert' },
+      { do: 'camera', zoom: 1.9, ms: 240 },
+      { do: 'hold', pose: 'brace', ms: 530 },
+      { do: 'camera', zoom: 1.08, ms: 220 },
+      { do: 'cutin', ms: 820, expr: 'determined' },
+      { do: 'hold', pose: 'brace', ms: 820, expr: 'determined' },
+      { do: 'caption' },
+      { do: 'camera', zoom: 1.22, tilt: -5, ms: 420 },
+      { do: 'jump', x: 602.5, lift: 129.5, height: 60, ms: 450, pose: 'leap' },
+      { do: 'prop', state: 'grab' },
+      { do: 'impact', x: 602.5, lift: 304, size: 0.35 },
+      { do: 'action', ms: 1100 },
+      { do: 'move', x: 750, lift: 90, ms: 550, pose: 'swing', ease: 'in' },
+      { do: 'slow', ms: 300, rate: 0.4 },
+      { do: 'move', x: 897.5, lift: 129.5, ms: 550, pose: 'swing', ease: 'out' },
+      { do: 'prop', state: 'letgo' },
+      { do: 'camera', zoom: 1, ms: 380 },
+      { do: 'jump', x: 1100, height: 80, ms: 550, pose: 'leap' },
+      { do: 'impact', x: 1100, lift: 0, size: 0.6 },
+      { do: 'hold', pose: 'cheer', ms: 50 },
+      { do: 'freeze', ms: 80 },
+      { do: 'shake', ms: 260, amp: 6 },
+      { do: 'emote', emote: 'sparkle' },
+      { do: 'camera', zoom: 1.14, ms: 200 },
+      { do: 'hold', pose: 'cheer', ms: 210 },
+      { do: 'camera', zoom: 1, ms: 700 },
+      { do: 'hold', pose: 'cheer', ms: 1300 },
+    ],
+  },
+};
+
+const SCENES = { v1: V1, dynamic: DYNAMIC } as const;
+export type Mode = 'now' | keyof typeof SCENES;
+const MODES: readonly Mode[] = ['now', 'v1', 'dynamic'];
 
 /**
- * Dev-only: the vine swing now and in the proposed look, to scrub or play. `#style-scene-kid`
- * opens it in a mode; `#style-scene-kid-2600` shows one frame without the controls (screenshots).
+ * Dev-only: the vine swing now, in the first style test (v1), and directed (dynamic), all with
+ * the lean build. `#style-scene-dynamic` opens it in a mode; `#style-scene-dynamic-2600` shows the
+ * frame at 2.6s of real time without the controls (screenshots).
  */
 export function StyleTestScene({ initial, still }: { initial: Mode; still?: number }) {
   const level = getLevel(12)!;
   const [mode, setMode] = useState<Mode>(initial);
-  const scene = mode === 'now' ? getCutScene(12)! : TOON_VINE;
+  const scene = mode === 'now' ? LEVEL_12 : SCENES[mode];
   const timeline = useMemo(() => buildTimeline(scene.script), [scene]);
-  const [t, setT] = useState(still ?? 0);
+  const [real, setReal] = useState(still ?? 0);
   const [playing, setPlaying] = useState(false);
   const raf = useRef(0);
 
@@ -59,16 +110,17 @@ export function StyleTestScene({ initial, still }: { initial: Mode; still?: numb
     let last = performance.now();
     let time = 0;
     const tick = (now: number) => {
-      time = Math.min(timeline.duration, time + Math.min(100, now - last));
+      time = Math.min(timeline.realDuration, time + Math.min(100, now - last));
       last = now;
-      setT(time);
-      if (time < timeline.duration) raf.current = requestAnimationFrame(tick);
+      setReal(time);
+      if (time < timeline.realDuration) raf.current = requestAnimationFrame(tick);
       else setPlaying(false);
     };
     raf.current = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf.current);
   }, [playing, timeline]);
 
+  const t = scriptTime(timeline, real);
   const view =
     mode === 'now' ? (
       <CutSceneView
@@ -85,8 +137,8 @@ export function StyleTestScene({ initial, still }: { initial: Mode; still?: numb
         timeline={timeline}
         worldId={level.world}
         avatar={DEFAULT_AVATAR}
-        build={mode === 'raster' ? 'kid' : mode}
-        raster={mode === 'raster'}
+        build="lean"
+        raster
         caption={level.caption}
         t={t}
       />
@@ -96,7 +148,7 @@ export function StyleTestScene({ initial, still }: { initial: Mode; still?: numb
     <div className="scene-preview">
       {view}
       <div className="scene-preview__bar">
-        {(['now', 'kid', 'lean', 'raster'] as const).map((m) => (
+        {MODES.map((m) => (
           <button
             key={m}
             type="button"
@@ -104,6 +156,7 @@ export function StyleTestScene({ initial, still }: { initial: Mode; still?: numb
             onClick={() => {
               setMode(m);
               setPlaying(false);
+              setReal(0);
             }}
           >
             {m}
@@ -113,20 +166,20 @@ export function StyleTestScene({ initial, still }: { initial: Mode; still?: numb
           type="range"
           aria-label="Scene time"
           min={0}
-          max={timeline.duration}
-          step={25}
-          value={Math.min(t, timeline.duration)}
+          max={timeline.realDuration}
+          step={10}
+          value={Math.min(real, timeline.realDuration)}
           onChange={(e) => {
             setPlaying(false);
-            setT(Number(e.target.value));
+            setReal(Number(e.target.value));
           }}
         />
-        <span className="scene-preview__time">{(t / 1000).toFixed(2)}s</span>
+        <span className="scene-preview__time">{(real / 1000).toFixed(2)}s</span>
         <button
           type="button"
           className="big-button"
           onClick={() => {
-            setT(0);
+            setReal(0);
             setPlaying(true);
           }}
         >

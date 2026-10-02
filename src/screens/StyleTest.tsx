@@ -25,7 +25,7 @@ const AVATARS: AvatarConfig[] = HAIR_STYLES.map((hairStyle, i) => ({
  */
 export function StyleTest({ view }: { view?: string }) {
   const fromHash = location.hash.split('-')[2];
-  const [build, setBuild] = useState<Build>(fromHash === 'lean' ? 'lean' : 'kid');
+  const [build, setBuild] = useState<Build>(fromHash === 'kid' ? 'kid' : 'lean');
   const show = (section: string) => !view || view === section;
   const open = (hash: string) => {
     location.hash = hash;
@@ -35,7 +35,7 @@ export function StyleTest({ view }: { view?: string }) {
     <div className="gallery">
       {!view && (
         <div className="gallery__row">
-          {(['now', 'kid', 'lean'] as const).map((m) => (
+          {(['now', 'v1', 'dynamic'] as const).map((m) => (
             <button
               key={m}
               type="button"
@@ -74,7 +74,7 @@ export function StyleTest({ view }: { view?: string }) {
       )}
       {!view && (
         <div className="gallery__row">
-          {(['kid', 'lean'] as const).map((b) => (
+          {(['lean', 'kid'] as const).map((b) => (
             <button
               key={b}
               type="button"

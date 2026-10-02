@@ -195,3 +195,39 @@ export function EmoteSign({ emote, x, y, dt }: { emote: Emote; x: number; y: num
       );
   }
 }
+
+/**
+ * A motion arc: a tapered streak along the path he has just traveled, widest at him and fading
+ * to a point (`points` run from where he is now back in time).
+ */
+export function MotionTrail({
+  points,
+  width,
+}: {
+  points: readonly { x: number; y: number }[];
+  width: number;
+}) {
+  const n = points.length;
+  if (n < 3) return null;
+  const streak = (w: number) => {
+    const left: string[] = [];
+    const right: string[] = [];
+    points.forEach((pt, i) => {
+      const a = points[Math.max(0, i - 1)]!;
+      const b = points[Math.min(n - 1, i + 1)]!;
+      const len = Math.hypot(b.x - a.x, b.y - a.y) || 1;
+      const nx = -(b.y - a.y) / len;
+      const ny = (b.x - a.x) / len;
+      const half = (w / 2) * (1 - i / (n - 1));
+      left.push(`${(pt.x + nx * half).toFixed(1)} ${(pt.y + ny * half).toFixed(1)}`);
+      right.push(`${(pt.x - nx * half).toFixed(1)} ${(pt.y - ny * half).toFixed(1)}`);
+    });
+    return `M${left.join(' L')} L${right.reverse().join(' L')} Z`;
+  };
+  return (
+    <g>
+      <path d={streak(width)} fill="#fffdf3" opacity={0.45} />
+      <path d={streak(width * 0.45)} fill="#fff" opacity={0.7} />
+    </g>
+  );
+}
