@@ -43,7 +43,9 @@ npm run format     # prettier --write
 
 In a dev build, `http://localhost:5173/#moments-1-4` is a contact sheet of levels 1–4's scenes at
 several moments (for picking sticker moments; screenshot it with headless Chrome at 2480px wide).
-Open `http://localhost:5173/#gallery` for the art gallery (every hero pose, every shop item, every sticker,
+Open `http://localhost:5173/#style` for the M7b style test (the current art next to the proposed cartoon
+look; `#style-scene-kid` plays the vine-swing scene in it, and `#style-scene-kid-2600` shows one frame for a
+screenshot). Open `http://localhost:5173/#gallery` for the art gallery (every hero pose, every shop item, every sticker,
 hair style and skin tone, plus every cut scene with a scrub slider to inspect any moment and a
 Play button). Use it to check art changes; it is left out of production builds.
 
@@ -89,7 +91,8 @@ Play button). Use it to check art changes; it is left out of production builds.
 ## Privacy rules (hard requirements)
 
 - **No runtime network calls, analytics, or third-party trackers.** The app must work fully offline once installed.
-- Avatar photos are stored **only** in local IndexedDB, downscaled to 256px. Never upload or log them.
+- The app has no photo feature: avatars are drawn from photos the parent shares (M8). Never commit,
+  store or log those photos, and keep the children's names out of the repo (presets are unnamed).
 - Never commit real photos of the children to the repo.
 
 ## Working conventions

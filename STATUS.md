@@ -1,6 +1,6 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Sep 30, 2026 (M7 rewards merged to `main`).
+Last updated: Oct 2, 2026 (M7b style test built on `m7b-cartoon-look`; waiting for the user's pick).
 milestone: `docs/decisions.md`.
 
 ## Goals
@@ -34,7 +34,14 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
   first pass, new stars) with a results tally; an avatar shop of 21 hats, capes, packs and pets worn
   on the hero; a sticker book of 40 stickers (stills from each level's cut scene with the child's own
   hero). Save format v5. Map dock buttons open the book and the shop.
-- **Checks:** 323 unit tests, lint and build pass on `main`; CI runs them on every push.
+- **M7b style test (on `m7b-cartoon-look`, not merged):** the user wants a Saturday-morning
+  cartoon look (Pokémon as the reference) before M8. Built apart from the game: a three-quarter-
+  view hero with anime eyes, six expressions and two builds (`kid`, `lean`); a painted forest; level
+  12's vine swing with squash and stretch, an impact burst, focus lines, emotes and a camera push.
+  Open `#style` (and `#style-scene-kid`) in a dev build. Painted layers cost frames; drawn once as
+  images they come close to today's cost (decisions.md has the numbers).
+- **M8 changed:** avatars drawn from photos the user provides (no builder, no photo feature).
+- **Checks:** 347 unit tests, lint and build pass on the branch; CI runs them on every push.
 - **Known gaps:** the parent controls for adaptive difficulty (and the unlock switch's final home)
   wait for Settings in M10; PNG icons
   and the Pages `base` path (M10).
@@ -42,18 +49,21 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 
 ## Next steps
 
-1. The user plays the rewards (and Worlds 2–5 if not done yet): PC with `npm run dev`, tablet with
-   the LAN preview (`npm run build`, then `npm run preview -- --host`). Worth a look: coin pace vs
-   prices, whether the pets and gear read well at tablet size, and how the sticker book runs on the
-   tablet (each page draws 8 scene stills). Feedback goes in `docs/feedback.md`.
-2. M8 (avatar builder + photo face) on a new branch, then M9 and M10.
+1. The user looks at `#style` and `#style-scene-kid`, picks `kid` or `lean`, and says whether the
+   direction is right (worth trying on the tablet too: the LAN preview serves the dev pages only
+   in `npm run dev -- --host`).
+2. M7b Phase B: the new hero becomes `Hero` (with gear redrawn for it) and `CutSceneView` gets the
+   cartoon beats; then Phase C, world by world (backdrop rasterized, obstacles, chaser, beats in
+   the scripts); Phase D, the UI; Phase E, the tablet check.
+3. M8 (avatars from the user's photos), then M9 and M10. The rewards play-through is still welcome
+   any time (coin pace vs prices, gear at tablet size, sticker book speed).
 
 ## Handoff
 
-- **Branch:** `main`, pushed, with `m7-rewards` merged (M0–M7). Nothing uncommitted
-  except the user's own `handover.md`. In the dev console, the store module is imported as
+- **Branch:** `m7b-cartoon-look`, pushed (the style test). `main` has M0–M7. Nothing uncommitted
+  except the user's own `handover.md` (an old pre-M5 prompt, out of date). In the dev console, the store module is imported as
   `/src/state/store.ts?t=…` (see the page's resource list) to seed test progress.
-- **Waiting on the user:** a play-through of the rewards (and of Worlds 2–5).
+- **Waiting on the user:** the style-test pick (kid or lean, and the direction), then photos for M8.
 - **Gotchas:** in a hidden browser pane `requestAnimationFrame` stops and `document.hidden` is true, so
   pages auto-pause and scenes don't advance; scrub scenes with the gallery slider. The dev server's file
   watcher sometimes misses edits made by tools; `touch` the file. Long Bash heredocs fail on Windows;

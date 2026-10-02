@@ -262,3 +262,36 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
   - Checked in the browser at 1280×800 and 915×412: a real page of level 9 paid 54 (14 + 5 + 10 +
     10 + 15, as the tally showed), bursts at 5 and 10, the new sticker; buying and wearing in the
     shop, a pet on the map and the page strip, the book and the large view.
+
+- **2026-10-02: Direction change, and the M7b style test** (`m7b-cartoon-look`, not merged).
+  - Reviewed the state (M0–M7 merged, nothing new in feedback, not deployed yet) with the user, who
+    changed the plan: before M8, a graphics pass so the game looks and moves like a Saturday-morning
+    cartoon (Pokémon is the reference); and M8 becomes avatars drawn from photos the user provides,
+    replacing the in-app builder with a camera crop. The photos are never committed or stored.
+  - **Style test** (dev page `#style`; `#style-scene-kid` for the scene), built apart from the game so
+    nothing changes until a direction is approved:
+    - A new hero (`art/toon/ToonHero.tsx`) in a **three-quarter view**: big anime eyes (iris,
+      two highlights, a thick upper lid whose slant carries the mood), bold silhouette lines and
+      thin inner ones, one crisp shadow per part, a rim light, hair in big locks with a shine band
+      and a shadow cast on the forehead. Two builds to choose from: `kid` (big head, ~3.3 heads
+      tall) and `lean` (~4.3 heads). Six expressions (`art/hero/expressions.ts`), each pose with
+      its own default. It keeps `Hero`'s joints and class names, so every pose in hero.css works.
+    - Found: in a three-quarter view the near arm hangs on the *left* of his body, so raised arms
+      that swing forward cross his face. The near limbs moved left, and the raised-arm poses got
+      their own angles (`toonHero.css`) that lift the arm beside his head.
+    - Scenes size him by **reach** (hands 175px above his feet in the swing pose, what every
+      vine, rope and ledge is laid out for): the kid build draws at ~212px, the lean at ~192px.
+    - A **painted forest** (`art/toon/paintedForest.tsx`, `WorldBackdrop painted`): gradient sky,
+      sun glow and light shafts through the canopy, tree rows fading into fog, trunks without ink
+      lines but with a rim light and moss, dappled light on the floor. Only the hero and the props
+      he touches keep ink lines, as in anime. Level 12's gully and water were repainted too.
+    - **Cartoon beats in the timeline** (pure, tested in `cartoonBeats.test.ts`): an `expr` field on
+      blocking steps; `impact`, `action` (focus lines) and `emote` ("!", sweat, sparkle) steps; and
+      squash and stretch computed from the timeline (a crouch before a jump, a stretch with
+      vertical speed, a springy squash on landing). The test scene also pushes the camera in on
+      the big moment and draws speed lines behind him when he moves fast.
+    - **Performance** (headless Chrome, the 5.5 s vine scene, CPU throttled 5×): now ~14 ms a frame;
+      the new look ~19 ms (1,580 SVG elements vs 930); with each backdrop layer drawn once as an
+      image (`WorldBackdrop raster`) and the scene on its own compositor layer, ~16 ms. So the
+      painted look should ship rasterized; the tablet check decides.
+  - Waiting on the user: kid or lean, and whether the direction is right, before Phase B.

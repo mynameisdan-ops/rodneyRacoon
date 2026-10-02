@@ -5,7 +5,9 @@ import { HAIR_COLORS, HAIR_STYLES, PANTS_COLORS, SHOE_COLORS, SKIN_TONES } from 
 import { PROFILE_COLORS } from '../content/profiles';
 import { avatarForProfile, DEFAULT_AVATAR } from './hero/avatar';
 import { Hero } from './hero/Hero';
+import { EXPRESSIONS } from './hero/expressions';
 import { HERO_POSES } from './hero/poses';
+import { ToonHero } from './toon/ToonHero';
 import { mix, shade, tint } from './style';
 import { getTheme, MEADOW, MINE } from './worlds/themes';
 import { WorldBackdrop } from './worlds/WorldBackdrop';
@@ -120,6 +122,28 @@ describe('hero', () => {
         expect(svg).not.toContain('NaN');
         // No CSS filters: they are slow on tablets.
         expect(svg).not.toContain('filter');
+      }
+    }
+  });
+});
+
+describe('style-test hero (M7b)', () => {
+  it.each(HERO_POSES)('draws the %s pose with every face, build and hair style', (pose) => {
+    for (const build of ['kid', 'lean'] as const) {
+      for (const expression of EXPRESSIONS) {
+        for (const hairStyle of HAIR_STYLES) {
+          const svg = renderToStaticMarkup(
+            createElement(ToonHero, {
+              avatar: { ...DEFAULT_AVATAR, hairStyle },
+              pose,
+              build,
+              expression,
+            }),
+          );
+          expect(svg).toContain(`hero-svg--${pose}`);
+          expect(svg).not.toContain('NaN');
+          expect(svg).not.toContain('filter');
+        }
       }
     }
   });

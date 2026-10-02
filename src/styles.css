@@ -1818,3 +1818,31 @@ button {
     transform: translateY(-30px);
   }
 }
+
+/* ---------- Style test (dev only, #style) ---------- */
+
+.style-test__face {
+  width: 230px;
+  height: 200px;
+  overflow: hidden;
+}
+
+.style-test__face svg {
+  margin: -6px 0 0 -66px;
+}
+
+.style-test__poses {
+  gap: 16px;
+}
+
+.style-test__strips {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0 -40px 28px;
+}
+
+/* M7b test: keep the scene on its own compositor layer so shakes and push-ins don't repaint it. */
+.scene__world--layer {
+  will-change: transform;
+}

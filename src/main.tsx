@@ -19,6 +19,30 @@ if (import.meta.env.DEV && location.hash === '#gallery') {
       </Stage>,
     ),
   );
+} else if (import.meta.env.DEV && location.hash.startsWith('#style')) {
+  // Dev-only M7b style test: the current art next to the proposed cartoon look.
+  // #style-faces, #style-poses ... show one section (for screenshots).
+  const [, view, mode, still] = location.hash.split('-');
+  if (view === 'scene') {
+    void import('./screens/StyleTestScene').then(({ StyleTestScene }) =>
+      render(
+        <Stage>
+          <StyleTestScene
+            initial={mode === 'now' || mode === 'lean' || mode === 'raster' ? mode : 'kid'}
+            still={still === undefined ? undefined : Number(still)}
+          />
+        </Stage>,
+      ),
+    );
+  } else {
+    void import('./screens/StyleTest').then(({ StyleTest }) =>
+      render(
+        <Stage>
+          <StyleTest view={view} />
+        </Stage>,
+      ),
+    );
+  }
 } else if (import.meta.env.DEV && location.hash.startsWith('#moments')) {
   // Dev-only contact sheet for picking sticker moments, e.g. #moments-1-4.
   const [from = 1, to = from] = location.hash.split('-').slice(1).map(Number);

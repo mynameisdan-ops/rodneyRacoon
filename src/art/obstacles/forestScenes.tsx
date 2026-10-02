@@ -9,6 +9,7 @@ import {
   MUSHROOMS,
   ROOT_SLIDE,
   VINE_SWING,
+  vineEnd,
 } from './forestLayout';
 import {
   bump,
@@ -372,20 +373,6 @@ export function RootSlideBack(p: ObstacleProps) {
 
 // ---------- Level 12: vine swing ----------
 // flood (water roars into the gully) → grab (he swings on a vine) → letgo.
-
-function vineEnd(p: ObstacleProps) {
-  const { pivot, vine, reach } = VINE_SWING;
-  const grabAt = eventTime(p.events, 'grab');
-  const letgoAt = eventTime(p.events, 'letgo');
-  if (p.t >= grabAt && p.t < letgoAt) return { x: p.heroX, y: -(p.heroLift + reach) };
-  let angle = 0.05 * Math.sin(p.t / 600);
-  if (p.t >= letgoAt) {
-    const dt = p.t - letgoAt;
-    const a0 = Math.asin(clamp01((p.heroAt(letgoAt).x - pivot.x) / vine));
-    angle = a0 * Math.cos(dt / 330) * Math.exp(-dt / 1400);
-  }
-  return { x: pivot.x + vine * Math.sin(angle), y: pivot.y + vine * Math.cos(angle) };
-}
 
 function Water({ a, b, level, t }: { a: number; b: number; level: number; t: number }) {
   const n = 8;

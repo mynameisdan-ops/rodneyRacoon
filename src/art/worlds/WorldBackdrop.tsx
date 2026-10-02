@@ -1,10 +1,12 @@
-import { useId, useMemo, type ReactNode } from 'react';
+import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { createRng } from '../../game/rng';
 import { CanyonFar, CanyonMid, CanyonNear, CanyonSky } from './canyon';
 import { ForestCanopy, ForestFar, ForestMid, ForestNear } from './forest';
 import { MineCeiling, MineFar, MineMid, MineNear } from './mine';
 import { MountainClouds, MountainFar, MountainMid, MountainNear } from './mountain';
 import { RiverClouds, RiverFar, RiverMid, RiverNear } from './river';
+import { PaintedCanopy, PaintedFar, PaintedMid, PaintedNear } from '../toon/paintedForest';
+import { PAINTED_FOREST } from '../toon/paintedPalette';
 import { getTheme, type OutdoorTheme } from './themes';
 import './backdrop.css';
 
@@ -28,6 +30,13 @@ interface Props {
   parallax?: Partial<typeof PARALLAX>;
   /** Ease scroll changes (page strip). Turn off when the camera moves every frame (cut scenes). */
   smooth?: boolean;
+  /** The M7b style test's painted look (only the forest so far). */
+  painted?: boolean;
+  /**
+   * Draw each layer once as an image and slide the images (M7b test): far cheaper to move than
+   * the shapes, which matters for painted layers full of gradients.
+   */
+  raster?: boolean;
   children?: ReactNode;
 }
 
@@ -51,6 +60,8 @@ export function WorldBackdrop({
   detail = 1,
   parallax,
   smooth = true,
+  painted = false,
+  raster = false,
   children,
 }: Props) {
   const speed = { ...PARALLAX, ...parallax };
@@ -70,6 +81,14 @@ export function WorldBackdrop({
       }
       case 'forest': {
         const p = { ...base, theme };
+        if (painted) {
+          return {
+            clouds: <PaintedCanopy {...p} />,
+            far: <PaintedFar {...p} />,
+            mid: <PaintedMid {...p} />,
+            near: <PaintedNear {...p} />,
+          };
+        }
         return {
           clouds: <ForestCanopy {...p} />,
           far: <ForestFar {...p} />,
@@ -129,7 +148,8 @@ export function WorldBackdrop({
         />
       ),
     };
-  }, [theme, horizon, groundTop, height, pathY, detail, worldId]);
+  }, [theme, horizon, groundTop, height, pathY, detail, worldId, painted]);
+  const paintedSky = painted && theme.kind === 'forest';
 
   return (
     <svg
@@ -139,21 +159,37 @@ export function WorldBackdrop({
       aria-hidden
     >
       <defs>
-        <linearGradient id={skyId} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor={theme.skyTop} />
-          <stop offset={Math.min(1, groundTop / height)} stopColor={theme.skyBottom} />
-        </linearGradient>
+        {paintedSky ? (
+          <linearGradient id={skyId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor={PAINTED_FOREST.skyTop} />
+            <stop offset={Math.min(1, horizon / height) * 0.7} stopColor={PAINTED_FOREST.skyMid} />
+            <stop offset={Math.min(1, groundTop / height)} stopColor={PAINTED_FOREST.skyBottom} />
+          </linearGradient>
+        ) : (
+          <linearGradient id={skyId} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor={theme.skyTop} />
+            <stop offset={Math.min(1, groundTop / height)} stopColor={theme.skyBottom} />
+          </linearGradient>
+        )}
       </defs>
       <rect width={W} height={height} fill={`url(#${skyId})`} />
       <Layer
         offset={scroll * speed.clouds}
         className={DRIFTING.has(theme.kind) ? 'backdrop__clouds' : undefined}
+        raster={raster}
+        height={height}
       >
         {layers.clouds}
       </Layer>
-      <Layer offset={scroll * speed.far}>{layers.far}</Layer>
-      <Layer offset={scroll * speed.mid}>{layers.mid}</Layer>
-      <Layer offset={scroll * speed.near}>{layers.near}</Layer>
+      <Layer offset={scroll * speed.far} raster={raster} height={height}>
+        {layers.far}
+      </Layer>
+      <Layer offset={scroll * speed.mid} raster={raster} height={height}>
+        {layers.mid}
+      </Layer>
+      <Layer offset={scroll * speed.near} raster={raster} height={height}>
+        {layers.near}
+      </Layer>
       {children}
     </svg>
   );
@@ -163,11 +199,37 @@ function Layer({
   offset,
   className,
   children,
+  raster = false,
+  height,
 }: {
   offset: number;
   className?: string;
   children: ReactNode;
+  raster?: boolean;
+  height: number;
 }) {
+  const vector = useRef<SVGGElement>(null);
+  const href = useLayerImage(vector, raster, children, height);
+  if (raster) {
+    return (
+      <g className="backdrop__layer" style={{ transform: `translateX(${-offset}px)` }}>
+        <g className={className}>
+          {href ? (
+            <>
+              <image href={href} width={W} height={height} />
+              <image href={href} x={W - 1} width={W} height={height} />
+            </>
+          ) : (
+            children
+          )}
+          {/* Kept (hidden) so it can be drawn into the image again when it changes. */}
+          <g ref={vector} style={{ display: 'none' }}>
+            {children}
+          </g>
+        </g>
+      </g>
+    );
+  }
   return (
     <g className="backdrop__layer" style={{ transform: `translateX(${-offset}px)` }}>
       <g className={className}>
@@ -177,6 +239,26 @@ function Layer({
       </g>
     </g>
   );
+}
+
+/** Serializes a layer's shapes (rendered hidden in `ref`) into an SVG image, as a blob URL. */
+function useLayerImage(
+  ref: RefObject<SVGGElement | null>,
+  on: boolean,
+  children: ReactNode,
+  height: number,
+) {
+  const [href, setHref] = useState<string | null>(null);
+  useEffect(() => {
+    const g = ref.current;
+    if (!on || !g) return;
+    const inner = [...g.childNodes].map((n) => new XMLSerializer().serializeToString(n)).join('');
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${height}" viewBox="0 0 ${W} ${height}">${inner}</svg>`;
+    const url = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+    setHref(url);
+    return () => URL.revokeObjectURL(url);
+  }, [ref, on, children, height]);
+  return on ? href : null;
 }
 
 function Clouds({
