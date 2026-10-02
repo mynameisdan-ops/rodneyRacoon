@@ -43,13 +43,13 @@ npm run format     # prettier --write
 
 In a dev build, `http://localhost:5173/#moments-1-4` is a contact sheet of levels 1–4's scenes at
 several moments (for picking sticker moments; screenshot it with headless Chrome at 2480px wide).
-Open `http://localhost:5173/#style` for the M7b style test (the current art next to the proposed cartoon
-look; `#style-scene-dynamic` plays the directed vine swing (`now` and `v1` for comparison), and
-`#style-scene-dynamic-2600` shows the frame at 2.6 s of real time for a screenshot). `#style-page` loops a page
-of answers on the new page strip (`#style-page-combo-300` holds one moment), and `http://localhost:5173/?toon`
-plays real pages with it. Open `http://localhost:5173/#gallery` for the art gallery (every hero pose, every shop item, every sticker,
-hair style and skin tone, plus every cut scene with a scrub slider to inspect any moment and a
-Play button). Use it to check art changes; it is left out of production builds.
+Open `http://localhost:5173/#gallery` for the art gallery (every hero pose, every shop item and icon, every
+sticker, hair style and skin tone, plus every cut scene with a scrub slider to inspect any moment and a
+Play button). `#gallery-gear` (or `poses`, `icons`, `gear-poses`, `hair`, `stickers`, `scenes`) shows one
+section, small enough for a 1280×800 screenshot. `#scene-12` opens level 12's scene in the scrubber, and
+`#scene-12-2600` shows its frame at 2.6 s of real time without the controls. `#strip` plays a page of answers
+on the page strip by itself (`#strip-combo-300` holds one moment: `correct`, `combo`, `wrong` or `danger`).
+Use these to check art changes; they are left out of production builds.
 
 (Keep this list in sync with `package.json`.)
 
@@ -67,16 +67,30 @@ Play button). Use it to check art changes; it is left out of production builds.
   `src/cutscenes/timeline.ts` and drawn by one `CutSceneView`, using reusable obstacle art from
   `src/art/obstacles/` (registered in `registry.ts`). Don't write one-off animation code for each
   level; obstacle motion is computed from scene time, not CSS, so any frame can be drawn exactly.
-- Art uses the style kit in `src/art/style.ts`: the `INK` outline on every object, and shading as flat overlay
-  shapes made with `shade()` / `tint()`. **No CSS or SVG `filter`** (slow on tablets). A theme's `kind` picks the
+  Scripts direct the scene with steps too (faces, impacts, emotes, focus lines, camera moves, cut-ins,
+  slow motion and freeze frames); `CutSceneView` adds what follows from his motion (squash and stretch,
+  lean, wind, smears, afterimages, dust). Slow motion and freezes stretch real time: screens run their
+  clock to `realDuration` and draw `scriptTime(timeline, real)`.
+- The look is a **Saturday-morning cartoon** (M7b; Pokémon is the reference). Characters and the props he
+  touches use the style kit in `src/art/style.ts`: bold `INK` outlines on the silhouette (2.5 view units on the
+  hero) and thin ones inside (1.3), one crisp shadow shape per part and a rim light, made with `shade()` / `tint()`.
+  Backgrounds are **painted**: gradients and soft shapes without outlines, detailed with the paint kit
+  (`src/art/worlds/paintKit.tsx`). **No CSS or SVG `filter`** (slow on tablets). A theme's `kind` picks the
   backdrop layers (`mine`, `forest`, `river`, `mountain`, `canyon`, each in its own file in `src/art/worlds/`;
-  shared tiling helpers in `sceneryKit.ts`). Backdrop layers are 1280px tiles: ridges must start and end at the same height.
+  shared tiling helpers in `sceneryKit.ts`; so far only the forest is painted). Backdrop layers are 1280px tiles:
+  ridges must start and end at the same height, and anything at a tile's edge is drawn the same at both ends.
+  Scenes and the page strip draw each layer once as an image (`WorldBackdrop raster`), so detail costs nothing
+  per frame; a `front` layer (big leaves) passes in front of the hero in scenes only.
 - Obstacle art gets the scene's whole prop schedule (`events`); use `eventTime()` to time a motion to a later
   event. Shared positions go in a layout module per world (`mineLayout.ts` … `canyonLayout.ts`) so art and
   scripts agree; small motion helpers are in `sceneKit.ts`. An obstacle's `focus` picks what the page-strip preview shows.
 - Only about 160px of a cut scene shows below the ground line, so put the action at or above it.
 - One `<Hero>` component renders the avatar everywhere (map, page strip, cut scenes, shop),
-  driven by the avatar config and a `pose` prop.
+  driven by the avatar config, a `pose` and (optionally) an `expression`. He stands in a three-quarter view
+  facing right: his near arm and leg (his right) hang on the left of his body, so a raised near arm goes up
+  or back (angles near 180° or positive in `hero.css`), never across his face. His joints are in `body.ts`;
+  scenes size him so his hands reach 175px up in the swing pose (`SCENE_SIZE`), the reach their ropes and
+  vines are laid out for. Hats are drawn in head units and ride inside `Head` (`gear.tsx`).
 - The design canvas is 1280×800 (16:10), scaled to fit the screen. Lay out in design units, not raw viewport pixels.
 - Audio is synthesized with Web Audio (no audio asset files unless we decide otherwise).
 

@@ -12,7 +12,6 @@ import { evaluatePage, type PageEvaluation } from '../game/scoring';
 import { createSession, currentProblem, sessionReducer, type SessionState } from '../game/session';
 import { Coin } from '../ui/icons';
 import { NumberPad, type PadKey } from '../ui/NumberPad';
-import { ToonTrailStrip } from '../ui/ToonTrailStrip';
 import { TrailStrip } from '../ui/TrailStrip';
 
 interface Props {
@@ -206,9 +205,6 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
   );
 }
 
-/** Dev builds opened with ?toon play pages with the M7b cartoon strip. */
-const TOON_STRIP = import.meta.env.DEV && new URLSearchParams(location.search).has('toon');
-
 /** "N in a row!", and at 5, 10, 15 in a row a burst that pays coins. */
 function ComboBadge({ combo }: { combo: number }) {
   const bonus = comboBonus(combo);
@@ -309,10 +305,11 @@ function PageLayout({
     feedback,
     running,
     endPose,
+    combo,
   };
   return (
     <div className="page">
-      {TOON_STRIP ? <ToonTrailStrip {...strip} combo={combo} /> : <TrailStrip {...strip} />}
+      <TrailStrip {...strip} />
       <div className="page__hud">
         <button type="button" className="icon-button" aria-label="Back to levels" onClick={onQuit}>
           ✕

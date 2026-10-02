@@ -1,18 +1,11 @@
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { createRng } from '../../game/rng';
 import { CanyonFar, CanyonMid, CanyonNear, CanyonSky } from './canyon';
-import { ForestCanopy, ForestFar, ForestMid, ForestNear } from './forest';
+import { ForestCanopy, ForestFar, ForestFront, ForestMid, ForestNear } from './forest';
+import { PAINTED_FOREST } from './forestPalette';
 import { MineCeiling, MineFar, MineMid, MineNear } from './mine';
 import { MountainClouds, MountainFar, MountainMid, MountainNear } from './mountain';
 import { RiverClouds, RiverFar, RiverMid, RiverNear } from './river';
-import {
-  PaintedCanopy,
-  PaintedFar,
-  PaintedFront,
-  PaintedMid,
-  PaintedNear,
-} from '../toon/paintedForest';
-import { PAINTED_FOREST } from '../toon/paintedPalette';
 import { getTheme, type OutdoorTheme } from './themes';
 import './backdrop.css';
 
@@ -36,11 +29,9 @@ interface Props {
   parallax?: Partial<typeof PARALLAX>;
   /** Ease scroll changes (page strip). Turn off when the camera moves every frame (cut scenes). */
   smooth?: boolean;
-  /** The M7b style test's painted look (only the forest so far). */
-  painted?: boolean;
   /**
-   * Draw each layer once as an image and slide the images (M7b test): far cheaper to move than
-   * the shapes, which matters for painted layers full of gradients.
+   * Draw each layer once as an image and slide the images: far cheaper to move than the shapes,
+   * which matters for painted layers full of gradients (cut scenes and the page strip).
    */
   raster?: boolean;
   /** Draw the layer in front of the hero (cut scenes; it would hide the page strip's trail). */
@@ -70,7 +61,6 @@ export function WorldBackdrop({
   detail = 1,
   parallax,
   smooth = true,
-  painted = false,
   raster = false,
   foreground = false,
   children,
@@ -94,20 +84,12 @@ export function WorldBackdrop({
       }
       case 'forest': {
         const p = { ...base, theme };
-        if (painted) {
-          return {
-            clouds: <PaintedCanopy {...p} />,
-            far: <PaintedFar {...p} />,
-            mid: <PaintedMid {...p} />,
-            near: <PaintedNear {...p} />,
-            front: <PaintedFront {...p} />,
-          };
-        }
         return {
           clouds: <ForestCanopy {...p} />,
           far: <ForestFar {...p} />,
           mid: <ForestMid {...p} />,
           near: <ForestNear {...p} />,
+          front: <ForestFront {...p} />,
         };
       }
       case 'river': {
@@ -162,8 +144,8 @@ export function WorldBackdrop({
         />
       ),
     };
-  }, [theme, horizon, groundTop, height, pathY, detail, worldId, painted]);
-  const paintedSky = painted && theme.kind === 'forest';
+  }, [theme, horizon, groundTop, height, pathY, detail, worldId]);
+  const paintedSky = theme.kind === 'forest';
 
   return (
     <svg

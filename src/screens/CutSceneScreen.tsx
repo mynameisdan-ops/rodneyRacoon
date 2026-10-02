@@ -3,7 +3,7 @@ import type { AvatarConfig } from '../art/hero/avatar';
 import type { CutScene } from '../content/cutscenes';
 import { getWorld, LEVELS, type LevelDef } from '../content/levels';
 import { CutSceneView } from '../cutscenes/CutSceneView';
-import { buildTimeline } from '../cutscenes/timeline';
+import { buildTimeline, scriptTime } from '../cutscenes/timeline';
 import { useSceneClock } from '../cutscenes/useSceneClock';
 
 interface Props {
@@ -19,8 +19,9 @@ interface Props {
 
 export function CutSceneScreen({ level, scene, avatar, hasNext, nextLabel, onNext, onMap }: Props) {
   const timeline = useMemo(() => buildTimeline(scene.script), [scene]);
-  const [t, skip] = useSceneClock(timeline.duration);
-  const over = t >= timeline.duration;
+  // The clock runs in real time; slow motion and freeze frames stretch scene time.
+  const [real, skip] = useSceneClock(timeline.realDuration);
+  const over = real >= timeline.realDuration;
 
   return (
     <div className="scene-screen">
@@ -30,7 +31,7 @@ export function CutSceneScreen({ level, scene, avatar, hasNext, nextLabel, onNex
         worldId={level.world}
         avatar={avatar}
         caption={level.caption}
-        t={t}
+        t={scriptTime(timeline, real)}
       />
       {!over && (
         <button type="button" className="scene-screen__skip" onClick={skip}>

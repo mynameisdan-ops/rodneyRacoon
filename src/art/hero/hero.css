@@ -2,7 +2,9 @@
  * Hero poses. Limbs are drawn hanging down from their joint at local (0, 0), so
  * rotating around that point swings them. Negative angles swing forward (toward
  * the way the hero faces). Knees bend with positive shin angles, elbows with
- * negative forearm angles.
+ * negative forearm angles. In his three-quarter view the near arm hangs on the left
+ * of his body, so a raised near arm that swung forward would cross his face: raised,
+ * it goes straight up or back instead (angles near 180° or positive), beside his head.
  */
 
 .hero-svg {
@@ -24,17 +26,26 @@
 
 .hero-head {
   transform-box: view-box;
-  transform-origin: 55px 50px;
+  transform-origin: 53px 42.4px;
 }
 
 .hero-eyes {
-  transform-box: view-box;
-  transform-origin: 64px 31px;
+  transform-box: fill-box;
+  transform-origin: center;
 }
 
 .hero-cape {
   transform-box: view-box;
-  transform-origin: 52px 57px;
+  transform-origin: 50px 53px;
+}
+
+/* Pose changes blend over a few frames instead of snapping (looping poses still loop). */
+.hero-body,
+.hero-arm,
+.hero-fore,
+.hero-leg,
+.hero-shin {
+  transition: transform 110ms ease-out;
 }
 
 .hero-arm--front {
@@ -59,7 +70,7 @@
   animation: hero-breathe 2.4s ease-in-out infinite;
 }
 
-.hero-svg .hero-eyes {
+.hero-eyes {
   animation: hero-blink 4.2s linear infinite;
 }
 
@@ -282,11 +293,11 @@
 }
 
 .hero-svg--jump .hero-arm--front {
-  transform: rotate(-150deg);
+  transform: rotate(160deg);
 }
 
 .hero-svg--jump .hero-arm--back {
-  transform: rotate(150deg);
+  transform: rotate(-150deg);
 }
 
 .hero-svg--jump .hero-cape {
@@ -322,11 +333,11 @@
 }
 
 .hero-svg--leap .hero-arm--front {
-  transform: rotate(-160deg);
+  transform: rotate(-96deg);
 }
 
 .hero-svg--leap .hero-fore--front {
-  transform: rotate(-8deg);
+  transform: rotate(-10deg);
 }
 
 .hero-svg--leap .hero-arm--back {
@@ -365,6 +376,15 @@
   animation-name: hero-climb-shin;
 }
 
+.hero-svg--climb .hero-arm--front {
+  animation-name: hero-climb-arm-near;
+}
+
+.hero-svg--climb .hero-fore--front {
+  animation-name: none;
+  transform: rotate(10deg);
+}
+
 .hero-svg--climb .hero-arm--back,
 .hero-svg--climb .hero-fore--back,
 .hero-svg--climb .hero-leg--front,
@@ -379,6 +399,16 @@
   }
   to {
     transform: rotate(-120deg);
+  }
+}
+
+/* The near hand reaches straight up beside his head. */
+@keyframes hero-climb-arm-near {
+  from {
+    transform: rotate(190deg);
+  }
+  to {
+    transform: rotate(158deg);
   }
 }
 
@@ -420,7 +450,7 @@
 }
 
 .hero-svg--cheer .hero-fore--front {
-  transform: rotate(-20deg);
+  transform: rotate(18deg);
 }
 
 .hero-svg--cheer .hero-arm--back {
@@ -429,11 +459,6 @@
 
 .hero-svg--cheer .hero-fore--back {
   transform: rotate(-95deg);
-}
-
-.hero-svg--cheer .hero-mouth {
-  d: path('M60.5 43 Q66 51 71.5 42.5 Z');
-  fill: #5a1f24;
 }
 
 @keyframes hero-hop {
@@ -447,10 +472,10 @@
 
 @keyframes hero-pump {
   from {
-    transform: rotate(-170deg);
+    transform: rotate(172deg);
   }
   to {
-    transform: rotate(-148deg);
+    transform: rotate(152deg);
   }
 }
 
@@ -461,15 +486,11 @@
 }
 
 .hero-svg--stumble .hero-arm--front {
-  animation: hero-flail 0.6s ease-out;
+  animation: hero-flail-near 0.6s ease-out;
 }
 
 .hero-svg--stumble .hero-arm--back {
   animation: hero-flail 0.6s ease-out reverse;
-}
-
-.hero-svg--stumble .hero-mouth {
-  d: path('M62 46 Q66 43 70 46');
 }
 
 @keyframes hero-stumble-body {
@@ -500,6 +521,19 @@
   }
 }
 
+@keyframes hero-flail-near {
+  0%,
+  100% {
+    transform: rotate(-8deg);
+  }
+  30% {
+    transform: rotate(110deg);
+  }
+  60% {
+    transform: rotate(50deg);
+  }
+}
+
 /* ---- brace: leaning back, arm up against danger ---- */
 
 .hero-svg--brace .hero-body {
@@ -507,11 +541,11 @@
 }
 
 .hero-svg--brace .hero-arm--front {
-  transform: rotate(-112deg);
+  transform: rotate(-62deg);
 }
 
 .hero-svg--brace .hero-fore--front {
-  transform: rotate(-100deg);
+  transform: rotate(-70deg);
 }
 
 .hero-svg--brace .hero-arm--back {
@@ -540,11 +574,6 @@
 
 .hero-svg--brace .hero-cape {
   transform: rotate(-6deg);
-}
-
-.hero-svg--brace .hero-mouth,
-.hero-svg--ride .hero-mouth {
-  d: path('M61.5 45 Q66 44 70.5 44.5');
 }
 
 @keyframes hero-tremble {
@@ -636,7 +665,7 @@
 /* ---- swing: hanging from a rope or chain with both hands ---- */
 
 .hero-svg--swing .hero-arm--front {
-  transform: rotate(-172deg);
+  transform: rotate(180deg);
 }
 
 .hero-svg--swing .hero-arm--back {
@@ -693,17 +722,12 @@
   transform: rotate(-30deg);
 }
 
-.hero-svg--fall .hero-mouth {
-  d: path('M65 42.5 Q68 42.5 68 45 Q68 48 65 48 Q62 48 62 45 Q62 42.5 65 42.5 Z');
-  fill: #5a1f24;
-}
-
 @keyframes hero-fall-arm-a {
   from {
-    transform: rotate(-155deg);
+    transform: rotate(155deg);
   }
   to {
-    transform: rotate(-115deg);
+    transform: rotate(118deg);
   }
 }
 
@@ -714,6 +738,44 @@
   to {
     transform: rotate(155deg);
   }
+}
+
+/* ---- crouch: the wind-up before a jump, knees bent and arms swung back ---- */
+
+.hero-svg--crouch .hero-body {
+  transform: translateY(15px);
+}
+
+.hero-svg--crouch .hero-leg--front {
+  transform: rotate(-50deg);
+}
+
+.hero-svg--crouch .hero-shin--front {
+  transform: rotate(80deg);
+}
+
+.hero-svg--crouch .hero-leg--back {
+  transform: rotate(-35deg);
+}
+
+.hero-svg--crouch .hero-shin--back {
+  transform: rotate(75deg);
+}
+
+.hero-svg--crouch .hero-arm--front {
+  transform: rotate(52deg);
+}
+
+.hero-svg--crouch .hero-fore--front {
+  transform: rotate(-24deg);
+}
+
+.hero-svg--crouch .hero-arm--back {
+  transform: rotate(62deg);
+}
+
+.hero-svg--crouch .hero-cape {
+  transform: rotate(-8deg);
 }
 
 /* ---- shop gear: pets and the rocket pack ---- */

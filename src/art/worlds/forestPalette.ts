@@ -1,4 +1,4 @@
-/** The painted forest's colors (M7b style test): richer and more saturated than the flat theme. */
+/** The painted forest's colors (M7b): richer and more saturated than the theme's flat colors. */
 export const PAINTED_FOREST = {
   skyTop: '#174a55',
   skyMid: '#4f9a86',

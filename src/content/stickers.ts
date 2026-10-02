@@ -21,7 +21,7 @@ export const STICKERS: readonly StickerDef[] = [
   { level: 9, name: 'Log Rider', moment: 0.3 },
   { level: 10, name: 'Bramble Vault', moment: 0.6 },
   { level: 11, name: 'Root Slide', moment: 0.4 },
-  { level: 12, name: 'Vine Swing', moment: 0.5 },
+  { level: 12, name: 'Vine Swing', moment: 0.6 },
   { level: 13, name: 'Grumpy Boar', moment: 0.8 },
   { level: 14, name: 'Bouncy Mushroom', moment: 0.4 },
   { level: 15, name: 'Falling Bridge', moment: 0.6 },

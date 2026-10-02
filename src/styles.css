@@ -792,13 +792,6 @@ button {
   translate: -260px 0;
 }
 
-.trail__hero {
-  position: absolute;
-  left: 0;
-  margin-left: -34px;
-  transition: transform 560ms ease-in-out;
-}
-
 .page__hud {
   position: absolute;
   top: 16px;
@@ -1244,6 +1237,23 @@ button {
 .gallery figcaption {
   font-size: 22px;
   font-weight: 800;
+}
+
+/* One section on its own (#gallery-gear ...): packed tight to fit a screenshot. */
+.gallery--sheet {
+  padding: 12px 16px;
+}
+
+.gallery--sheet .gallery__row {
+  gap: 10px;
+}
+
+.gallery--sheet figure {
+  padding: 4px 8px;
+}
+
+.gallery--sheet figcaption {
+  font-size: 16px;
 }
 
 /* ---------- Cut scene ---------- */
@@ -1819,35 +1829,12 @@ button {
   }
 }
 
-/* ---------- Style test (dev only, #style) ---------- */
-
-.style-test__face {
-  width: 230px;
-  height: 200px;
-  overflow: hidden;
-}
-
-.style-test__face svg {
-  margin: -6px 0 0 -66px;
-}
-
-.style-test__poses {
-  gap: 16px;
-}
-
-.style-test__strips {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin: 0 -40px 28px;
-}
-
-/* M7b test: keep the scene on its own compositor layer so shakes and push-ins don't repaint it. */
+/* Keep the scene on its own compositor layer so shakes and push-ins don't repaint it. */
 .scene__world--layer {
   will-change: transform;
 }
 
-/* M7b test: the anime cut-in sits over the scene, outside the camera. */
+/* The anime cut-in sits over the scene (or the page strip), outside the camera. */
 .cutin {
   position: absolute;
   inset: 0;
@@ -1856,19 +1843,19 @@ button {
   pointer-events: none;
 }
 
-/* M7b test strip: the layer that shakes on a wrong answer. */
+/* The page strip's layer that shakes on a wrong answer. */
 .trail__shake {
   position: absolute;
   inset: 0;
 }
 
-/* M7b test: the page-strip demo (#style-page). */
-.style-page {
+/* The page-strip demo (dev only, #strip). */
+.strip-demo {
   height: 100%;
   background: #eaf7ff;
 }
 
-.style-page__label {
+.strip-demo__label {
   padding: 14px 40px 24px;
   font-size: 30px;
   font-weight: 800;

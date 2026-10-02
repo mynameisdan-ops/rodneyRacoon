@@ -3,15 +3,28 @@ import { DEFAULT_AVATAR } from '../art/hero/avatar';
 import { getCutScene } from '../content/cutscenes';
 import type { LevelDef } from '../content/levels';
 import { CutSceneView } from '../cutscenes/CutSceneView';
-import { buildTimeline } from '../cutscenes/timeline';
+import { buildTimeline, scriptTime } from '../cutscenes/timeline';
 import { CutSceneScreen } from './CutSceneScreen';
 
-/** Dev-only: scrub through a cut scene frame by frame, or play it for real. */
-export function ScenePreview({ level, onClose }: { level: LevelDef; onClose: () => void }) {
+/**
+ * Dev-only: scrub through a cut scene frame by frame (in real time, so freeze frames and slow
+ * motion show as they play), or play it for real. With `still` (ms of real time) it shows just
+ * that frame, for screenshots.
+ */
+export function ScenePreview({
+  level,
+  onClose,
+  still,
+}: {
+  level: LevelDef;
+  onClose: () => void;
+  still?: number;
+}) {
   const scene = getCutScene(level.id)!;
   const timeline = useMemo(() => buildTimeline(scene.script), [scene]);
-  const [t, setT] = useState(0);
+  const [real, setReal] = useState(still ?? 0);
   const [playing, setPlaying] = useState(0);
+  const t = scriptTime(timeline, real);
 
   if (playing) {
     return (
@@ -36,26 +49,28 @@ export function ScenePreview({ level, onClose }: { level: LevelDef; onClose: () 
         caption={level.caption}
         t={t}
       />
-      <div className="scene-preview__bar">
-        <button type="button" className="big-button big-button--quiet" onClick={onClose}>
-          Back
-        </button>
-        <input
-          type="range"
-          aria-label="Scene time"
-          min={0}
-          max={timeline.duration}
-          step={50}
-          value={t}
-          onChange={(e) => setT(Number(e.target.value))}
-        />
-        <span className="scene-preview__time">
-          {(t / 1000).toFixed(2)}s / {(timeline.duration / 1000).toFixed(1)}s
-        </span>
-        <button type="button" className="big-button" onClick={() => setPlaying(Date.now())}>
-          Play
-        </button>
-      </div>
+      {still === undefined && (
+        <div className="scene-preview__bar">
+          <button type="button" className="big-button big-button--quiet" onClick={onClose}>
+            Back
+          </button>
+          <input
+            type="range"
+            aria-label="Scene time"
+            min={0}
+            max={timeline.realDuration}
+            step={10}
+            value={real}
+            onChange={(e) => setReal(Number(e.target.value))}
+          />
+          <span className="scene-preview__time">
+            {(real / 1000).toFixed(2)}s / {(timeline.realDuration / 1000).toFixed(1)}s
+          </span>
+          <button type="button" className="big-button" onClick={() => setPlaying(Date.now())}>
+            Play
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -348,3 +348,44 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     throttle in the dev build: today's scene ~10.3 ms a frame, the directed one ~14.5 ms (it was
     ~17.5); the slow frames are the afterimages and the cut-in. Production React will be faster;
     the tablet decides.
+
+- **2026-10-02 (night): M7b Phase B, the cartoon look made real** (`m7b-cartoon-look`).
+  - The user approved the look ("make it real, start phase B"). The style test's pieces replaced
+    the game's own, in place; `src/art/toon/` and the `#style` pages are gone.
+  - **The hero** (`art/hero/Hero.tsx`): the lean three-quarter-view hero is now `Hero`
+    everywhere (map, page strip, scenes, results, shop, profile cards, stickers), memoized, with
+    `expression` and `wind` props and the new `crouch` pose. The `kid` build was dropped: gear is
+    fitted to one body (`art/hero/body.ts`: `BODY`, `SCENE_SIZE`, `capeColor`, `smearBands`).
+    `hero.css` took the cartoon pose angles (raised near arms go up or back, beside his head),
+    the crouch, the 110 ms pose blending, and lost the old mouth overrides (faces are
+    expressions now).
+  - **Gear redrawn** (`art/hero/gear.tsx`): hats are drawn in the head's own units and ride
+    inside `Head`, so they turn with it and show in the cut-in close-up; hair above a hat's band
+    is clipped (`HAT_LINE` in `gearLayout.ts`), so spikes don't poke through a helmet (the crown
+    sits on top of the hair instead). Capes fit the new shoulders (shop capes longer, with a
+    scalloped hem); packs sit on his back past the tunic's left edge (the map tube sticks up
+    behind his shoulder); pets got bolder lines and shiny two-highlight eyes. Each shop icon is
+    framed around its own drawing (`iconView`).
+  - **Scenes:** the directed view is `CutSceneView` (signposts restored). `CutSceneScreen` runs
+    its clock in real time and maps it to scene time (`scriptTime`), so slow motion and freezes
+    play; the gallery scrubber scrubs real time. Level 12 plays the directed vine swing; the
+    other 39 scripts get their beats world by world (Phase C). Smears, afterimages and the motion
+    arc are only for moves he makes himself (in the air, or a hard sprint for the smear): on
+    carts, rafts, sleds and trains they looked like a ghost riding along.
+  - **Page strip:** the lively strip is `TrailStrip` on every page (the `?toon` flag is gone);
+    `#strip` plays a page of answers by itself.
+  - **Backdrops:** the painted forest is the forest (`worlds/forest.tsx`, `paintKit.tsx`), drawn
+    as images in scenes and on the strip (`raster`); the maps draw it as shapes. The other four
+    worlds keep their flat layers (rasterized too) until Phase C. The painted vine swing is the
+    real one (`obstacles/vineSwing.tsx`).
+  - **Dev pages:** `#scene-12` opens a level's scene in the scrubber and `#scene-12-2600` shows
+    one frame at 2.6 s of real time; `#gallery-gear` (or `poses`, `icons`, `gear-poses`, `hair`,
+    `stickers`, `scenes`) shows one gallery section, small enough to screenshot.
+  - **Checked:** every pose and all 21 items in the gallery, every level's sticker moments
+    (level 12's moved to 0.6, mid-swing, as 0.5 now lands on the cut-in), a real page of level 12
+    (the combo cut-in at 5), results, the shop at 1280×800 and 915×412.
+  - **Performance** (headless Chrome, dev build, 5× CPU throttle): level 12 plays at ~15.7 ms a
+    frame once running (the style test measured ~15 ms the same way), level 1 ~11 ms. New: a
+    scene's first frames draw the backdrop into images, one ~430 ms frame under throttle (the
+    clock caps a frame at 100 ms, so it pauses rather than skips). Worth warming the images
+    during the results screen if the tablet shows it (Phase E).

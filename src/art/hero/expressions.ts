@@ -26,6 +26,7 @@ export const POSE_EXPRESSION: Record<HeroPose, Expression> = {
   slide: 'determined',
   swing: 'shout',
   fall: 'surprised',
+  crouch: 'determined',
 };
 
 /** Little cartoon signs that pop up over his head: a "!", a sweat drop, sparkles. */

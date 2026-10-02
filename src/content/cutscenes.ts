@@ -4,7 +4,10 @@ import type { SceneScript } from '../cutscenes/timeline';
 /**
  * Cut scenes after each level (data only). World x is in px from the scene's left
  * edge; the obstacle is drawn with its local (0, 0) at `anchor` on the ground line.
- * The hero is about 200px tall; `lift` is how high his feet are above the ground.
+ * The hero is about 190px tall (sized so his hands reach 175px up in the swing pose); `lift`
+ * is how high his feet are above the ground. Steps can also direct the scene like a cartoon
+ * (faces, impacts, emotes, camera moves, cut-ins, slow motion and freeze frames: see
+ * `SceneStep` in timeline.ts).
  * The captions come from `levels.ts`.
  */
 export interface CutScene {
@@ -330,7 +333,10 @@ export const CUT_SCENES: Record<number, CutScene> = {
 
   // Level 12: the vine swing (VINE_SWING, anchor 300). The vine hangs from 750 (295px to his
   // hands, 175px above his feet); he grabs it 30° left of straight down and lets go 30° right.
-  // The gully floods at 530–970.
+  // The gully floods at 530–970. Directed like a Saturday-morning cartoon (M7b): the flood
+  // freezes for a beat and the camera snaps to his surprised face; a cut-in of his determined
+  // face; he crouches and leaps under a tilted camera; the swing slows at the bottom of its arc;
+  // the landing freezes, kicks up dust and sparkles as the camera eases back.
   12: {
     obstacle: 'vine-swing',
     anchor: 300,
@@ -340,16 +346,37 @@ export const CUT_SCENES: Record<number, CutScene> = {
       steps: [
         { do: 'walk', x: 500, ms: 1000 },
         { do: 'prop', state: 'flood' },
-        { do: 'shake', ms: 700, amp: 9 },
-        { do: 'hold', pose: 'brace', ms: 900 },
+        { do: 'impact', x: 750, lift: 40, size: 1.2 },
+        { do: 'hold', pose: 'brace', ms: 70 },
+        { do: 'freeze', ms: 120 },
+        { do: 'shake', ms: 700, amp: 12 },
+        { do: 'emote', emote: 'alert' },
+        { do: 'camera', zoom: 1.9, ms: 240 },
+        { do: 'hold', pose: 'brace', ms: 530 },
+        { do: 'camera', zoom: 1.08, ms: 220 },
+        { do: 'cutin', ms: 820, expr: 'determined' },
+        { do: 'hold', pose: 'brace', ms: 820, expr: 'determined' },
         { do: 'caption' },
-        { do: 'jump', x: 602.5, lift: 129.5, height: 60, ms: 450, pose: 'leap' },
+        { do: 'camera', zoom: 1.22, tilt: -5, ms: 420 },
+        { do: 'jump', x: 602.5, lift: 129.5, height: 70, ms: 360, pose: 'leap' },
         { do: 'prop', state: 'grab' },
+        { do: 'impact', x: 602.5, lift: 304, size: 0.35 },
+        { do: 'action', ms: 1100 },
         { do: 'move', x: 750, lift: 90, ms: 550, pose: 'swing', ease: 'in' },
+        { do: 'slow', ms: 300, rate: 0.4 },
         { do: 'move', x: 897.5, lift: 129.5, ms: 550, pose: 'swing', ease: 'out' },
         { do: 'prop', state: 'letgo' },
-        { do: 'jump', x: 1100, height: 70, ms: 550, pose: 'leap' },
-        { do: 'hold', pose: 'cheer', ms: 1500 },
+        { do: 'camera', zoom: 1, ms: 380 },
+        { do: 'jump', x: 1100, height: 95, ms: 420, pose: 'leap' },
+        { do: 'impact', x: 1100, lift: 0, size: 0.6 },
+        { do: 'hold', pose: 'cheer', ms: 50 },
+        { do: 'freeze', ms: 80 },
+        { do: 'shake', ms: 260, amp: 6 },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'camera', zoom: 1.14, ms: 200 },
+        { do: 'hold', pose: 'cheer', ms: 210 },
+        { do: 'camera', zoom: 1, ms: 700 },
+        { do: 'hold', pose: 'cheer', ms: 1300 },
       ],
     },
   },

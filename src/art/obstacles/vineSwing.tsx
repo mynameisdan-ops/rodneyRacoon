@@ -1,13 +1,13 @@
 import { useId } from 'react';
-import { VINE_SWING, vineEnd } from '../obstacles/forestLayout';
-import { bump, clamp01, easeOut, lerp, noise, since } from '../obstacles/sceneKit';
-import type { ObstacleProps } from '../obstacles/types';
+import { VINE_SWING, vineEnd } from './forestLayout';
+import { bump, clamp01, easeOut, lerp, noise, since } from './sceneKit';
+import type { ObstacleProps } from './types';
 import { INK, ink, shade, tint } from '../style';
 
 /*
- * Level 12's vine swing, painted for the M7b style test. Same layout and motion as
- * `VineSwingBack` (the gully, the flood, the vine): only the drawing changes. Things he touches
- * (the vine, the branch, the water's surface) keep an ink line; the earth is painted.
+ * Level 12's vine swing, painted (M7b): a gully the flood roars into, and a vine on a branch he
+ * swings across on (positions in `VINE_SWING`). Things he touches (the vine, the branch, the
+ * water's surface) keep an ink line; the earth is painted.
  */
 
 const BARK = '#6b4a32';
@@ -108,7 +108,7 @@ function Water({
   );
 }
 
-export function PaintedVineSwingBack(p: ObstacleProps) {
+export function VineSwingBack(p: ObstacleProps) {
   const id = useId();
   const { pivot, gully } = VINE_SWING;
   const [a, b] = gully;

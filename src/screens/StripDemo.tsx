@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { DEFAULT_AVATAR } from '../art/hero/avatar';
 import type { SessionState } from '../game/session';
-import { ToonTrailStrip } from '../ui/ToonTrailStrip';
 import { TrailStrip } from '../ui/TrailStrip';
 
 /** A page's worth of answers, looping: five right (the combo cut-in), a slip, a reveal, more. */
@@ -34,11 +33,10 @@ function next(d: Demo): Demo {
 }
 
 /**
- * Dev-only (#style-page): the page strip playing a page of answers on its own, the M7b cartoon
- * strip over today's. `#style-page-correct-200` (or `combo`, `wrong`, `danger`) holds one moment
- * for a screenshot.
+ * Dev-only (#strip): the page strip playing a page of answers on its own. `#strip-correct-200`
+ * (or `combo`, `wrong`, `danger`) holds one moment for a screenshot.
  */
-export function StylePageDemo({ still }: { still?: { kind: string; dt: number } }) {
+export function StripDemo({ still }: { still?: { kind: string; dt: number } }) {
   const [demo, setDemo] = useState<Demo>(START);
   const [elapsed, setElapsed] = useState(0);
   useEffect(() => {
@@ -55,8 +53,8 @@ export function StylePageDemo({ still }: { still?: { kind: string; dt: number } 
     const kind = still.kind === 'wrong' ? 'wrong' : 'correct';
     const danger = still.kind === 'danger';
     return (
-      <div className="style-page">
-        <ToonTrailStrip
+      <div className="strip-demo">
+        <TrailStrip
           worldId={2}
           obstacle="vine-swing"
           avatar={DEFAULT_AVATAR}
@@ -71,8 +69,8 @@ export function StylePageDemo({ still }: { still?: { kind: string; dt: number } 
     );
   }
   return (
-    <div className="style-page">
-      <ToonTrailStrip
+    <div className="strip-demo">
+      <TrailStrip
         worldId={2}
         obstacle="vine-swing"
         avatar={DEFAULT_AVATAR}
@@ -82,19 +80,9 @@ export function StylePageDemo({ still }: { still?: { kind: string; dt: number } 
         combo={demo.combo}
         running
       />
-      <div className="style-page__label">
+      <div className="strip-demo__label">
         {demo.combo >= 3 ? `${demo.combo} in a row!` : 'Answers play by themselves'}
       </div>
-      <TrailStrip
-        worldId={2}
-        obstacle="vine-swing"
-        avatar={DEFAULT_AVATAR}
-        progress={demo.progress}
-        elapsed={elapsed}
-        feedback={demo.feedback ?? undefined}
-        running
-      />
-      <div className="style-page__label">Today's strip</div>
     </div>
   );
 }

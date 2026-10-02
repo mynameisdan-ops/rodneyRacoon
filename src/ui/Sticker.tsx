@@ -55,6 +55,7 @@ export function Sticker({ levelId, avatar, width, tilt = true, moment }: Props) 
           timeline={timeline}
           worldId={level.world}
           avatar={avatar}
+          raster={false}
           t={t}
         />
       </div>

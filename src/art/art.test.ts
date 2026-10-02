@@ -3,11 +3,12 @@ import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
 import { HAIR_COLORS, HAIR_STYLES, PANTS_COLORS, SHOE_COLORS, SKIN_TONES } from '../content/avatar';
 import { PROFILE_COLORS } from '../content/profiles';
+import { SHOP_ITEMS } from '../content/shop';
 import { avatarForProfile, DEFAULT_AVATAR } from './hero/avatar';
 import { Hero } from './hero/Hero';
 import { EXPRESSIONS } from './hero/expressions';
+import { ItemIcon } from './hero/ItemIcon';
 import { HERO_POSES } from './hero/poses';
-import { ToonHero } from './toon/ToonHero';
 import { mix, shade, tint } from './style';
 import { getTheme, MEADOW, MINE } from './worlds/themes';
 import { WorldBackdrop } from './worlds/WorldBackdrop';
@@ -112,61 +113,63 @@ describe('style kit', () => {
 });
 
 describe('hero', () => {
-  it.each(HERO_POSES)('draws the %s pose for every hair style and skin tone', (pose) => {
+  it.each(HERO_POSES)('draws the %s pose for every face, hair style and skin tone', (pose) => {
     for (const hairStyle of HAIR_STYLES) {
       for (const skin of SKIN_TONES) {
-        const svg = renderToStaticMarkup(
-          createElement(Hero, { avatar: { ...DEFAULT_AVATAR, hairStyle, skin: skin.value }, pose }),
-        );
-        expect(svg).toContain(`hero-svg--${pose}`);
-        expect(svg).not.toContain('NaN');
-        // No CSS filters: they are slow on tablets.
-        expect(svg).not.toContain('filter');
+        for (const expression of [undefined, ...EXPRESSIONS]) {
+          const svg = renderToStaticMarkup(
+            createElement(Hero, {
+              avatar: { ...DEFAULT_AVATAR, hairStyle, skin: skin.value },
+              pose,
+              expression,
+              wind: hairStyle === 'curly' ? 1 : 0.4,
+            }),
+          );
+          expect(svg).toContain(`hero-svg--${pose}`);
+          expect(svg).not.toContain('NaN');
+          // No CSS filters: they are slow on tablets.
+          expect(svg).not.toContain('filter');
+        }
       }
     }
   });
-});
 
-describe('style-test hero (M7b)', () => {
-  it.each([...HERO_POSES, 'crouch' as const])(
-    'draws the %s pose with every face, build and hair style',
-    (pose) => {
-      for (const build of ['kid', 'lean'] as const) {
-        for (const expression of EXPRESSIONS) {
-          for (const hairStyle of HAIR_STYLES) {
-            const svg = renderToStaticMarkup(
-              createElement(ToonHero, {
-                avatar: { ...DEFAULT_AVATAR, hairStyle },
-                pose,
-                build,
-                expression,
-                wind: hairStyle === 'curly' ? 1 : 0.4,
-              }),
-            );
-            expect(svg).toContain(`hero-svg--${pose}`);
-            expect(svg).not.toContain('NaN');
-            expect(svg).not.toContain('filter');
-          }
-        }
-      }
-    },
-  );
-
-  it('draws the cut-in close-up through its whole slide', async () => {
-    const { CutIn } = await import('./toon/CutIn');
-    for (const dt of [0, 70, 400, 700, 790]) {
+  it.each(SHOP_ITEMS.map((i) => [i.id, i] as const))('wears %s, and draws it alone', (_, item) => {
+    for (const hairStyle of HAIR_STYLES) {
       const svg = renderToStaticMarkup(
-        createElement(CutIn, {
-          dt,
-          ms: 800,
-          expr: 'determined',
-          avatar: DEFAULT_AVATAR,
-          build: 'lean',
+        createElement(Hero, {
+          avatar: { ...DEFAULT_AVATAR, hairStyle, gear: { [item.slot]: item.id } },
+          pose: 'walk',
         }),
       );
-      expect(svg).toContain('cutin');
+      const marker = { hat: 'gear-hat', cape: item.color, pack: 'gear-pack', pet: 'hero-pet' };
+      expect(svg).toContain(marker[item.slot]);
       expect(svg).not.toContain('NaN');
       expect(svg).not.toContain('filter');
+    }
+    const icon = renderToStaticMarkup(createElement(ItemIcon, { item, size: 100 }));
+    expect(icon).toContain('item-icon');
+    expect(icon).not.toContain('NaN');
+  });
+
+  it('draws the cut-in close-up through its whole slide, hat and all', async () => {
+    const { CutIn } = await import('./hero/CutIn');
+    for (const layout of ['scene', 'strip'] as const) {
+      for (const dt of [0, 70, 400, 700, 790]) {
+        const svg = renderToStaticMarkup(
+          createElement(CutIn, {
+            dt,
+            ms: 800,
+            expr: 'determined',
+            avatar: { ...DEFAULT_AVATAR, gear: { hat: 'wizard-hat' } },
+            layout,
+          }),
+        );
+        expect(svg).toContain('cutin');
+        expect(svg).toContain('gear-hat');
+        expect(svg).not.toContain('NaN');
+        expect(svg).not.toContain('filter');
+      }
     }
   });
 });

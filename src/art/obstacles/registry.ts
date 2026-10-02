@@ -48,8 +48,8 @@ import {
   LogRollFront,
   MushroomBounceBack,
   RootSlideBack,
-  VineSwingBack,
 } from './forestScenes';
+import { VineSwingBack } from './vineSwing';
 import { DAM, FALLS, GEYSER, RAFT, RAPIDS, RISING, ROPE_BRIDGE, STONES } from './riverLayout';
 import {
   BeaverDamBack,

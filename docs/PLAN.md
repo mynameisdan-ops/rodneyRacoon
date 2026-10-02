@@ -1,6 +1,6 @@
 # Project Plan — "The Long Way Home" (working title)
 
-Last updated Oct 2, 2026 (M7b cartoon-look style test built; M8 changed to avatars drawn from photos). This is the forward plan: design, milestones with their status, and open
+Last updated Oct 2, 2026 (M7b Phase B: the cartoon hero, gear, scenes and strip are the game's own; M8 changed to avatars drawn from photos). This is the forward plan: design, milestones with their status, and open
 questions. Update it whenever a design decision changes or a milestone moves (see the end-of-session
 checklist in `CLAUDE.md`). Current state in a few lines: `STATUS.md`. Session history: `docs/decisions.md`.
 
@@ -27,7 +27,7 @@ a big obstacle on his way home.
 | Parent tools | Stats and difficulty settings live in the normal **Settings** screen (not locked) |
 | Unlocking | Levels unlock **strictly in order** (decided in M2). A per-player "Levels: one by one / all open" switch in the player editor opens every level (added Sep 30, 2026 from feedback; it moves into Settings in M10) |
 | Submitting | Enter / ✓ checks the answer; auto-submit is a per-profile switch (decided after the M4 playtest) |
-| Art style | **Cel-shaded adventure** ("between Math Pirates and Zelda"), still drawn in code as SVG: ink outlines, two-tone shading as overlay shapes (no `filter`), dramatic light. The target is engaging a 9-year-old, not a preschool look (M4b). **M7b** (Oct 2, 2026): a **Saturday-morning cartoon** look (Pokémon as the reference): a three-quarter-view hero (the **lean** build, picked Oct 2) with anime eyes and expressions, painted backgrounds with only the hero and his props lined, and directed scenes: squash and stretch, crouches and leans, cape and hair in the wind, smears and afterimages, impact bursts and freeze frames, focus lines, camera close-ups and tilts, slow motion, emotes and anime cut-ins. Backgrounds are detailed (a paint kit of leaves, grass, ferns, rocks, ivy, litter) and drawn once as images. The page strip makes each answer a moment (a dash, a stumble, a combo cut-in). Style test at `#style`, `#style-scene-dynamic`, `#style-page` and `?toon` |
+| Art style | **Cel-shaded adventure** ("between Math Pirates and Zelda"), still drawn in code as SVG: ink outlines, two-tone shading as overlay shapes (no `filter`), dramatic light. The target is engaging a 9-year-old, not a preschool look (M4b). **M7b** (Oct 2, 2026): a **Saturday-morning cartoon** look (Pokémon as the reference): a three-quarter-view hero (the **lean** build, picked Oct 2) with anime eyes and expressions, painted backgrounds with only the hero and his props lined, and directed scenes: squash and stretch, crouches and leans, cape and hair in the wind, smears and afterimages, impact bursts and freeze frames, focus lines, camera close-ups and tilts, slow motion, emotes and anime cut-ins. Backgrounds are detailed (a paint kit of leaves, grass, ferns, rocks, ivy, litter) and drawn once as images. The page strip makes each answer a moment (a dash, a stumble, a combo cut-in). Approved and made real in Phase B (the hero, gear, scenes and strip); worlds are repainted one by one in Phase C |
 | Hero | A **young adventurer**: taller proportions, tunic in the player's color, satchel, boots, cape; still the child's own avatar (M4b) |
 | Age | Each player has an age (5–10+), set by a parent in the player editor. It sets where every skill's difficulty starts (decided in M6) |
 | Hero look before M8 | The hero wears the player's chosen shirt color on the default avatar until the builder stores a full avatar (M3) |
@@ -44,8 +44,10 @@ Profile select → Trail map → Level intro (3-2-1)
 ```
 
 **Page screen layout (landscape):**
-- **Top strip (about 30%)**: the world scene. The hero walks toward the obstacle a step for
-  every correct answer and stumbles on a wrong one. The timer is a sun moving across the sky,
+- **Top strip (about 30%)**: the world scene. The hero dashes toward the obstacle a step for
+  every correct answer (a crouch, a dash with dust and a smear, a springy landing) and stumbles on
+  a wrong one while the strip shakes; 5, 10 and 15 in a row slam in a cut-in of his face (M7b).
+  His face watches the danger behind him. The timer is a sun moving across the sky,
   with a small numeric countdown next to it. A **danger chases him** from behind (a boulder, a bee
   swarm, a flood wave, a snowball, a dust devil: one per world). It moves at 85% of the pace that
   finishes the page right at time's up, so a child on pace pulls away and a slow one sees it close
@@ -234,7 +236,7 @@ check. Status: ✅ merged, 🟡 built on its branch, ⬜ not started.
 | M5 | Skills for Worlds 2–5 + all 40 level definitions + remaining cut scenes | All 40 levels playable | ✅ merged Sep 30, 2026 at the user's request; the world overview and the unlock switch followed from feedback |
 | M6 | Adaptive difficulty + weak-fact weighting, and an age setting for the starting point | Difficulty adjusts for each kid | ✅ merged; the parent controls (see the ratings, pin, turn off) come with Settings in M10 |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ✅ merged Sep 30, 2026 at the user's request, before their play-through |
-| M7b | Saturday-morning cartoon look: style test (approval) → new hero and animation beats → each world's backdrop, obstacles and chaser repainted → UI to match → tablet check | The game looks and moves like a cartoon | 🟡 style test on `m7b-cartoon-look`: lean build picked; the directed scene, smears, the lively strip and detailed forest wait for approval (Oct 2, 2026) |
+| M7b | Saturday-morning cartoon look: style test (approval) → new hero and animation beats → each world's backdrop, obstacles and chaser repainted → UI to match → tablet check | The game looks and moves like a cartoon | 🟡 on `m7b-cartoon-look`: style test approved; Phase B done (hero, gear, scenes, page strip, painted forest; level 12 directed). Next: Phase C, world by world (Oct 2, 2026) |
 | M8 | Avatars drawn from the parent's photos, a Look picker, save v6 (changed Oct 2, 2026) | Kids play as themselves | ⬜ |
 | M9 | Audio: synthesized SFX + music loops | Sound on | ⬜ |
 | M10 | Settings/stats (moving the unlock-all switch there), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing | Installed on PC and tablet | ⬜ |

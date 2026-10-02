@@ -1,10 +1,11 @@
 import { useId } from 'react';
-import type { AvatarConfig } from '../hero/avatar';
-import type { Expression } from '../hero/expressions';
+import { wornItem } from '../../content/shop';
 import { noise } from '../obstacles/sceneKit';
 import { INK, shade, tint } from '../style';
-import { Head } from './ToonHero';
-import { BUILDS, type Build } from './toonBuilds';
+import type { AvatarConfig } from './avatar';
+import { BODY } from './body';
+import type { Expression } from './expressions';
+import { Head } from './Hero';
 
 /*
  * The anime cut-in (M7b): just before the big move, a slanted panel slams across the screen with
@@ -45,14 +46,12 @@ export function CutIn({
   ms,
   expr,
   avatar,
-  build,
   layout = 'scene',
 }: {
   dt: number;
   ms: number;
   expr: Expression;
   avatar: AvatarConfig;
-  build: Build;
   layout?: keyof typeof LAYOUTS;
 }) {
   const id = useId();
@@ -75,7 +74,6 @@ export function CutIn({
     return `M${BURST.x + Math.cos(a) * r0} ${BURST.y + Math.sin(a) * r0} L${BURST.x + Math.cos(a - w) * r1} ${BURST.y + Math.sin(a - w) * r1} L${BURST.x + Math.cos(a + w) * r1} ${BURST.y + Math.sin(a + w) * r1} Z`;
   }).join('');
   const sweep = ((dt - ENTER) / (ms - ENTER - EXIT)) * 1800 - 300;
-  const s = BUILDS[build].head.s;
   return (
     <svg className="cutin" viewBox={`0 0 ${W} ${H}`} aria-hidden>
       <defs>
@@ -107,9 +105,10 @@ export function CutIn({
               hairColor={avatar.hairColor}
               hairStyle={avatar.hairStyle}
               expr={expr}
-              s={s}
+              s={BODY.head.s}
               weight={0.36}
               wind={0.5}
+              hat={wornItem(avatar.gear, 'hat')}
             />
           </g>
           {sweep > -300 && sweep < 1500 && (
