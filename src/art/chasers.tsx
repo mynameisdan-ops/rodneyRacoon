@@ -1,5 +1,7 @@
 import type { FC } from 'react';
 import { CHASER_BOX, CHASER_WORLDS } from './chaserData';
+import { ROCK } from './obstacles/mineKit';
+import { noise, roundPath } from './obstacles/sceneKit';
 import { ink, INK, shade, tint } from './style';
 import './chasers.css';
 
@@ -9,32 +11,60 @@ import './chasers.css';
  * for it. Thrilling, never scary: no teeth, no glaring eyes.
  */
 
-const ROCK = '#80705f';
+/** The boulder's lumpy outline around (72, 72), like the cut scene's boulder. */
+const BOULDER_EDGE = roundPath(
+  Array.from({ length: 11 }, (_, i) => {
+    const a = (i / 11) * Math.PI * 2;
+    const m = 52 * (1 + 0.06 * noise(i, 4));
+    return [72 + Math.cos(a) * m, 72 + Math.sin(a) * m] as const;
+  }),
+);
 
-/** World 1: a boulder rolling down the tunnel, kicking up dust. */
+/** A pebble hopping along in front of the boulder. */
+function Pebble({ x, delay }: { x: number; delay: number }) {
+  return (
+    <g className="chaser__hop" style={{ animationDelay: `${delay}s` }}>
+      <path
+        d={`M${x - 7} 124 Q${x - 8} 116 ${x - 2} 114 Q${x + 6} 112 ${x + 7} 119 Q${x + 8} 124 ${x - 7} 124 Z`}
+        fill={ROCK}
+        {...ink(2.2)}
+      />
+    </g>
+  );
+}
+
+/** World 1: a boulder rolling down the tunnel, kicking up dust and pebbles. */
 function Boulder() {
   return (
     <g>
-      <DustPuffs color="#b89a82" />
-      <g className="chaser__spin" style={{ transformOrigin: '72px 72px' }}>
-        <circle cx={72} cy={72} r={52} fill={ROCK} {...ink(4)} />
-        <g fill="none" stroke={INK} strokeWidth={3} strokeLinecap="round">
-          <path d="M62 56 L74 70 L68 84 M74 70 L90 74" />
-          <path d="M36 88 L48 94" />
-          <path d="M92 40 L98 50" />
-        </g>
-        <circle cx={52} cy={50} r={5} fill={shade(ROCK, 0.25)} />
-        <circle cx={98} cy={98} r={6} fill={shade(ROCK, 0.25)} />
+      <DustPuffs color="#c8a88c" />
+      <g stroke="#fff3d6" strokeWidth={4} strokeLinecap="round" opacity={0.7}>
+        <path d="M6 50 h-20 M2 74 h-26 M8 98 h-16" />
       </g>
-      {/* Light and shadow stay put while it rolls. */}
-      <path d="M24 84 A52 52 0 0 0 96 118 Q48 112 24 84 Z" fill={shade(ROCK, 0.4)} />
+      <g className="chaser__spin" style={{ transformOrigin: '72px 72px' }}>
+        <path d={BOULDER_EDGE} fill={ROCK} {...ink(4)} />
+        <g fill="none" stroke={INK} strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round">
+          <path d="M62 54 L74 68 L69 82 M74 68 L90 71" />
+          <path d="M38 86 L50 92" />
+          <path d="M90 38 L96 48" />
+          <path d="M98 88 Q102 95 100 102" />
+        </g>
+        <circle cx={52} cy={50} r={4.5} fill={shade(ROCK, 0.25)} />
+        <circle cx={62} cy={100} r={5.5} fill={shade(ROCK, 0.3)} />
+        <circle cx={106} cy={74} r={3.5} fill={shade(ROCK, 0.25)} />
+      </g>
+      {/* Light and shadow stay put while it rolls: a crisp shadow, a rim light, a shine. */}
+      <path d="M23 81 A50 50 0 0 0 89 119 Q50 110 23 81 Z" fill={shade(ROCK, 0.36)} />
       <path
-        d="M80 32 Q100 36 110 54"
+        d="M79 31 A41 41 0 0 1 113 65"
         fill="none"
-        stroke={tint(ROCK, 0.4)}
-        strokeWidth={7}
+        stroke={tint(ROCK, 0.5)}
+        strokeWidth={5.5}
         strokeLinecap="round"
       />
+      <ellipse cx={88} cy={45} rx={7} ry={4} transform="rotate(40 88 45)" fill={tint(ROCK, 0.7)} />
+      <Pebble x={130} delay={0} />
+      <Pebble x={146} delay={-0.25} />
     </g>
   );
 }

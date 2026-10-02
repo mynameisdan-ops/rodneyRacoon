@@ -45,10 +45,12 @@ In a dev build, `http://localhost:5173/#moments-1-4` is a contact sheet of level
 several moments (for picking sticker moments; screenshot it with headless Chrome at 2480px wide).
 Open `http://localhost:5173/#gallery` for the art gallery (every hero pose, every shop item and icon, every
 sticker, hair style and skin tone, plus every cut scene with a scrub slider to inspect any moment and a
-Play button). `#gallery-gear` (or `poses`, `icons`, `gear-poses`, `hair`, `stickers`, `scenes`) shows one
-section, small enough for a 1280×800 screenshot. `#scene-12` opens level 12's scene in the scrubber, and
+Play button). `#gallery-gear` (or `poses`, `icons`, `gear-poses`, `hair`, `stickers`, `scenes`, `worlds`) shows
+one section, small enough for a 1280×800 screenshot; `#gallery-worlds-1` shows World 1's backdrop as the scene,
+the map and the page strip draw it. `#scene-12` opens level 12's scene in the scrubber, and
 `#scene-12-2600` shows its frame at 2.6 s of real time without the controls. `#strip` plays a page of answers
-on the page strip by itself (`#strip-combo-300` holds one moment: `correct`, `combo`, `wrong` or `danger`).
+on the page strip by itself (`#strip-combo-300` holds one moment: `correct`, `combo`, `wrong` or `danger`;
+add `-L1` for level 1's world and obstacle, e.g. `#strip-L1` or `#strip-danger-0-L1`).
 Use these to check art changes; they are left out of production builds.
 
 (Keep this list in sync with `package.json`.)
@@ -73,14 +75,18 @@ Use these to check art changes; they are left out of production builds.
   clock to `realDuration` and draw `scriptTime(timeline, real)`.
 - The look is a **Saturday-morning cartoon** (M7b; Pokémon is the reference). Characters and the props he
   touches use the style kit in `src/art/style.ts`: bold `INK` outlines on the silhouette (2.5 view units on the
-  hero) and thin ones inside (1.3), one crisp shadow shape per part and a rim light, made with `shade()` / `tint()`.
-  Backgrounds are **painted**: gradients and soft shapes without outlines, detailed with the paint kit
-  (`src/art/worlds/paintKit.tsx`). **No CSS or SVG `filter`** (slow on tablets). A theme's `kind` picks the
-  backdrop layers (`mine`, `forest`, `river`, `mountain`, `canyon`, each in its own file in `src/art/worlds/`;
-  shared tiling helpers in `sceneryKit.ts`; so far only the forest is painted). Backdrop layers are 1280px tiles:
+  hero, `PROP_OUT` 3.2px on scene props) and thin ones inside (1.3, `PROP_IN` 1.5px), one crisp shadow shape per
+  part and a rim light, lit from the upper right, made with `shade()` / `tint()`. Backgrounds, and the ground
+  around his props (pits, ledges, rails, beams overhead), are **painted**: gradients and soft shapes without
+  outlines, detailed with the paint kit (`src/art/worlds/paintKit.tsx`). **No CSS or SVG `filter`** (slow on
+  tablets). A theme's `kind` picks the backdrop layers (`mine`, `forest`, `river`, `mountain`, `canyon`, each in
+  its own file in `src/art/worlds/`; shared tiling helpers in `sceneryKit.ts`; so far the forest and the mine are
+  painted, with their colors in `forestPalette.ts` and `minePalette.ts`). Backdrop layers are 1280px tiles:
   ridges must start and end at the same height, and anything at a tile's edge is drawn the same at both ends.
   Scenes and the page strip draw each layer once as an image (`WorldBackdrop raster`), so detail costs nothing
-  per frame; a `front` layer (big leaves) passes in front of the hero in scenes only.
+  per frame; a `front` layer (big leaves, dark rocks) passes in front of the hero in scenes only (a scene that
+  leaves its world, like the mine train bursting into daylight, sets `foreground: false`). Obstacles are drawn
+  every frame: memoize the static parts of anything drawn many times (a swarm of rats or bats).
 - Obstacle art gets the scene's whole prop schedule (`events`); use `eventTime()` to time a motion to a later
   event. Shared positions go in a layout module per world (`mineLayout.ts` … `canyonLayout.ts`) so art and
   scripts agree; small motion helpers are in `sceneKit.ts`. An obstacle's `focus` picks what the page-strip preview shows.

@@ -186,7 +186,7 @@ export function Frond({
   );
 }
 
-/** A rock resting at (x, y) with a lit face, a shadowed side, a crack and a cap of moss. */
+/** A rock resting at (x, y) with a lit face, a shadowed side, a crack and (if given) a cap of moss. */
 export function MossRock({
   x,
   y,
@@ -199,7 +199,7 @@ export function MossRock({
   y: number;
   s: number;
   rock: string;
-  moss: string;
+  moss?: string;
   seed: number;
 }) {
   const r = createRng(seed);
@@ -229,17 +229,82 @@ export function MossRock({
         strokeWidth={1.6}
         fill="none"
       />
-      <path
-        d={`M${-w * 0.7} ${-h * 0.82} Q${-w * 0.3} ${-h * 1.32} ${w * 0.35} ${-h * 1.08} Q${w * 0.1} ${-h * 0.86} ${-w * 0.2} ${-h * 0.92} Q${-w * 0.5} ${-h * 0.8} ${-w * 0.7} ${-h * 0.82} Z`}
-        fill={moss}
-      />
-      <path
-        d={`M${-w * 0.5} ${-h * 1.02} Q${-w * 0.2} ${-h * 1.26} ${w * 0.15} ${-h * 1.12}`}
-        stroke={tint(moss, 0.4)}
-        strokeWidth={2}
-        fill="none"
-        strokeLinecap="round"
-      />
+      {moss && (
+        <>
+          <path
+            d={`M${-w * 0.7} ${-h * 0.82} Q${-w * 0.3} ${-h * 1.32} ${w * 0.35} ${-h * 1.08} Q${w * 0.1} ${-h * 0.86} ${-w * 0.2} ${-h * 0.92} Q${-w * 0.5} ${-h * 0.8} ${-w * 0.7} ${-h * 0.82} Z`}
+            fill={moss}
+          />
+          <path
+            d={`M${-w * 0.5} ${-h * 1.02} Q${-w * 0.2} ${-h * 1.26} ${w * 0.15} ${-h * 1.12}`}
+            stroke={tint(moss, 0.4)}
+            strokeWidth={2}
+            fill="none"
+            strokeLinecap="round"
+          />
+        </>
+      )}
+    </g>
+  );
+}
+
+/** A four-pointed glint of light at (x, y), `r` from its middle to a tip. */
+export function Glint({ x, y, r, color }: { x: number; y: number; r: number; color: string }) {
+  const n = r * 0.16;
+  return (
+    <path
+      d={`M${x} ${y - r} Q${x + n} ${y - n} ${x + r} ${y} Q${x + n} ${y + n} ${x} ${y + r} Q${x - n} ${y + n} ${x - r} ${y} Q${x - n} ${y - n} ${x} ${y - r} Z`}
+      fill={color}
+    />
+  );
+}
+
+/** A little heap of pebbles around (x, y): each lit on top with a shadow underneath. */
+export function Pebbles({
+  x,
+  y,
+  s,
+  seed,
+  stone,
+  count = 5,
+}: {
+  x: number;
+  y: number;
+  s: number;
+  seed: number;
+  stone: string;
+  count?: number;
+}) {
+  const stones = useMemo(() => {
+    const rng = createRng(seed);
+    return Array.from({ length: count }, () => ({
+      x: (rng.next() - 0.5) * 34,
+      y: (rng.next() - 0.5) * 6,
+      r: 2.4 + rng.next() * 3.6,
+      c: rng.next() < 0.5 ? stone : shade(stone, 0.18),
+    })).sort((a, b) => a.y - b.y);
+  }, [seed, count, stone]);
+  return (
+    <g transform={`translate(${x} ${y}) scale(${s})`}>
+      {stones.map((p, i) => (
+        <g key={i}>
+          <ellipse
+            cx={p.x + 0.8}
+            cy={p.y + p.r * 0.45}
+            rx={p.r * 1.1}
+            ry={p.r * 0.4}
+            fill="rgba(15,8,12,0.3)"
+          />
+          <ellipse cx={p.x} cy={p.y} rx={p.r} ry={p.r * 0.72} fill={p.c} />
+          <ellipse
+            cx={p.x - p.r * 0.25}
+            cy={p.y - p.r * 0.32}
+            rx={p.r * 0.5}
+            ry={p.r * 0.26}
+            fill={tint(p.c, 0.45)}
+          />
+        </g>
+      ))}
     </g>
   );
 }

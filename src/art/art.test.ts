@@ -10,7 +10,8 @@ import { EXPRESSIONS } from './hero/expressions';
 import { ItemIcon } from './hero/ItemIcon';
 import { HERO_POSES } from './hero/poses';
 import { mix, shade, tint } from './style';
-import { getTheme, MEADOW, MINE } from './worlds/themes';
+import { PAINTED_MINE } from './worlds/minePalette';
+import { getTheme, MEADOW } from './worlds/themes';
 import { WorldBackdrop } from './worlds/WorldBackdrop';
 
 describe('avatar', () => {
@@ -63,14 +64,15 @@ describe('world backdrops', () => {
     expect(render(1)).not.toBe(render(2));
   });
 
-  it('draws World 1 as the mine, with rails on the path', () => {
+  it('draws World 1 as the painted mine, with rails on the path', () => {
     expect(getTheme(1).kind).toBe('mine');
-    expect(render(1)).toContain(MINE.rail);
+    expect(render(1)).toContain(PAINTED_MINE.rail);
     expect(render(1)).not.toContain('NaN');
+    expect(render(1)).not.toContain('filter');
   });
 
-  it.each([2, 3, 4, 5])('draws World %s in its own style, cleanly', (worldId) => {
-    const kinds = { 2: 'forest', 3: 'river', 4: 'mountain', 5: 'canyon' } as const;
+  it.each([1, 2, 3, 4, 5])('draws World %s in its own style, cleanly', (worldId) => {
+    const kinds = { 1: 'mine', 2: 'forest', 3: 'river', 4: 'mountain', 5: 'canyon' } as const;
     expect(getTheme(worldId).kind).toBe(kinds[worldId as keyof typeof kinds]);
     for (const [height, horizon, groundTop, pathY] of [
       [240, 120, 168, 206],
@@ -79,7 +81,15 @@ describe('world backdrops', () => {
     ] as const) {
       for (const scroll of [0, 700]) {
         const svg = renderToStaticMarkup(
-          createElement(WorldBackdrop, { worldId, height, horizon, groundTop, pathY, scroll }),
+          createElement(WorldBackdrop, {
+            worldId,
+            height,
+            horizon,
+            groundTop,
+            pathY,
+            scroll,
+            foreground: true,
+          }),
         );
         expect(svg).not.toContain('NaN');
         expect(svg).not.toContain('filter');

@@ -22,11 +22,17 @@ if (import.meta.env.DEV && location.hash.startsWith('#gallery')) {
   );
 } else if (import.meta.env.DEV && location.hash.startsWith('#strip')) {
   // Dev-only: the page strip playing a page of answers by itself; #strip-combo-300 holds a moment.
-  const [, kind, dt] = location.hash.split('-');
+  // An `L<level>` part (#strip-L1, #strip-danger-0-L1) shows that level's world and obstacle.
+  const parts = location.hash.split('-').slice(1);
+  const levelPart = parts.find((p) => /^L\d+$/.test(p));
+  const [kind, dt] = parts.filter((p) => p !== levelPart);
   void import('./screens/StripDemo').then(({ StripDemo }) =>
     render(
       <Stage>
-        <StripDemo still={kind ? { kind, dt: Number(dt ?? 0) } : undefined} />
+        <StripDemo
+          still={kind ? { kind, dt: Number(dt ?? 0) } : undefined}
+          level={levelPart ? Number(levelPart.slice(1)) : undefined}
+        />
       </Stage>,
     ),
   );

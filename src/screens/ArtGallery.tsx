@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { HAIR_COLORS, HAIR_STYLES, SKIN_TONES } from '../content/avatar';
 import { DEFAULT_AVATAR } from '../art/hero/avatar';
 import { Hero } from '../art/hero/Hero';
 import { ItemIcon } from '../art/hero/ItemIcon';
 import { HERO_POSES, type HeroPose } from '../art/hero/poses';
+import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 import { getCutScene } from '../content/cutscenes';
-import { getLevel, LEVELS } from '../content/levels';
+import { getLevel, LEVELS, WORLDS } from '../content/levels';
 import { SHOP_ITEMS } from '../content/shop';
 import { STICKERS } from '../content/stickers';
 import { Sticker } from '../ui/Sticker';
@@ -13,11 +14,13 @@ import { ScenePreview } from './ScenePreview';
 
 /**
  * Dev-only page (open with #gallery in a dev build) for checking art at a glance.
- * `#gallery-poses` (or `gear`, `gear-poses`, `icons`, `hair`, `stickers`) shows one section
- * on its own, for screenshots.
+ * `#gallery-poses` (or `gear`, `gear-poses`, `icons`, `hair`, `stickers`, `worlds`) shows one
+ * section on its own, for screenshots; `#gallery-worlds-1` shows one world's backdrops.
  */
 export function ArtGallery({ section }: { section?: string }) {
   const show = (name: string) => !section || section === name;
+  // #gallery-worlds-1 shows one world's backdrops.
+  const onlyWorld = section?.startsWith('worlds-') ? Number(section.slice(7)) : undefined;
   const [stumbleKey, setStumbleKey] = useState(0);
   const [sceneLevel, setSceneLevel] = useState<number | null>(null);
 
@@ -26,6 +29,40 @@ export function ArtGallery({ section }: { section?: string }) {
 
   return (
     <div className={section ? 'gallery gallery--sheet' : 'gallery'}>
+      {(show('worlds') || onlyWorld) && (
+        <>
+          <h1>World backdrops: scene, map, page strip</h1>
+          {WORLDS.filter((w) => !onlyWorld || w.id === onlyWorld).map((w) => (
+            <div key={w.id} className="gallery__row">
+              <BackdropFrame w={1280} h={800} scale={0.6}>
+                <WorldBackdrop
+                  worldId={w.id}
+                  height={800}
+                  horizon={330}
+                  groundTop={470}
+                  pathY={640}
+                  smooth={false}
+                  foreground
+                />
+              </BackdropFrame>
+              <BackdropFrame w={1280} h={800} scale={0.36}>
+                <WorldBackdrop worldId={w.id} height={800} horizon={190} groundTop={290} />
+              </BackdropFrame>
+              <BackdropFrame w={1280} h={240} scale={0.6}>
+                <WorldBackdrop
+                  worldId={w.id}
+                  height={240}
+                  horizon={120}
+                  groundTop={168}
+                  pathY={206}
+                  detail={0.55}
+                  smooth={false}
+                />
+              </BackdropFrame>
+            </div>
+          ))}
+        </>
+      )}
       {show('scenes') && (
         <>
           <h1>Cut scenes</h1>
@@ -153,6 +190,35 @@ export function ArtGallery({ section }: { section?: string }) {
           </div>
         </>
       )}
+    </div>
+  );
+}
+
+/** A `w`×`h` design-px backdrop shown at `scale`. */
+function BackdropFrame({
+  w,
+  h,
+  scale,
+  children,
+}: {
+  w: number;
+  h: number;
+  scale: number;
+  children: ReactNode;
+}) {
+  return (
+    <div style={{ width: w * scale, height: h * scale, overflow: 'hidden' }}>
+      <div
+        style={{
+          position: 'relative',
+          width: w,
+          height: h,
+          transform: `scale(${scale})`,
+          transformOrigin: '0 0',
+        }}
+      >
+        {children}
+      </div>
     </div>
   );
 }

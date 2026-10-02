@@ -30,3 +30,21 @@ export const noise = (i: number, seed = 1) => {
 
 /** Rotation in degrees of a wheel or log of radius `r` that has rolled `dist` px. */
 export const rollAngle = (dist: number, r: number) => (dist / r) * (180 / Math.PI);
+
+/** A closed path through `pts`, rounded by curving through the midpoints (rocks, lumps). */
+export function roundPath(pts: readonly (readonly [number, number])[]): string {
+  const n = pts.length;
+  const mid = (i: number) => {
+    const [x1, y1] = pts[i % n]!;
+    const [x2, y2] = pts[(i + 1) % n]!;
+    return [(x1 + x2) / 2, (y1 + y2) / 2] as const;
+  };
+  const [sx, sy] = mid(n - 1);
+  let d = `M${sx.toFixed(1)} ${sy.toFixed(1)}`;
+  for (let i = 0; i < n; i++) {
+    const [cx, cy] = pts[i]!;
+    const [mx, my] = mid(i);
+    d += ` Q${cx.toFixed(1)} ${cy.toFixed(1)} ${mx.toFixed(1)} ${my.toFixed(1)}`;
+  }
+  return `${d} Z`;
+}

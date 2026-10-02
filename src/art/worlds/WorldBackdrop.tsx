@@ -3,13 +3,26 @@ import { createRng } from '../../game/rng';
 import { CanyonFar, CanyonMid, CanyonNear, CanyonSky } from './canyon';
 import { ForestCanopy, ForestFar, ForestFront, ForestMid, ForestNear } from './forest';
 import { PAINTED_FOREST } from './forestPalette';
-import { MineCeiling, MineFar, MineMid, MineNear } from './mine';
+import { MineCeiling, MineFar, MineFront, MineMid, MineNear } from './mine';
+import { PAINTED_MINE } from './minePalette';
 import { MountainClouds, MountainFar, MountainMid, MountainNear } from './mountain';
 import { RiverClouds, RiverFar, RiverMid, RiverNear } from './river';
-import { getTheme, type OutdoorTheme } from './themes';
+import { getTheme, type OutdoorTheme, type WorldTheme } from './themes';
 import './backdrop.css';
 
 const W = 1280;
+
+/** The painted worlds' skies (M7b): three stops, the middle one partway down to the horizon. */
+const PAINTED_SKY: Partial<
+  Record<WorldTheme['kind'], { top: string; mid: string; bottom: string }>
+> = {
+  forest: {
+    top: PAINTED_FOREST.skyTop,
+    mid: PAINTED_FOREST.skyMid,
+    bottom: PAINTED_FOREST.skyBottom,
+  },
+  mine: { top: PAINTED_MINE.skyTop, mid: PAINTED_MINE.skyMid, bottom: PAINTED_MINE.skyBottom },
+};
 
 interface Props {
   worldId: number;
@@ -80,6 +93,7 @@ export function WorldBackdrop({
           far: <MineFar {...p} />,
           mid: <MineMid {...p} />,
           near: <MineNear {...p} />,
+          front: <MineFront {...p} />,
         };
       }
       case 'forest': {
@@ -145,7 +159,7 @@ export function WorldBackdrop({
       ),
     };
   }, [theme, horizon, groundTop, height, pathY, detail, worldId]);
-  const paintedSky = theme.kind === 'forest';
+  const paintedSky = PAINTED_SKY[theme.kind];
 
   return (
     <svg
@@ -157,9 +171,9 @@ export function WorldBackdrop({
       <defs>
         {paintedSky ? (
           <linearGradient id={skyId} x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stopColor={PAINTED_FOREST.skyTop} />
-            <stop offset={Math.min(1, horizon / height) * 0.7} stopColor={PAINTED_FOREST.skyMid} />
-            <stop offset={Math.min(1, groundTop / height)} stopColor={PAINTED_FOREST.skyBottom} />
+            <stop offset="0" stopColor={paintedSky.top} />
+            <stop offset={Math.min(1, horizon / height) * 0.7} stopColor={paintedSky.mid} />
+            <stop offset={Math.min(1, groundTop / height)} stopColor={paintedSky.bottom} />
           </linearGradient>
         ) : (
           <linearGradient id={skyId} x1="0" y1="0" x2="0" y2="1">

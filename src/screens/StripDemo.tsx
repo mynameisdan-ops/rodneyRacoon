@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { DEFAULT_AVATAR } from '../art/hero/avatar';
+import { getCutScene } from '../content/cutscenes';
+import { getLevel } from '../content/levels';
 import type { SessionState } from '../game/session';
 import { TrailStrip } from '../ui/TrailStrip';
 
@@ -34,9 +36,18 @@ function next(d: Demo): Demo {
 
 /**
  * Dev-only (#strip): the page strip playing a page of answers on its own. `#strip-correct-200`
- * (or `combo`, `wrong`, `danger`) holds one moment for a screenshot.
+ * (or `combo`, `wrong`, `danger`) holds one moment for a screenshot; `#strip-L1` (or
+ * `#strip-danger-0-L1`) uses level 1's world and obstacle instead of level 12's.
  */
-export function StripDemo({ still }: { still?: { kind: string; dt: number } }) {
+export function StripDemo({
+  still,
+  level = 12,
+}: {
+  still?: { kind: string; dt: number };
+  level?: number;
+}) {
+  const worldId = getLevel(level)?.world ?? 2;
+  const obstacle = getCutScene(level)?.obstacle;
   const [demo, setDemo] = useState<Demo>(START);
   const [elapsed, setElapsed] = useState(0);
   useEffect(() => {
@@ -55,8 +66,8 @@ export function StripDemo({ still }: { still?: { kind: string; dt: number } }) {
     return (
       <div className="strip-demo">
         <TrailStrip
-          worldId={2}
-          obstacle="vine-swing"
+          worldId={worldId}
+          obstacle={obstacle}
           avatar={DEFAULT_AVATAR}
           progress={0.4}
           elapsed={danger ? 0.52 : 0.25}
@@ -71,8 +82,8 @@ export function StripDemo({ still }: { still?: { kind: string; dt: number } }) {
   return (
     <div className="strip-demo">
       <TrailStrip
-        worldId={2}
-        obstacle="vine-swing"
+        worldId={worldId}
+        obstacle={obstacle}
         avatar={DEFAULT_AVATAR}
         progress={demo.progress}
         elapsed={elapsed}

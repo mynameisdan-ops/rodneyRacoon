@@ -1,12 +1,16 @@
+import { PROP_IN, PROP_OUT } from '../style';
 import { CART_FLOOR } from './mineLayout';
 import { eventTime, type ObstacleProps } from './types';
 
 /** Colors, sizes and motion helpers shared by the World 1 (mine) obstacles. */
 
 export const RAIL_TOP = -9;
-export const WOOD = '#7a5234';
-export const IRON = '#5d6570';
-export const ROCK = '#80705f';
+/** The style kit's line weights for the props he touches: the silhouette, and inside it. */
+export const OUT = PROP_OUT;
+export const IN = PROP_IN;
+export const WOOD = '#a26a3c';
+export const IRON = '#5a6270';
+export const ROCK = '#8c7468';
 export const STEEL = '#a9b4c0';
 export const CRYSTALS = ['#43e0cf', '#a07bff', '#ff6fb5'] as const;
 /** The i-th crystal color, cycling through the palette. */

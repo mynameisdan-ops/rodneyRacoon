@@ -1,17 +1,32 @@
-import { useId } from 'react';
-import { Debris, Dust, Glow, SparkBurst, SparkTrail, SpeedLines } from '../fx';
+import { memo, useId } from 'react';
+import { Debris, Dust, SparkBurst, SparkTrail, SpeedLines } from '../fx';
 import { debrisPieces } from '../fxData';
-import { INK, ink, shade } from '../style';
+import { INK, ink, mix, shade, tint } from '../style';
+import { Glint } from '../worlds/paintKit';
+import { PAINTED_MINE } from '../worlds/minePalette';
 import { CART_JUMP, CART_RACE, MINE_TRAIN, WALL_SMASH } from './mineLayout';
-import { BOULDER_R, cartRide, clamp, flightTilt, RAIL_TOP, ROCK, STEEL, WOOD } from './mineKit';
+import {
+  BOULDER_R,
+  cartRide,
+  clamp,
+  flightTilt,
+  IN,
+  IRON,
+  OUT,
+  RAIL_TOP,
+  ROCK,
+  WOOD,
+} from './mineKit';
 import { Boulder, CartRim, MineCart, Pit, PitLip, Rails, Rock } from './mineParts';
 import { eventTime, type ObstacleProps } from './types';
 
 /*
- * World 1 cart scenes: levels 1, 2, 3 and the level 8 boss. Motion is computed
- * from `t` and the prop schedule, so every frame is deterministic.
+ * World 1 cart scenes: levels 1, 2, 3 and the level 8 boss. Motion is computed from `t` and the
+ * prop schedule, so every frame is deterministic. What he touches is lined like him; the ground,
+ * the timber of the track and the daylight outside are painted like the backdrop (M7b).
  */
 
+const P = PAINTED_MINE;
 const SPEED_YS = [-60, -86, -100, -48];
 
 // ---------- Level 1: cart race ----------
@@ -62,27 +77,51 @@ const PEBBLES = Array.from({ length: 10 }, (_, i) => ({
 
 function Pebbles({ t, from }: { t: number; from: number }) {
   return (
-    <g fill={shade(ROCK, 0.15)} {...ink(2)}>
+    <g>
       {PEBBLES.map((pb, i) => {
         const dt = t - from - pb.delay;
         if (!(dt >= 0)) return null;
         const y = -760 + 0.004 * dt * dt;
         if (y > -pb.r) return null;
-        return <circle key={i} cx={pb.x} cy={y} r={pb.r} />;
+        return <Rock key={i} x={pb.x} y={y + pb.r} s={pb.r * 1.6} spin={dt * 0.3} />;
       })}
     </g>
   );
 }
 
+/** A painted timber beam from (x1, y1) to (x2, y2), lit along one edge. */
+function Timber({
+  x1,
+  y1,
+  x2,
+  y2,
+  w,
+}: {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+  w: number;
+}) {
+  const d = `M${x1} ${y1} L${x2} ${y2}`;
+  return (
+    <g strokeLinecap="round" fill="none">
+      <path d={d} stroke={P.timberDark} strokeWidth={w} />
+      <path d={d} stroke={P.timber} strokeWidth={w * 0.62} transform={`translate(${w * 0.16} 0)`} />
+    </g>
+  );
+}
+
+/** The wooden trestle carrying the track over the pit, until the boulder smashes through it. */
 function Trestle({ t, dropAt }: { t: number; dropAt: number }) {
   const [a, b] = CART_RACE.pit;
   if (t < dropAt) {
     return (
       <g>
-        <g stroke={shade(WOOD, 0.2)} strokeWidth={9} strokeLinecap="round">
-          <path d={`M${a + 10} -2 L${a + 100} 150 M${b - 10} -2 L${a + 100} 150`} />
-          <path d={`M${a + 100} -2 V180`} />
-        </g>
+        <Timber x1={a + 10} y1={-2} x2={a + 100} y2={150} w={11} />
+        <Timber x1={b - 10} y1={-2} x2={a + 100} y2={150} w={11} />
+        <Timber x1={a + 100} y1={-2} x2={a + 100} y2={190} w={12} />
+        <Timber x1={a + 40} y1={60} x2={b - 40} y2={60} w={8} />
         <Rails a={a - 12} b={b + 12} />
       </g>
     );
@@ -96,8 +135,10 @@ function Trestle({ t, dropAt }: { t: number; dropAt: number }) {
         const x = a + 35 + i * 65 + (i - 1) * dt * 0.05;
         return (
           <g key={i} transform={`translate(${x} ${y}) rotate(${(i - 1) * 0.35 * dt + 8})`}>
-            <rect x={-36} y={-5} width={72} height={10} fill={STEEL} {...ink(2)} />
-            <rect x={-14} y={3} width={26} height={11} fill={WOOD} {...ink(2)} />
+            <rect x={-14} y={3} width={26} height={11} fill={P.sleeper} />
+            <rect x={-36} y={-5} width={72} height={8} fill={P.rail} />
+            <rect x={-36} y={-5} width={72} height={1.8} fill={P.railLight} />
+            <rect x={-36} y={0} width={72} height={3} fill={P.railDark} />
           </g>
         );
       })}
@@ -105,17 +146,36 @@ function Trestle({ t, dropAt }: { t: number; dropAt: number }) {
   );
 }
 
+/** The buffer stop at the end of the line: a red-and-white beam on a braced timber post. */
 function Bumper({ x }: { x: number }) {
   return (
     <g>
-      <rect x={x + 10} y={-120} width={22} height={124} fill={shade(WOOD, 0.15)} {...ink(3)} />
-      <rect x={x} y={-92} width={46} height={60} rx={4} fill={WOOD} {...ink(3)} />
       <path
-        d={`M${x} -80 H${x + 46} M${x} -48 H${x + 46}`}
-        stroke={shade(WOOD, 0.4)}
-        strokeWidth={3}
+        d={`M${x + 24} -112 L${x + 84} 2 L${x + 70} 2 L${x + 16} -100 Z`}
+        fill={shade(WOOD, 0.2)}
+        {...ink(OUT)}
       />
-      <rect x={x - 6} y={-86} width={10} height={48} rx={3} fill="#c0392b" {...ink(2.5)} />
+      <rect x={x + 10} y={-124} width={24} height={128} rx={3} fill={WOOD} {...ink(OUT)} />
+      <rect x={x + 10} y={-124} width={8} height={128} fill={shade(WOOD, 0.3)} />
+      <path
+        d={`M${x + 30} -118 V-6`}
+        stroke={tint(WOOD, 0.5)}
+        strokeWidth={2.2}
+        strokeLinecap="round"
+      />
+      <rect x={x} y={-94} width={48} height={62} rx={5} fill="#e04b3a" {...ink(OUT)} />
+      {/* White stripes, then its shadow side and a rim light. */}
+      <path
+        d={`M${x + 4} -66 L${x + 30} -92 L${x + 44} -92 L${x + 4} -52 Z M${x + 4} -36 L${x + 46} -78 L${x + 46} -62 L${x + 20} -36 Z`}
+        fill="#fff4e6"
+      />
+      <path
+        d={`M${x} -40 V-89 Q${x} -94 ${x + 5} -94 L${x + 12} -94 L${x + 12} -32 L${x + 5} -32 Q${x} -32 ${x} -40 Z`}
+        fill={shade('#e04b3a', 0.35)}
+        opacity={0.75}
+      />
+      <path d={`M${x + 44} -88 V-40`} stroke="#ffb0a0" strokeWidth={2.2} strokeLinecap="round" />
+      <rect x={x - 6} y={-84} width={10} height={40} rx={3} fill={IRON} {...ink(IN + 0.6)} />
     </g>
   );
 }
@@ -180,6 +240,17 @@ function jumpTilt(p: ObstacleProps) {
   return flightTilt(p.t, landAt - 1, landAt);
 }
 
+/** A painted steel rail along a path (it can bend): dark underside, steel, a bright top edge. */
+function BentRail({ d }: { d: string }) {
+  return (
+    <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d={d} stroke={P.railDark} strokeWidth={9} />
+      <path d={d} stroke={P.rail} strokeWidth={5} transform="translate(0 -1.5)" />
+      <path d={d} stroke={P.railLight} strokeWidth={1.8} transform="translate(0 -3.2)" />
+    </g>
+  );
+}
+
 export function CartJumpBack(p: ObstacleProps) {
   const { rampStart: r0, rampEnd: r1, rampHeight: h } = CART_JUMP;
   const [a, b] = CART_JUMP.gap;
@@ -187,44 +258,18 @@ export function CartJumpBack(p: ObstacleProps) {
   return (
     <g>
       <Pit a={a} b={b} />
-      {/* The broken ramp: a timber trestle with the rail bent up at the end. */}
-      <path d={`M${r0 + 20} 0 L${r1} ${-h + 4} L${r1} 0 Z`} fill={shade(WOOD, 0.25)} {...ink(3)} />
+      {/* The broken ramp: a timber trestle under the rail, bent up where the track ends. */}
+      <path d={`M${r0 + 20} 0 L${r1} ${-h + 4} L${r1 + 4} 2 Z`} fill={P.timberDark} />
       <path
-        d={`M${r0 + 60} 0 L${r1 - 30} ${-h + 14} M${r1 - 30} 0 L${r1 - 30} ${-h + 16}`}
-        stroke={WOOD}
-        strokeWidth={7}
+        d={`M${r0 + 40} -2 L${r1 - 6} ${-h + 10} L${r1 - 6} -2 Z`}
+        fill={mix(P.timberDark, P.timber, 0.45)}
       />
-      <path
-        d={`M${r0} ${RAIL_TOP + 4} L${r1} ${RAIL_TOP - h + 4} l14 -14`}
-        fill="none"
-        stroke={INK}
-        strokeWidth={12}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d={`M${r0} ${RAIL_TOP + 4} L${r1} ${RAIL_TOP - h + 4} l14 -14`}
-        fill="none"
-        stroke={STEEL}
-        strokeWidth={7}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <Timber x1={r0 + 62} y1={0} x2={r1 - 30} y2={-h + 18} w={9} />
+      <Timber x1={r1 - 30} y1={0} x2={r1 - 30} y2={-h + 18} w={9} />
+      <Timber x1={r1} y1={2} x2={r1} y2={-h + 6} w={10} />
+      <BentRail d={`M${r0} ${RAIL_TOP + 4} L${r1} ${RAIL_TOP - h + 4} l14 -14`} />
       {/* The far rail's broken end curls down into the gap. */}
-      <path
-        d={`M${b + 30} ${RAIL_TOP + 4} Q${b + 6} ${RAIL_TOP + 2} ${b} 20`}
-        fill="none"
-        stroke={INK}
-        strokeWidth={12}
-        strokeLinecap="round"
-      />
-      <path
-        d={`M${b + 30} ${RAIL_TOP + 4} Q${b + 6} ${RAIL_TOP + 2} ${b} 20`}
-        fill="none"
-        stroke={STEEL}
-        strokeWidth={7}
-        strokeLinecap="round"
-      />
+      <BentRail d={`M${b + 30} ${RAIL_TOP + 4} Q${b + 6} ${RAIL_TOP + 2} ${b} 20`} />
       <CartRim x={cart.x} lift={cart.lift} tilt={jumpTilt(p)} />
     </g>
   );
@@ -281,6 +326,66 @@ function smashCartX(p: ObstacleProps) {
   return p.t < smashAt ? x : x + 0.35 * (p.t - smashAt);
 }
 
+/** The cave-in: a mass of fallen rock from floor to roof (painted), loose boulders on its face. */
+const CaveIn = memo(function CaveIn() {
+  const id = useId();
+  const [w0, w1] = WALL_SMASH.wall;
+  return (
+    <g>
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#4a3036" />
+          <stop offset="0.5" stopColor="#6a4a44" />
+          <stop offset="1" stopColor="#3a2430" />
+        </linearGradient>
+      </defs>
+      <path
+        d={`M${w0 - 20} 4 L${w0} -120 L${w0 - 14} -260 L${w0 + 6} -400 L${w0 - 10} -620 L${w1 + 30} -620 L${w1 + 10} -420 L${w1 + 26} -250 L${w1 + 8} -110 L${w1 + 30} 4 Z`}
+        fill={`url(#${id})`}
+      />
+      {/* Broken props sticking out of the cave-in. */}
+      <path
+        d={`M${w0 - 30} -470 L${w1 + 40} -330`}
+        stroke={INK}
+        strokeWidth={22}
+        strokeLinecap="round"
+      />
+      <path
+        d={`M${w0 - 30} -470 L${w1 + 40} -330`}
+        stroke={WOOD}
+        strokeWidth={15}
+        strokeLinecap="round"
+      />
+      <path
+        d={`M${w0 - 26} -476 L${w1 + 42} -337`}
+        stroke={tint(WOOD, 0.5)}
+        strokeWidth={2.4}
+        strokeLinecap="round"
+      />
+      {WALL_ROCKS.map(([x, y, s], i) => (
+        <Rock key={i} x={x} y={y} s={s} spin={((i * 23) % 30) - 15} />
+      ))}
+      {/* Cracks glow where the wall is weakest. */}
+      <path
+        d={`M${w0 + 10} -60 L${w0 + 40} -90 L${w0 + 30} -130 L${w0 + 55} -170`}
+        fill="none"
+        stroke="#ffd27a"
+        strokeWidth={5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d={`M${w0 + 10} -60 L${w0 + 40} -90 L${w0 + 30} -130 L${w0 + 55} -170`}
+        fill="none"
+        stroke="#fff6d0"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  );
+});
+
 export function WallSmashBack(p: ObstacleProps) {
   const smashAt = eventTime(p.events, 'smash');
   const [w0, w1] = WALL_SMASH.wall;
@@ -297,42 +402,12 @@ export function WallSmashBack(p: ObstacleProps) {
       </g>
     );
   }
+  // The cracks pulse while he pushes toward them.
+  const pulse = 0.55 + 0.45 * Math.sin(p.t / 120);
   return (
     <g>
-      {/* The cave-in: a solid mass of rock from floor to roof, with loose boulders on its face. */}
-      <path
-        d={`M${w0 - 20} 4 L${w0} -120 L${w0 - 14} -260 L${w0 + 6} -400 L${w0 - 10} -620 L${w1 + 30} -620 L${w1 + 10} -420 L${w1 + 26} -250 L${w1 + 8} -110 L${w1 + 30} 4 Z`}
-        fill="#4e3c34"
-        {...ink(4)}
-      />
-      <path
-        d={`M${w0} -120 L${w0 - 14} -260 L${w0 + 6} -400 L${w0 - 10} -620 L${w0 + 30} -620 L${w0 + 24} -380 L${w0 + 10} -250 L${w0 + 24} -110 Z`}
-        fill="#6a5448"
-      />
-      {/* Broken props sticking out of the cave-in. */}
-      <path
-        d={`M${w0 - 30} -470 L${w1 + 40} -330`}
-        stroke={INK}
-        strokeWidth={22}
-        strokeLinecap="round"
-      />
-      <path
-        d={`M${w0 - 30} -470 L${w1 + 40} -330`}
-        stroke={WOOD}
-        strokeWidth={16}
-        strokeLinecap="round"
-      />
-      {WALL_ROCKS.map(([x, y, s], i) => (
-        <Rock key={i} x={x} y={y} s={s} spin={((i * 23) % 30) - 15} />
-      ))}
-      {/* Cracks glow where the wall is weakest. */}
-      <path
-        d={`M${w0 + 10} -60 L${w0 + 40} -90 L${w0 + 30} -130 L${w0 + 55} -170`}
-        fill="none"
-        stroke="#ffb347"
-        strokeWidth={4}
-        strokeLinecap="round"
-      />
+      <CaveIn />
+      <circle cx={w0 + 34} cy={-115} r={60} fill="#ffb347" opacity={0.12 * pulse} />
     </g>
   );
 }
@@ -368,9 +443,9 @@ function Rockfall(p: ObstacleProps) {
   const boardAt = eventTime(p.events, 'board');
   if (!(p.t >= rumbleAt)) return null;
   const rocks = [];
-  // A first few around him as the rumble starts.
+  // A first few behind him as the rumble starts (never on him: he stands at about 30).
   for (let i = 0; i < 4; i++) {
-    rocks.push({ s: rumbleAt + i * 160, x: -160 + i * 70, size: 18 + (i % 2) * 8, k: i });
+    rocks.push({ s: rumbleAt + i * 160, x: -230 + i * 55, size: 18 + (i % 2) * 8, k: i });
   }
   for (let k = 0; ; k++) {
     const s = boardAt + 200 + k * 110;
@@ -398,37 +473,67 @@ function Rockfall(p: ObstacleProps) {
   );
 }
 
-/** Daylight past the tunnel mouth: sky, mesas, sunlit ground and the canyon. */
-function Outside() {
-  const sky = useId();
+/** Daylight past the tunnel mouth (painted): sky, sun, mesas, the canyon and the far river. */
+const Outside = memo(function Outside() {
+  const id = useId();
   const { mouth } = MINE_TRAIN;
   const [c0, c1] = MINE_TRAIN.canyon;
   const end = 2400;
   return (
     <g>
       <defs>
-        <linearGradient id={sky} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f08a5d" />
-          <stop offset="1" stopColor="#ffe0a3" />
+        <linearGradient id={`${id}sky`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#f5845a" />
+          <stop offset="0.6" stopColor="#ffc27a" />
+          <stop offset="1" stopColor="#ffe6b0" />
+        </linearGradient>
+        <radialGradient id={`${id}sun`}>
+          <stop offset="0" stopColor="#fffbe6" stopOpacity={1} />
+          <stop offset="0.25" stopColor="#fff1c0" stopOpacity={0.8} />
+          <stop offset="1" stopColor="#ffe0a0" stopOpacity={0} />
+        </radialGradient>
+        <linearGradient id={`${id}deep`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#8a4030" />
+          <stop offset="1" stopColor="#4a1e1c" />
         </linearGradient>
       </defs>
-      <rect x={mouth} y={-700} width={end - mouth} height={704} fill={`url(#${sky})`} />
-      <Glow x={1900} y={-430} r={260} color="#fff3c4" />
-      <circle cx={1900} cy={-430} r={46} fill="#fff6d8" />
+      <rect x={mouth} y={-700} width={end - mouth} height={704} fill={`url(#${id}sky)`} />
+      <circle cx={1900} cy={-430} r={260} fill={`url(#${id}sun)`} />
+      <circle cx={1900} cy={-430} r={44} fill="#fffaf0" />
+      {/* Mesas far away, then nearer, each lit along its top. */}
       <path
         d={`M${mouth} -120 L1150 -120 L1170 -210 L1320 -210 L1340 -130 L1560 -130 L1580 -260 L1760 -260 L1790 -150 L2000 -150 L2020 -230 L2200 -230 L2230 -110 L${end} -110 V0 H${mouth} Z`}
-        fill="#c77a6e"
+        fill="#e09a84"
+        opacity={0.85}
+      />
+      <path
+        d="M1170 -210 L1320 -210 M1580 -260 L1760 -260 M2020 -230 L2200 -230"
+        stroke="#ffd8b8"
+        strokeWidth={4}
         opacity={0.8}
       />
       <path
         d={`M${mouth} -40 L1240 -40 L1260 -90 L1400 -90 L1420 -50 L1700 -50 L1730 -120 L1880 -120 L1900 -60 L${end} -60 V0 H${mouth} Z`}
-        fill="#a85a45"
+        fill="#c26a50"
       />
-      {/* The canyon: far wall, river far below, and the two cliff faces. */}
-      <rect x={c0} y={-4} width={c1 - c0} height={210} fill="#7a3b24" />
+      <path d="M1260 -90 L1400 -90 M1730 -120 L1880 -120" stroke="#f0a880" strokeWidth={4} />
+      {/* The canyon: the far wall, the river far below, and the two cliff faces. */}
+      <rect x={c0} y={-4} width={c1 - c0} height={210} fill={`url(#${id}deep)`} />
       <path d={`M${c0} 150 Q${(c0 + c1) / 2} 135 ${c1} 150 V210 H${c0} Z`} fill="#4fb3d9" />
-      <path d={`M${c0} -4 L${c0 + 40} 210 H${c0 - 4} Z`} fill="#b86a3e" {...ink(3)} />
-      <path d={`M${c1} -4 L${c1 - 30} 210 H${c1 + 4} Z`} fill="#8f4a2c" {...ink(3)} />
+      <path
+        d={`M${c0 + 30} 146 Q${(c0 + c1) / 2} 134 ${c1 - 40} 146`}
+        stroke="#c8f0ff"
+        strokeWidth={3}
+        fill="none"
+      />
+      <path d={`M${c0} -4 L${c0 + 40} 210 H${c0 - 4} Z`} fill="#b86a4a" />
+      <path d={`M${c1} -4 L${c1 - 30} 210 H${c1 + 4} Z`} fill="#6e3424" />
+      <path
+        d={`M${c0 + 8} 30 l14 4 M${c0 + 16} 80 l14 4`}
+        stroke="#d88a60"
+        strokeWidth={3}
+        strokeLinecap="round"
+      />
       {/* Sunlit ground on both sides, with its own track. */}
       {(
         [
@@ -437,71 +542,118 @@ function Outside() {
         ] as const
       ).map(([a, b]) => (
         <g key={a}>
-          <rect x={a} y={-4} width={b - a} height={210} fill="#c47a45" {...ink(3)} />
-          <rect x={a} y={-4} width={b - a} height={8} fill="#e0a068" />
+          <rect x={a} y={-4} width={b - a} height={210} fill="#c47a45" />
+          <rect x={a} y={-4} width={b - a} height={8} fill="#f0b47a" />
+          <rect x={a} y={30} width={b - a} height={180} fill="#a85e38" opacity={0.6} />
           <Rails a={a} b={b} />
         </g>
       ))}
     </g>
   );
-}
+});
 
-/** The tunnel mouth: the rock face and a timber portal. */
-function Mouth() {
+/** The tunnel mouth (painted): the rock face and a timber portal, daylight on its far edge. */
+const Mouth = memo(function Mouth() {
   const m = MINE_TRAIN.mouth;
   return (
     <g>
       <path
         d={`M${m - 40} -700 L${m + 50} -700 L${m + 30} -560 L${m + 60} -420 L${m + 36} -300 L${m + 58} -170 L${m + 40} 4 L${m - 40} 4 Z`}
         fill="#3a2830"
-        {...ink(3)}
       />
-      <rect x={m - 20} y={-250} width={20} height={254} fill={WOOD} {...ink(3)} />
-      <rect x={m - 60} y={-270} width={110} height={24} fill={WOOD} {...ink(3)} />
+      <path
+        d={`M${m + 50} -700 L${m + 30} -560 L${m + 60} -420 L${m + 36} -300 L${m + 58} -170 L${m + 40} 4`}
+        stroke="#f0a070"
+        strokeWidth={5}
+        fill="none"
+        opacity={0.7}
+      />
+      <rect x={m - 20} y={-250} width={20} height={254} fill={P.timber} />
+      <rect x={m - 20} y={-250} width={7} height={254} fill={P.timberDark} />
+      <rect x={m - 60} y={-270} width={110} height={24} fill={P.timber} />
+      <rect x={m - 60} y={-254} width={110} height={8} fill={P.timberDark} />
+      <rect x={m - 60} y={-270} width={110} height={3} fill={P.timberLight} />
     </g>
   );
-}
+});
+
+const ENGINE = '#2f7d64';
+const CAB = '#d2453a';
+const BRASS = '#f0c050';
 
 /** The little engine pushing the cart, its front facing right. */
 function Engine({ x, lift, tilt, t }: { x: number; lift: number; tilt: number; t: number }) {
   const spin = (x / 16) * (180 / Math.PI);
   return (
     <g>
+      {/* Puffs of smoke streaming back from the stack (painted, soft). */}
       {Array.from({ length: 4 }, (_, i) => {
         const ph = ((t + i * 180) % 720) / 720;
+        const cx = x + 40 - ph * 90;
+        const cy = -lift - 150 - ph * 120;
+        const r = 12 + ph * 26;
         return (
-          <circle
-            key={i}
-            cx={x + 40 - ph * 90}
-            cy={-lift - 150 - ph * 120}
-            r={12 + ph * 26}
-            fill="#e8e1d8"
-            opacity={0.7 * (1 - ph)}
-          />
+          <g key={i} opacity={0.8 * (1 - ph)}>
+            <circle cx={cx} cy={cy} r={r} fill="#d8d0cc" />
+            <circle cx={cx - r * 0.2} cy={cy - r * 0.25} r={r * 0.62} fill="#f4f0ee" />
+          </g>
         );
       })}
       <g transform={`translate(${x} ${-lift}) rotate(${tilt} 0 -24)`}>
+        <EngineBody />
         {[-40, 0, 40].map((wx) => (
-          <g key={wx} transform={`translate(${wx} ${RAIL_TOP - 16}) rotate(${spin})`}>
-            <circle r={16} fill="#8a2a24" {...ink(3)} />
-            <path d="M-12 0 H12 M0 -12 V12" stroke="#e0b458" strokeWidth={3} />
+          <g key={wx} transform={`translate(${wx} ${RAIL_TOP - 16})`}>
+            <circle r={16} fill="#a8322d" {...ink(OUT)} />
+            <g transform={`rotate(${spin})`} stroke={BRASS} strokeWidth={3} strokeLinecap="round">
+              <path d="M-11 0 H11 M0 -11 V11" />
+            </g>
+            <circle r={4.5} fill={BRASS} {...ink(IN)} />
           </g>
         ))}
-        <rect x={-66} y={-44} width={136} height={16} rx={3} fill="#2c2f36" {...ink(3)} />
-        <rect x={-8} y={-100} width={72} height={58} rx={26} fill="#2f5d50" {...ink(3.5)} />
-        <rect x={-8} y={-70} width={72} height={10} fill={shade('#2f5d50', 0.35)} />
-        {[10, 40].map((bx) => (
-          <rect key={bx} x={bx} y={-102} width={7} height={62} fill="#e0b458" {...ink(2)} />
-        ))}
-        <path d="M34 -100 L30 -132 H56 L50 -100 Z" fill="#2c2f36" {...ink(3)} />
-        <rect x={-66} y={-138} width={60} height={96} rx={4} fill="#a8322d" {...ink(3.5)} />
-        <rect x={-72} y={-148} width={72} height={14} rx={3} fill="#5a1f24" {...ink(3)} />
-        <rect x={-54} y={-126} width={36} height={30} rx={3} fill="#ffe7a8" {...ink(2.5)} />
-        <rect x={64} y={-60} width={12} height={22} rx={3} fill="#e0b458" {...ink(2.5)} />
+        <path d="M-40 -24 H40" stroke={IRON} strokeWidth={5} strokeLinecap="round" />
       </g>
     </g>
   );
 }
+
+/** The engine's body, cab and boiler: drawn once (memoized), since only its wheels turn. */
+const EngineBody = memo(function EngineBody() {
+  return (
+    <g>
+      <rect x={-68} y={-46} width={142} height={18} rx={4} fill="#2c2f36" {...ink(OUT)} />
+      <rect x={-64} y={-34} width={134} height={5} fill="#16181c" />
+      {/* The boiler, its bands and a rim light along the top. */}
+      <rect x={-10} y={-104} width={78} height={60} rx={28} fill={ENGINE} {...ink(OUT)} />
+      <path
+        d="M-10 -66 Q-10 -46 10 -46 L60 -46 Q66 -46 68 -54 L-6 -54 Z"
+        fill={shade(ENGINE, 0.32)}
+      />
+      <path
+        d="M10 -100 Q40 -104 58 -96"
+        stroke={tint(ENGINE, 0.5)}
+        strokeWidth={3}
+        fill="none"
+        strokeLinecap="round"
+      />
+      {[12, 42].map((bx) => (
+        <rect key={bx} x={bx} y={-106} width={7} height={63} rx={2} fill={BRASS} {...ink(IN)} />
+      ))}
+      <path d="M34 -104 L29 -136 H57 L51 -104 Z" fill="#2c2f36" {...ink(OUT)} />
+      <rect x={25} y={-142} width={36} height={9} rx={3} fill="#2c2f36" {...ink(IN + 0.5)} />
+      {/* The headlamp at the front. */}
+      <rect x={64} y={-92} width={16} height={18} rx={5} fill={BRASS} {...ink(IN + 0.5)} />
+      <circle cx={76} cy={-83} r={5} fill="#fff6c0" />
+      <Glint x={78} y={-86} r={9} color="#ffffff" />
+      {/* The cab: red, with a window and a roof. */}
+      <rect x={-68} y={-140} width={62} height={98} rx={5} fill={CAB} {...ink(OUT)} />
+      <path d="M-68 -136 L-68 -46 L-50 -46 L-50 -136 Z" fill={shade(CAB, 0.3)} />
+      <path d="M-10 -134 V-52" stroke={tint(CAB, 0.5)} strokeWidth={2.4} strokeLinecap="round" />
+      <rect x={-76} y={-152} width={76} height={15} rx={4} fill="#5a1f24" {...ink(OUT)} />
+      <rect x={-55} y={-128} width={38} height={32} rx={4} fill="#ffe7a8" {...ink(IN + 0.5)} />
+      <path d="M-50 -100 L-24 -124" stroke="#fff8e0" strokeWidth={3} strokeLinecap="round" />
+    </g>
+  );
+});
 
 export function MineTrainBack(p: ObstacleProps) {
   const cart = trainCart(p);

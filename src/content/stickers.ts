@@ -10,14 +10,14 @@ export interface StickerDef {
 }
 
 export const STICKERS: readonly StickerDef[] = [
-  { level: 1, name: 'Runaway Cart', moment: 0.5 },
-  { level: 2, name: 'Cart Jump', moment: 0.5 },
-  { level: 3, name: 'Wall Buster', moment: 0.6 },
-  { level: 4, name: 'Rat Swarm', moment: 0.4 },
+  { level: 1, name: 'Runaway Cart', moment: 0.6 },
+  { level: 2, name: 'Cart Jump', moment: 0.6 },
+  { level: 3, name: 'Wall Buster', moment: 0.7 },
+  { level: 4, name: 'Rat Swarm', moment: 0.5 },
   { level: 5, name: 'Crystal Hop', moment: 0.3 },
   { level: 6, name: 'Bat Storm', moment: 0.5 },
   { level: 7, name: 'Runaway Lift', moment: 0.7 },
-  { level: 8, name: 'Mine Train Leap', moment: 0.5 },
+  { level: 8, name: 'Mine Train Leap', moment: 0.6 },
   { level: 9, name: 'Log Rider', moment: 0.3 },
   { level: 10, name: 'Bramble Vault', moment: 0.6 },
   { level: 11, name: 'Root Slide', moment: 0.4 },

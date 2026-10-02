@@ -389,3 +389,46 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     scene's first frames draw the backdrop into images, one ~430 ms frame under throttle (the
     clock caps a frame at 100 ms, so it pauses rather than skips). Worth warming the images
     during the results screen if the tablet shows it (Phase E).
+
+- **2026-10-02 (late night): M7b Phase C, World 1 painted and directed** (`m7b-cartoon-look`).
+  - **The painted mine** (`worlds/mine.tsx`, colors in `minePalette.ts`, drawn as images in
+    scenes and on the strip like the forest): a deep cavern glowing amber far away (rows of
+    stalagmite clusters, mounds and stepped mesas fading into a warm haze, a far rock arch, a
+    winding tower, a trestle with lanterns, far crystal glows); a rock ceiling whose undersides
+    catch the lantern light, stalactites with drips, and a crack letting a shaft of daylight in
+    with roots hanging from it; timber sets with knee braces and wedges, hanging lanterns in
+    pools of warm light; glowing crystal clusters, barrels, crates, a pickaxe and a shovel, ore
+    heaps with gold, glowing mushrooms; a gravel floor with pebbles, puddles, nuggets and crystal
+    sprouts; painted rails; and a front layer of dark rocks with a glinting crystal. The paint
+    kit gained `Pebbles`, `Glint` and moss-less `MossRock`. Warm and inviting rather than a
+    dark hole (the first screen, "Who's playing?", shows it too).
+  - **Obstacles repainted** (`mineParts`, `mineCarts`, `mineCaverns`): what he touches is lined
+    like him (bold silhouette, thin inner lines, one crisp shadow shape and a rim light, lit
+    from the upper right; the weights are `PROP_OUT`/`PROP_IN` in `style.ts`): the cart, a lumpy
+    boulder (its cracks turn as it rolls while its shadow and shine stay put), the buffer, the
+    ore cart, cute rats and bats with big shiny eyes, crystal spires, the lift cage, rope and
+    chain, the little engine. The ground around them is painted: pits fading to black with a
+    near lip shaded like the floor, the trestles, ramps, cave-in mass, rat hole, crack, the
+    lift's upper ledge (natural rock), roof beams, and level 8's daylight canyon. The page-strip
+    boulder matches (pebbles hop ahead of it).
+  - **Directed scripts** for levels 1–8 (`content/cutscenes.ts`): every threat lands with an
+    impact and a hit-stop, the camera snaps to his face, a cut-in shows him deciding (1, 2, 3,
+    7, 8), the big move plays in slow motion under focus lines and a tilted camera, and landings
+    freeze, shake and sparkle. Beats are timed to the props' own events (the boulder lands 450 ms
+    after 'rumble', the lantern 390 ms after 'crash', the rats reach him ~850 ms after 'swarm').
+    Where a freeze lands mid-ride, the move is split into a short stretch at the same speed and
+    the rest, so the cart's speed never jumps. Level 8's first rocks now fall behind him.
+  - **New:** `CutScene.foreground: false` keeps the cave's foreground rocks out of level 8's
+    daylight. Stickers 1, 2, 3, 4 and 8 moved to their new best moments (the boulder behind the
+    cart, the cart in flight, the wall bursting, the swing over the rats, the train over the
+    canyon). Dev pages: `#gallery-worlds` (or `#gallery-worlds-1`) shows each world's backdrop
+    as the scene, the map and the strip draw it; `#strip-L1` plays the strip with level 1's
+    world and obstacle.
+  - **Checked:** every beat of all 8 scenes in headless Chrome, `#moments-1-8`, the sticker
+    gallery, the strip (`#strip-danger-0-L1`), and the real player select, trail map and page.
+  - **Performance** (dev build, headless Chrome, 5× CPU throttle, main-thread work per frame,
+    measured the same way for both): the detailed animals first cost more (rat swarm 17.4 →
+    23.0 ms); memoizing the static parts of rats, bats, carts, the engine, the boulder and the
+    spires (only their transforms change per frame) brought the mine scenes to ~17–19.6 ms,
+    level 12's range (17–20 ms). A scene's first-frame hitch (drawing the backdrop into images)
+    is ~210 ms for the mine vs ~330 ms for the forest. The tablet decides (Phase E).

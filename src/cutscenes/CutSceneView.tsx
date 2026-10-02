@@ -152,7 +152,7 @@ export function CutSceneView({
           scroll={cam}
           smooth={false}
           raster={raster}
-          foreground
+          foreground={scene.foreground ?? true}
         >
           <FocusLines cx={heroX} cy={heroY - size * 0.45} t={t} strength={frame.action} />
           <g transform={obstacleAt}>

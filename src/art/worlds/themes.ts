@@ -24,16 +24,9 @@ export interface OutdoorTheme extends BaseTheme {
   flowers: string[];
 }
 
+/** The mine is painted (M7b): its layers take their colors from `PAINTED_MINE` (minePalette.ts). */
 export interface MineTheme extends BaseTheme {
   kind: 'mine';
-  /** Rock from farthest (hazy) to nearest. */
-  rockFar: string;
-  rockMid: string;
-  rockNear: string;
-  timber: string;
-  rail: string;
-  lantern: string;
-  crystals: string[];
 }
 
 export interface ForestTheme extends BaseTheme {
@@ -113,13 +106,6 @@ export const MINE: MineTheme = {
   groundLight: '#7a5538',
   path: '#c9a26b',
   pathEdge: '#6b4524',
-  rockFar: '#3b2735',
-  rockMid: '#2e1f2a',
-  rockNear: '#5a3d30',
-  timber: '#8a5a30',
-  rail: '#a9b4c0',
-  lantern: '#ffc64d',
-  crystals: ['#43e0cf', '#a07bff', '#ff6fb5'],
 };
 
 export const FOREST: ForestTheme = {
