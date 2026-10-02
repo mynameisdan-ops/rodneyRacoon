@@ -4,7 +4,7 @@ import { Chaser } from '../art/chasers';
 import type { AvatarConfig } from '../art/hero/avatar';
 import { Hero, type HeroPose } from '../art/hero/Hero';
 import { OBSTACLES } from '../art/obstacles/registry';
-import type { ObstacleId } from '../art/obstacles/types';
+import type { ObstacleArt, ObstacleId } from '../art/obstacles/types';
 import { getTheme } from '../art/worlds/themes';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 import { CONFIG } from '../game/config';
@@ -120,8 +120,11 @@ export function TrailStrip({
   );
 }
 
-/** A small, still preview of the obstacle ahead, so kids can see where they're heading. */
-function Goal({ obstacle }: { obstacle?: ObstacleId }) {
+/**
+ * A small, still preview of the obstacle ahead, so kids can see where they're heading. `art`
+ * draws it in another style (the M7b painted test).
+ */
+export function Goal({ obstacle, art: drawn }: { obstacle?: ObstacleId; art?: ObstacleArt }) {
   const clipId = useId();
   if (!obstacle) {
     return (
@@ -131,7 +134,7 @@ function Goal({ obstacle }: { obstacle?: ObstacleId }) {
       </g>
     );
   }
-  const art = OBSTACLES[obstacle];
+  const art = drawn ?? OBSTACLES[obstacle];
   const still = {
     t: 0,
     state: 'idle',

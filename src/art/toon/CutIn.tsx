@@ -13,11 +13,29 @@ import { BUILDS, type Build } from './toonBuilds';
 
 const ENTER = 140;
 const EXIT = 170;
-/** The panel: a band across the screen, higher on the right. */
-const BAND = 'M-60 252 L1340 148 L1340 548 L-60 652 Z';
-/** Where the middle of his skull sits in the panel, and how big. */
-const FACE = { x: 790, y: 404, scale: 5.4 };
-const BURST = { x: 860, y: 380 };
+/**
+ * Where it plays: the full scene, or the page strip at the top of a page (the combo cut-in).
+ * `band` is the panel (a band across, higher on the right), `face` where the middle of his skull
+ * sits in it and how big, and `burst` the center of the light behind him.
+ */
+const LAYOUTS = {
+  scene: {
+    w: 1280,
+    h: 800,
+    band: 'M-60 252 L1340 148 L1340 548 L-60 652 Z',
+    face: { x: 790, y: 404, scale: 5.4 },
+    burst: { x: 860, y: 380 },
+    line: 12,
+  },
+  strip: {
+    w: 1280,
+    h: 240,
+    band: 'M-60 40 L1340 10 L1340 214 L-60 244 Z',
+    face: { x: 720, y: 140, scale: 2.5 },
+    burst: { x: 760, y: 120 },
+    line: 7,
+  },
+} as const;
 
 const easeOut = (p: number) => 1 - (1 - p) ** 3;
 const easeIn = (p: number) => p * p * p;
@@ -28,14 +46,17 @@ export function CutIn({
   expr,
   avatar,
   build,
+  layout = 'scene',
 }: {
   dt: number;
   ms: number;
   expr: Expression;
   avatar: AvatarConfig;
   build: Build;
+  layout?: keyof typeof LAYOUTS;
 }) {
   const id = useId();
+  const { w: W, h: H, band: BAND, face: FACE, burst: BURST, line } = LAYOUTS[layout];
   if (!(dt >= 0 && dt < ms)) return null;
   const slide =
     dt < ENTER
@@ -56,7 +77,7 @@ export function CutIn({
   const sweep = ((dt - ENTER) / (ms - ENTER - EXIT)) * 1800 - 300;
   const s = BUILDS[build].head.s;
   return (
-    <svg className="cutin" viewBox="0 0 1280 800" aria-hidden>
+    <svg className="cutin" viewBox={`0 0 ${W} ${H}`} aria-hidden>
       <defs>
         <clipPath id={`${id}band`}>
           <path d={BAND} />
@@ -75,7 +96,7 @@ export function CutIn({
       </defs>
       <g transform={`translate(${slide} 0)`}>
         <g clipPath={`url(#${id}band)`}>
-          <rect x={-100} y={0} width={1500} height={800} fill={`url(#${id}burst)`} />
+          <rect x={-100} y={0} width={1500} height={H} fill={`url(#${id}burst)`} />
           <path d={lines} fill="#fffbe6" opacity={0.75} />
           <g
             transform={`translate(${FACE.x} ${FACE.y}) scale(${FACE.scale * push}) translate(0 -4)`}
@@ -93,13 +114,13 @@ export function CutIn({
           </g>
           {sweep > -300 && sweep < 1500 && (
             <path
-              d={`M${sweep} 0 L${sweep + 90} 0 L${sweep - 110} 800 L${sweep - 200} 800 Z`}
+              d={`M${sweep} 0 L${sweep + 90} 0 L${sweep - 110} ${H} L${sweep - 200} ${H} Z`}
               fill="#fff"
               opacity={0.28}
             />
           )}
         </g>
-        <path d={BAND} fill="none" stroke={INK} strokeWidth={12} />
+        <path d={BAND} fill="none" stroke={INK} strokeWidth={line} />
         <path
           d={BAND}
           transform="translate(0 -14)"
@@ -110,7 +131,7 @@ export function CutIn({
           clipPath={`url(#${id}band)`}
         />
       </g>
-      {dt < 90 && <rect width={1280} height={800} fill="#fffdf0" opacity={0.55 * (1 - dt / 90)} />}
+      {dt < 90 && <rect width={W} height={H} fill="#fffdf0" opacity={0.55 * (1 - dt / 90)} />}
     </svg>
   );
 }

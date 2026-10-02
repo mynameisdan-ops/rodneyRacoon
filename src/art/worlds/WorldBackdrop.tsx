@@ -43,6 +43,8 @@ interface Props {
    * the shapes, which matters for painted layers full of gradients.
    */
   raster?: boolean;
+  /** Draw the layer in front of the hero (cut scenes; it would hide the page strip's trail). */
+  foreground?: boolean;
   children?: ReactNode;
 }
 
@@ -70,6 +72,7 @@ export function WorldBackdrop({
   smooth = true,
   painted = false,
   raster = false,
+  foreground = false,
   children,
 }: Props) {
   const speed = { ...PARALLAX, ...parallax };
@@ -202,7 +205,7 @@ export function WorldBackdrop({
         {layers.near}
       </Layer>
       {children}
-      {layers.front && (
+      {foreground && layers.front && (
         <Layer offset={(scroll * FRONT_SPEED) % (W - 1)} raster={raster} height={height}>
           {layers.front}
         </Layer>

@@ -1855,3 +1855,21 @@ button {
   height: 100%;
   pointer-events: none;
 }
+
+/* M7b test strip: the layer that shakes on a wrong answer. */
+.trail__shake {
+  position: absolute;
+  inset: 0;
+}
+
+/* M7b test: the page-strip demo (#style-page). */
+.style-page {
+  height: 100%;
+  background: #eaf7ff;
+}
+
+.style-page__label {
+  padding: 14px 40px 24px;
+  font-size: 30px;
+  font-weight: 800;
+}

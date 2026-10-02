@@ -23,7 +23,15 @@ if (import.meta.env.DEV && location.hash === '#gallery') {
   // Dev-only M7b style test: the current art next to the proposed cartoon look.
   // #style-faces, #style-poses ... show one section (for screenshots).
   const [, view, mode, still] = location.hash.split('-');
-  if (view === 'scene') {
+  if (view === 'page') {
+    void import('./screens/StylePageDemo').then(({ StylePageDemo }) =>
+      render(
+        <Stage>
+          <StylePageDemo still={mode ? { kind: mode, dt: Number(still ?? 0) } : undefined} />
+        </Stage>,
+      ),
+    );
+  } else if (view === 'scene') {
     void import('./screens/StyleTestScene').then(({ StyleTestScene }) =>
       render(
         <Stage>

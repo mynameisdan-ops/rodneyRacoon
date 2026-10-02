@@ -12,6 +12,7 @@ import { evaluatePage, type PageEvaluation } from '../game/scoring';
 import { createSession, currentProblem, sessionReducer, type SessionState } from '../game/session';
 import { Coin } from '../ui/icons';
 import { NumberPad, type PadKey } from '../ui/NumberPad';
+import { ToonTrailStrip } from '../ui/ToonTrailStrip';
 import { TrailStrip } from '../ui/TrailStrip';
 
 interface Props {
@@ -183,6 +184,7 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
       running={!done && !paused}
       progress={correct / problems.length}
       feedback={state.feedback}
+      combo={state.combo}
       endPose={endPose}
       counter={`${Math.min(state.index + 1, problems.length)} / ${problems.length}`}
       pad={<NumberPad onKey={handleKey} disabled={paused || state.phase !== 'playing'} />}
@@ -203,6 +205,9 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
     </PageLayout>
   );
 }
+
+/** Dev builds opened with ?toon play pages with the M7b cartoon strip. */
+const TOON_STRIP = import.meta.env.DEV && new URLSearchParams(location.search).has('toon');
 
 /** "N in a row!", and at 5, 10, 15 in a row a burst that pays coins. */
 function ComboBadge({ combo }: { combo: number }) {
@@ -272,6 +277,7 @@ interface LayoutProps {
   running: boolean;
   progress?: number;
   feedback?: SessionState['feedback'];
+  combo?: number;
   endPose?: HeroPose;
   counter?: string;
   pad?: ReactNode;
@@ -287,24 +293,26 @@ function PageLayout({
   running,
   progress = 0,
   feedback,
+  combo,
   endPose,
   counter,
   pad,
   children,
 }: LayoutProps) {
   const shown = Math.ceil(secondsLeft);
+  const strip = {
+    worldId: level.world,
+    obstacle: getCutScene(level.id)?.obstacle,
+    avatar,
+    progress,
+    elapsed: 1 - secondsLeft / CONFIG.pageSeconds,
+    feedback,
+    running,
+    endPose,
+  };
   return (
     <div className="page">
-      <TrailStrip
-        worldId={level.world}
-        obstacle={getCutScene(level.id)?.obstacle}
-        avatar={avatar}
-        progress={progress}
-        elapsed={1 - secondsLeft / CONFIG.pageSeconds}
-        feedback={feedback}
-        running={running}
-        endPose={endPose}
-      />
+      {TOON_STRIP ? <ToonTrailStrip {...strip} combo={combo} /> : <TrailStrip {...strip} />}
       <div className="page__hud">
         <button type="button" className="icon-button" aria-label="Back to levels" onClick={onQuit}>
           ✕

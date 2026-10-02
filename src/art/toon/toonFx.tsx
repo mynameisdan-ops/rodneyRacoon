@@ -231,3 +231,56 @@ export function MotionTrail({
     </g>
   );
 }
+
+/** One streak of a smear: a color at a height on his body (fraction of his height) and a width. */
+export interface SmearBand {
+  color: string;
+  y: number;
+  w: number;
+}
+
+/**
+ * A cartoon smear: on his fastest moves, streaks of his own colors (hair, shirt, cape, pants,
+ * boots) tear off behind him toward where he just was, tapering into ragged tips. `now` and
+ * `then` are where his feet are and were (screen px); `strength` 0..1 fades it with his speed.
+ */
+export function Smear({
+  now,
+  then,
+  height,
+  bands,
+  strength,
+}: {
+  now: { x: number; y: number };
+  then: { x: number; y: number };
+  height: number;
+  bands: readonly SmearBand[];
+  strength: number;
+}) {
+  if (strength <= 0) return null;
+  return (
+    <g opacity={Math.min(0.92, 0.4 + strength * 0.6)}>
+      {bands.map((b, i) => {
+        const ax = now.x;
+        const ay = now.y - height * b.y;
+        const bx = then.x + (then.x - now.x) * 0.25;
+        const by = then.y - height * b.y + (then.y - now.y) * 0.25;
+        const len = Math.hypot(bx - ax, by - ay);
+        if (len < 10) return null;
+        const nx = -(by - ay) / len;
+        const ny = (bx - ax) / len;
+        const hw = (b.w / 2) * (0.6 + strength * 0.4);
+        const at = (f: number, side: number) =>
+          `${(ax + (bx - ax) * f + nx * hw * side).toFixed(1)} ${(ay + (by - ay) * f + ny * hw * side).toFixed(1)}`;
+        // Full width at his body, easing in, then torn into three ragged tips at the tail.
+        return (
+          <path
+            key={i}
+            d={`M${at(0, 1)} Q${at(0.4, 1)} ${at(0.62, 0.7)} L${at(1, 0.55)} L${at(0.7, 0.25)} L${at(0.9, -0.1)} L${at(0.66, -0.35)} L${at(0.82, -0.7)} Q${at(0.45, -1)} ${at(0, -1)} Z`}
+            fill={b.color}
+          />
+        );
+      })}
+    </g>
+  );
+}

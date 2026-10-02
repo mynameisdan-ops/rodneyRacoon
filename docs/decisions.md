@@ -319,3 +319,32 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     camera, the swing slows at the bottom of its arc, and the landing freezes with dust and sparkles.
     Found in checking: a freeze must start a few frames after its impact, or it holds an empty burst.
   - **Performance** (5× CPU throttle, warm runs): now ~14 ms a frame, v1 ~17 ms, directed ~18 ms.
+
+- **2026-10-02 (evening): Smears, a livelier page strip, detailed backgrounds** (`m7b-cartoon-look`).
+  - Asked for by the user after the directed scene.
+  - **Smear frames** (`Smear` in `toonFx.tsx`, `smearBands` in `toonBuilds.ts`): on his fastest
+    moves (leaps and swings past ~0.42 px/ms, anything past ~0.85) he stretches along his motion
+    and streaks of his own colors (cape, one wide tunic streak, pants and hair through it) tear off
+    toward where he was 60 ms before, ending in ragged tips. First try used a streak per body
+    part, and the thin boot and pants streaks read as sticks under him. The vine scene's two leaps
+    got quicker so they smear.
+  - **Livelier page strip** (`ui/ToonTrailStrip.tsx`, motion in the pure, tested
+    `ui/stripMotion.ts`): a right answer is a 50 ms crouch, a 340 ms dash that overshoots a touch
+    (dust, speed lines, a smear, lean, cape streaming) and a springy landing with sparkles and a
+    smile; a wrong one a stumble, a sweat drop and a 300 ms shake of the strip; 5, 10 and 15 in a
+    row slam in a strip-sized cut-in of his shouting face. His face watches the danger (worried
+    within 170 px). Dev builds play pages with it at `?toon`; `#style-page` loops a page of
+    answers by itself over today's strip. Feedback starts on the frame of the answer (the crouch).
+  - **Detailed backgrounds** (`art/toon/paintKit.tsx`, a kit for every painted world): leaf
+    clusters with single leaves around their edges and lit tops, grass clumps, fern fronds, mossy
+    rocks, flowers, leaf litter, mushroom groups, ivy and bark grooves. The forest now has two rows
+    of canopy, vines with leaves, lit crowns in the fog rows, roots, knots, ivy, bushes, ferns and
+    a fallen log, and a floor of grass, flowers, litter, path ruts and stones. A foreground of big
+    dark leaves slides past in scenes only (`WorldBackdrop foreground`; on the strip it hid the
+    trail).
+  - **Performance:** the painted layers are images, so the detail costs nothing per frame (hiding
+    them saved ~1.5 ms). The cost was React redrawing the hero every frame as `wind` changed: the
+    hero is now memoized (avatar compared by its looks) and wind kept in tenths. At 5× CPU
+    throttle in the dev build: today's scene ~10.3 ms a frame, the directed one ~14.5 ms (it was
+    ~17.5); the slow frames are the afterimages and the cut-in. Production React will be faster;
+    the tablet decides.

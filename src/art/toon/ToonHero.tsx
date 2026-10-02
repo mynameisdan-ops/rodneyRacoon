@@ -1,4 +1,4 @@
-import { useId } from 'react';
+import { memo, useId } from 'react';
 import type { HairStyle } from '../../content/avatar';
 import type { AvatarConfig } from '../hero/avatar';
 import { POSE_EXPRESSION, type Expression } from '../hero/expressions';
@@ -45,7 +45,7 @@ interface Props {
   className?: string;
 }
 
-export function ToonHero({
+function ToonHeroArt({
   avatar,
   pose = 'idle',
   build = 'kid',
@@ -133,6 +133,35 @@ export function ToonHero({
     </svg>
   );
 }
+
+/** Same avatar? Compared by its looks, since callers often rebuild the object every render. */
+const sameAvatar = (a: AvatarConfig, b: AvatarConfig) =>
+  a === b ||
+  (a.skin === b.skin &&
+    a.hairStyle === b.hairStyle &&
+    a.hairColor === b.hairColor &&
+    a.shirt === b.shirt &&
+    a.pants === b.pants &&
+    a.shoes === b.shoes &&
+    JSON.stringify(a.gear) === JSON.stringify(b.gear));
+
+/**
+ * The hero. Scenes move him every frame with a transform on a group around him, so he only
+ * redraws when something about him changes (keep `wind` coarse, e.g. in tenths).
+ */
+export const ToonHero = memo(
+  ToonHeroArt,
+  (a, b) =>
+    sameAvatar(a.avatar, b.avatar) &&
+    a.pose === b.pose &&
+    a.build === b.build &&
+    a.expression === b.expression &&
+    a.facing === b.facing &&
+    a.size === b.size &&
+    a.shadow === b.shadow &&
+    a.wind === b.wind &&
+    a.className === b.className,
+);
 
 // ---------- Body ----------
 

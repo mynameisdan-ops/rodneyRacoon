@@ -1,7 +1,6 @@
 import type { AvatarConfig } from '../hero/avatar';
 import { Dust } from '../fx';
 import { OBSTACLES } from '../obstacles/registry';
-import type { ObstacleArt, ObstacleId } from '../obstacles/types';
 import { WorldBackdrop } from '../worlds/WorldBackdrop';
 import type { CutScene } from '../../content/cutscenes';
 import {
@@ -11,10 +10,19 @@ import {
   type Timeline,
 } from '../../cutscenes/timeline';
 import { CutIn } from './CutIn';
-import { PaintedVineSwingBack } from './paintedVineSwing';
-import { DashLines, EmoteSign, FocusLines, ImpactBurst, ImpactFlash, MotionTrail } from './toonFx';
+import { PAINTED_OBSTACLES } from './paintedObstacles';
+import {
+  DashLines,
+  EmoteSign,
+  FocusLines,
+  ImpactBurst,
+  ImpactFlash,
+  MotionTrail,
+  Smear,
+} from './toonFx';
 import { ToonHero } from './ToonHero';
-import { swingReach, type Build } from './toonBuilds';
+import { smearBands, swingReach, type Build } from './toonBuilds';
+import { mix, shade } from '../style';
 import '../../cutscenes/cutscene.css';
 
 /*
@@ -32,10 +40,6 @@ import '../../cutscenes/cutscene.css';
 const W = 1280;
 const H = 800;
 const SCENE_GROUND = 640;
-/** Obstacles repainted so far (the rest draw their flat versions). */
-const PAINTED: Partial<Record<ObstacleId, ObstacleArt>> = {
-  'vine-swing': { ...OBSTACLES['vine-swing'], back: PaintedVineSwingBack },
-};
 /** How far the camera pushes in on him at the peak of a big moment. */
 const PUSH_IN = 0.08;
 /** Hands this far above his feet in the swing pose, the reach every scene is laid out for. */
@@ -75,7 +79,7 @@ export function ToonSceneView({
   const size = (REACH_PX * 170) / swingReach(build);
   const frame = sampleTimeline(timeline, t);
   const cam = cameraFor(frame.x, scene.width);
-  const art = PAINTED[scene.obstacle] ?? OBSTACLES[scene.obstacle];
+  const art = PAINTED_OBSTACLES[scene.obstacle] ?? OBSTACLES[scene.obstacle];
   const propArgs = {
     t,
     state: frame.propState,
@@ -106,8 +110,25 @@ export function ToonSceneView({
   // A motion arc behind leaps and swings, and afterimages when he's really flying.
   const airborne = frame.pose === 'leap' || frame.pose === 'swing' || frame.pose === 'jump';
   const arc = t > 60 && (bodySpeed > 0.55 || (airborne && bodySpeed > 0.22));
-  const fast = t > 60 && bodySpeed > 0.5;
-  const wind = clamp(bodySpeed * 1.1, 0, 1);
+  // In tenths, so the hero only redraws when it changes visibly.
+  const wind = Math.round(clamp(bodySpeed * 1.1, 0, 1) * 10) / 10;
+  // On the fastest moves he smears: stretched along his motion, with streaks of his colors
+  // torn off behind him. Afterimages show the moves that are fast but not that fast.
+  const smear =
+    t > 60
+      ? airborne
+        ? clamp((bodySpeed - 0.42) / 0.4, 0, 1)
+        : clamp((bodySpeed - 0.85) / 0.4, 0, 1)
+      : 0;
+  const fast = t > 60 && bodySpeed > 0.5 && smear < 0.3;
+  const vx = trail[0]!.x - trail[2]!.x;
+  const vy = trail[0]!.y - trail[2]!.y;
+  const heading = (Math.atan2(vy, vx) * 180) / Math.PI;
+  const stretch =
+    smear > 0
+      ? `translate(${trail[0]!.x} ${trail[0]!.y}) rotate(${heading}) scale(${1 + 0.45 * smear} ${1 - 0.16 * smear}) rotate(${-heading}) translate(${-trail[0]!.x} ${-trail[0]!.y})`
+      : undefined;
+  const before = sampleTimeline(timeline, Math.max(0, t - 60));
 
   const figure = (f: SceneFrame, opacity = 1, key?: string) => (
     <g key={key} transform={placeHero(f, cam, size)} opacity={opacity}>
@@ -139,6 +160,7 @@ export function ToonSceneView({
           smooth={false}
           painted
           raster={raster}
+          foreground
         >
           <FocusLines cx={heroX} cy={heroY - size * 0.45} t={t} strength={frame.action} />
           <g transform={obstacleAt}>
@@ -176,12 +198,19 @@ export function ToonSceneView({
               dir={frame.speed > 0 ? 1 : -1}
             />
           )}
-          {arc && <MotionTrail points={trail} width={size * 0.42} />}
+          {arc && smear === 0 && <MotionTrail points={trail} width={size * 0.42} />}
+          <Smear
+            now={{ x: heroX, y: heroY }}
+            then={{ x: before.x - cam, y: SCENE_GROUND - before.lift }}
+            height={size * 0.94}
+            bands={smearBands(avatar, size, mix(shade(avatar.shirt, 0.45), '#2a1f4a', 0.35))}
+            strength={smear}
+          />
           {fast &&
             GHOSTS.map((g) =>
               figure(sampleTimeline(timeline, t - g.ms), g.opacity, `ghost${g.ms}`),
             )}
-          {figure(frame)}
+          <g transform={stretch}>{figure(frame)}</g>
           {art.front && (
             <g transform={obstacleAt}>
               <art.front {...propArgs} />

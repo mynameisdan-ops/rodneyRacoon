@@ -45,7 +45,9 @@ In a dev build, `http://localhost:5173/#moments-1-4` is a contact sheet of level
 several moments (for picking sticker moments; screenshot it with headless Chrome at 2480px wide).
 Open `http://localhost:5173/#style` for the M7b style test (the current art next to the proposed cartoon
 look; `#style-scene-dynamic` plays the directed vine swing (`now` and `v1` for comparison), and
-`#style-scene-dynamic-2600` shows the frame at 2.6 s of real time for a screenshot). Open `http://localhost:5173/#gallery` for the art gallery (every hero pose, every shop item, every sticker,
+`#style-scene-dynamic-2600` shows the frame at 2.6 s of real time for a screenshot). `#style-page` loops a page
+of answers on the new page strip (`#style-page-combo-300` holds one moment), and `http://localhost:5173/?toon`
+plays real pages with it. Open `http://localhost:5173/#gallery` for the art gallery (every hero pose, every shop item, every sticker,
 hair style and skin tone, plus every cut scene with a scrub slider to inspect any moment and a
 Play button). Use it to check art changes; it is left out of production builds.
 

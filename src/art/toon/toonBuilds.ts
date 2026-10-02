@@ -49,3 +49,20 @@ export function swingReach(build: Build): number {
   const b = BUILDS[build];
   return 163 - (b.shoulderY + 1 - b.upper - (b.fore + 3));
 }
+
+/**
+ * The colors of his smear, back to front: the cape, then one wide streak of his tunic with his
+ * pants and hair running through it (see `Smear`).
+ */
+export function smearBands(
+  avatar: { hairColor: string; skin: string; shirt: string; pants: string; shoes: string },
+  size: number,
+  cape: string,
+) {
+  return [
+    { color: cape, y: 0.62, w: size * 0.24 },
+    { color: avatar.shirt, y: 0.52, w: size * 0.36 },
+    { color: avatar.pants, y: 0.3, w: size * 0.13 },
+    { color: avatar.hairColor, y: 0.86, w: size * 0.13 },
+  ];
+}

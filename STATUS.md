@@ -1,6 +1,6 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Oct 2, 2026 (M7b: lean picked; the directed scene waits for the user's look).
+Last updated: Oct 2, 2026 (M7b: smears, a lively page strip and detailed backgrounds added to the style test).
 milestone: `docs/decisions.md`.
 
 ## Goals
@@ -41,10 +41,13 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
   The user picked **lean** and asked for more dynamic animation: the scene is now *directed*
   (freeze frames, camera close-ups and tilts, an anime cut-in, slow motion, crouch and lean,
   cape and hair in the wind, afterimages, dust, a foreground layer). Open `#style` and
-  `#style-scene-dynamic` (also `now` and `v1`) in a dev build. Cost at 5× CPU throttle: ~18 ms a
-  frame against ~14 ms today (decisions.md).
+  `#style-scene-dynamic` (also `now` and `v1`) in a dev build. Then, also asked for: **smear
+  frames**, a **lively page strip** (a dash per right answer, a stumble and shake per wrong one,
+  a combo cut-in at 5/10/15; play it for real with `?toon`, or watch `#style-page`) and much
+  **more detailed backgrounds** (a paint kit). Cost at 5× CPU throttle in the dev build: ~14.5 ms
+  a frame against ~10.3 ms today (decisions.md).
 - **M8 changed:** avatars drawn from photos the user provides (no builder, no photo feature).
-- **Checks:** 357 unit tests, lint and build pass on the branch; CI runs them on every push.
+- **Checks:** 362 unit tests, lint and build pass on the branch; CI runs them on every push.
 - **Known gaps:** the parent controls for adaptive difficulty (and the unlock switch's final home)
   wait for Settings in M10; PNG icons
   and the Pages `base` path (M10).
@@ -52,7 +55,8 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 
 ## Next steps
 
-1. The user plays `#style-scene-dynamic` and says how far to take it (worth trying on the tablet
+1. The user plays `?toon` (a real page with the new strip), `#style-page` and
+   `#style-scene-dynamic`, and says whether to start rolling it out (worth trying on the tablet
    too: the dev pages are served only by `npm run dev -- --host`).
 2. M7b Phase B: the new hero becomes `Hero` (with gear redrawn for it) and `CutSceneView` gets the
    cartoon beats; then Phase C, world by world (backdrop rasterized, obstacles, chaser, beats in
@@ -65,7 +69,7 @@ Each level is a 60-second page of problems followed by an obstacle cut scene.
 - **Branch:** `m7b-cartoon-look`, pushed (the style test). `main` has M0–M7. Nothing uncommitted
   except the user's own `handover.md` (an old pre-M5 prompt, out of date). In the dev console, the store module is imported as
   `/src/state/store.ts?t=…` (see the page's resource list) to seed test progress.
-- **Waiting on the user:** a look at the directed scene, then photos for M8 (after Phase B).
+- **Waiting on the user:** a look at the strip, smears and backgrounds, then photos for M8 (after Phase B).
 - **Gotchas:** in a hidden browser pane `requestAnimationFrame` stops and `document.hidden` is true, so
   pages auto-pause and scenes don't advance; scrub scenes with the gallery slider. The dev server's file
   watcher sometimes misses edits made by tools; `touch` the file. Long Bash heredocs fail on Windows;
