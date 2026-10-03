@@ -19,7 +19,7 @@ import { WorldsMap } from './screens/WorldsMap';
 import { useActiveProfile, useGame } from './state/store';
 import { Stage } from './ui/Stage';
 
-type Screen =
+export type Screen =
   | { name: 'profiles' }
   /** `profileId` undefined = creating a new player. */
   | { name: 'editProfile'; profileId?: string }
@@ -42,7 +42,11 @@ type Screen =
   | { name: 'shop'; worldId: number }
   | { name: 'stickers'; worldId: number };
 
-export function App() {
+/** Screens that work before a player is picked; every other screen needs one. */
+const NO_PLAYER: ReadonlySet<Screen['name']> = new Set(['profiles', 'editProfile']);
+
+/** `start` opens a screen other than player selection (the dev-only #demo links use it). */
+export function App({ start }: { start?: Screen }) {
   const status = useGame((s) => s.status);
   const init = useGame((s) => s.init);
 
@@ -58,12 +62,12 @@ export function App() {
           This game was saved by a newer version. Please reload or update the app.
         </div>
       )}
-      {status === 'ready' && <Game />}
+      {status === 'ready' && <Game start={start} />}
     </Stage>
   );
 }
 
-function Game() {
+function Game({ start }: { start?: Screen }) {
   const profiles = useGame((s) => s.data.profiles);
   const lastProfileId = useGame((s) => s.data.lastProfileId);
   const saveFailed = useGame((s) => s.saveFailed);
@@ -76,8 +80,8 @@ function Game() {
   const toggleItem = useGame((s) => s.toggleItem);
   const profile = useActiveProfile();
 
-  const [screen, setScreen] = useState<Screen>(() =>
-    profiles.length === 0 ? { name: 'editProfile' } : { name: 'profiles' },
+  const [screen, setScreen] = useState<Screen>(
+    () => start ?? (profiles.length === 0 ? { name: 'editProfile' } : { name: 'profiles' }),
   );
 
   const play = useCallback(
@@ -106,15 +110,7 @@ function Game() {
   );
 
   // Everything past player selection needs an active player.
-  const needsPlayer =
-    screen.name === 'map' ||
-    screen.name === 'worlds' ||
-    screen.name === 'page' ||
-    screen.name === 'results' ||
-    screen.name === 'scene' ||
-    screen.name === 'shop' ||
-    screen.name === 'stickers';
-  const current: Screen = needsPlayer && !profile ? { name: 'profiles' } : screen;
+  const current: Screen = !NO_PLAYER.has(screen.name) && !profile ? { name: 'profiles' } : screen;
 
   switch (current.name) {
     case 'profiles':
