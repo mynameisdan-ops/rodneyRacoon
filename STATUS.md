@@ -28,6 +28,9 @@ are playable with rewards, audio and parent settings.
   recipes, one file per obstacle and a script file per world, a world art registry, a CSS file
   per screen, dev `#demo/<screen>` links, `npm run check`, and a content test that names
   anything a new world is missing.
+- **In progress on its own branch:** M7b, a Saturday-morning cartoon look (`m7b-cartoon-look`,
+  not merged; Worlds 1–3 repainted and directed). Its `STATUS.md` has the details, and it already
+  has this restructure merged in. Art, scene and doc work belongs there until it merges.
 - **Checks:** 370 unit tests, lint and build pass; CI runs them on every push.
 - **Known gaps:** parent controls for adaptive difficulty, and the unlock switch's final home,
   wait for Settings (M10); PNG icons and the Pages `base` path (M10).
@@ -39,8 +42,9 @@ are playable with rewards, audio and parent settings.
    (`npm run build`, then `npm run preview -- --host`). Worth a look: coin pace against prices,
    whether gear and pets read well at tablet size, and the sticker book on the tablet (each page
    draws 8 scene stills). Notes go in `docs/feedback.md`.
-2. M8 (avatar builder and photo face) on a new branch, then M9 (audio) and M10 (settings, PWA
-   polish, deploy).
+2. Finish M7b on `m7b-cartoon-look` (Mountains, Canyon, the UI, the tablet check) and merge it;
+   then M8 (avatars drawn from the parent's photos, as decided on that branch), M9 (audio) and
+   M10 (settings, PWA polish, deploy).
 
 ## Handoff
 

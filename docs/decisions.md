@@ -15,4 +15,5 @@ The design is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     `content.test.ts`, which names whatever a new world or level is missing.
   - Nothing a player sees changed: 3,032 renders (every scene frame, backdrop, pose, item and
     screen) matched before and after, and the built CSS has the same rules. Dropped the unused
-    meadow backdrop (an unknown world now draws World 1).
+    meadow backdrop (an unknown world now draws World 1). The same day it was merged into the
+    unmerged `m7b-cartoon-look`, re-splitting its repainted art the same way (renders matched).

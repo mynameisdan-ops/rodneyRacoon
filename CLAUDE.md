@@ -85,6 +85,8 @@ contact sheet. (Keep this section in sync with `package.json`.)
   milestone (`mN-short-name`) that is pushed as it goes and merged to `main` after a browser check
   at 1280×800 and a phone or tablet size. CI runs lint, tests and build on every push.
 - One session at a time: check `git status` first and ask before building on uncommitted work.
+  Also check `git branch -r --no-merged main`: work that touches the same files belongs on an
+  unmerged milestone branch, or must wait for it.
 - Gotchas: a hidden browser pane stops `requestAnimationFrame` (pages auto-pause, scenes stand
   still; scrub them in `#gallery`). The dev server sometimes misses edits made by tools: `touch`
   the file. On Windows, long Bash heredocs fail (run a script file instead), and Python must open
