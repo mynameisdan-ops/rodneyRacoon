@@ -96,12 +96,15 @@ export function SparkTrail({ x, y, t }: { x: number; y: number; t: number }) {
 /** Horizontal speed lines streaming behind something moving right at x. */
 export function SpeedLines({ x, t, ys }: { x: number; t: number; ys: readonly number[] }) {
   return (
-    <g stroke="#fff3d6" strokeWidth={4} strokeLinecap="round" opacity={0.55}>
-      {ys.map((y, i) => {
-        const off = (t * 0.7 + i * 53) % 170;
-        return <path key={i} d={`M${x - off} ${y} h${-50 - i * 12}`} />;
-      })}
-    </g>
+    <path
+      d={ys
+        .map((y, i) => `M${(x - ((t * 0.7 + i * 53) % 170)).toFixed(1)} ${y}h${-50 - i * 12}`)
+        .join('')}
+      stroke="#fff3d6"
+      strokeWidth={4}
+      strokeLinecap="round"
+      opacity={0.55}
+    />
   );
 }
 

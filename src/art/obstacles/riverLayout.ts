@@ -9,7 +9,8 @@ export const STONES = {
   stones: [300, 480, 660, 840] as const,
   /** Stone tops stand this far up. */
   top: 30,
-  waveStart: -700,
+  /** Where the wave's front bursts up out of the river ('surge'); it never comes within 190px of him. */
+  waveStart: 260,
   width: 1050,
 };
 

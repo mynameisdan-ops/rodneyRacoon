@@ -6,7 +6,8 @@ import { PAINTED_FOREST } from './forestPalette';
 import { MineCeiling, MineFar, MineFront, MineMid, MineNear } from './mine';
 import { PAINTED_MINE } from './minePalette';
 import { MountainClouds, MountainFar, MountainMid, MountainNear } from './mountain';
-import { RiverClouds, RiverFar, RiverMid, RiverNear } from './river';
+import { RiverClouds, RiverFar, RiverFront, RiverMid, RiverNear } from './river';
+import { PAINTED_RIVER } from './riverPalette';
 import { getTheme, type OutdoorTheme, type WorldTheme } from './themes';
 import './backdrop.css';
 
@@ -22,6 +23,7 @@ const PAINTED_SKY: Partial<
     bottom: PAINTED_FOREST.skyBottom,
   },
   mine: { top: PAINTED_MINE.skyTop, mid: PAINTED_MINE.skyMid, bottom: PAINTED_MINE.skyBottom },
+  river: { top: PAINTED_RIVER.skyTop, mid: PAINTED_RIVER.skyMid, bottom: PAINTED_RIVER.skyBottom },
 };
 
 interface Props {
@@ -113,6 +115,7 @@ export function WorldBackdrop({
           far: <RiverFar {...p} />,
           mid: <RiverMid {...p} />,
           near: <RiverNear {...p} />,
+          front: <RiverFront {...p} />,
         };
       }
       case 'mountain': {

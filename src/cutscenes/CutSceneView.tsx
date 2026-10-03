@@ -252,7 +252,7 @@ function placeHero(f: SceneFrame, cam: number): string {
 /**
  * The camera: the script's zoom and tilt, a push-in during focus lines, and shakes, all framed on
  * him. Zooming in moves him toward the middle of the screen, as far as the edges allow; a tilt
- * zooms in enough that no corner shows.
+ * zooms in, and eases that framing back if he's near an edge, so no corner shows past the world.
  */
 function cameraStyle(f: SceneFrame, heroX: number, heroY: number) {
   const shaking = f.shake.x !== 0 || f.shake.y !== 0;
@@ -267,12 +267,43 @@ function cameraStyle(f: SceneFrame, heroX: number, heroY: number) {
   const fx = heroX;
   const fy = heroY - size * (0.45 + 0.42 * close);
   const k = Math.min(1, (zoom - 1) / 0.4) * (0.7 + 0.25 * close);
-  const tx = clamp((W / 2 - fx) * k, -(zoom - 1) * (W - fx), (zoom - 1) * fx);
-  const ty = clamp((H / 2 - fy) * k, -(zoom - 1) * (H - fy), (zoom - 1) * fy);
+  let tx = clamp((W / 2 - fx) * k, -(zoom - 1) * (W - fx), (zoom - 1) * fx);
+  let ty = clamp((H / 2 - fy) * k, -(zoom - 1) * (H - fy), (zoom - 1) * fy);
+  // A tilt turns the world about him, not about the middle of the screen. Near an edge, the
+  // framing above leaves the world's edge flush with the screen's, so a turned corner would show
+  // past it: ease the framing back toward him (where the turn leaves the most slack) and zoom a
+  // hair, until every corner of the screen is on the world.
+  for (let i = 0; tilt !== 0 && i < 40; i++) {
+    if (covers(zoom, tilt, fx, fy, tx + f.shake.x, ty + f.shake.y)) break;
+    tx *= 0.85;
+    ty *= 0.85;
+    zoom *= 1.005;
+  }
   return {
     transform: `translate(${tx + f.shake.x}px, ${ty + f.shake.y}px) rotate(${tilt}deg) scale(${zoom})`,
     transformOrigin: `${fx}px ${fy}px`,
   };
+}
+
+/** Whether the world, turned and zoomed about (fx, fy) then moved by (tx, ty), fills the screen. */
+function covers(zoom: number, tilt: number, fx: number, fy: number, tx: number, ty: number) {
+  const a = (-tilt * Math.PI) / 180;
+  const cos = Math.cos(a);
+  const sin = Math.sin(a);
+  for (const [sx, sy] of [
+    [0, 0],
+    [W, 0],
+    [0, H],
+    [W, H],
+  ] as const) {
+    // Back from the screen corner to the world: undo the move, the turn and the zoom.
+    const dx = sx - fx - tx;
+    const dy = sy - fy - ty;
+    const px = fx + (dx * cos - dy * sin) / zoom;
+    const py = fy + (dx * sin + dy * cos) / zoom;
+    if (px < 0 || px > W || py < 0 || py > H) return false;
+  }
+  return true;
 }
 
 function Signpost({ x, text }: { x: number; text: string }) {

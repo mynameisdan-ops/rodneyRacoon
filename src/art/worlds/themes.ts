@@ -43,18 +43,9 @@ export interface ForestTheme extends BaseTheme {
   light: string;
 }
 
+/** The river is painted (M7b): its layers take their colors from `PAINTED_RIVER` (riverPalette.ts). */
 export interface RiverTheme extends BaseTheme {
   kind: 'river';
-  cloud: string;
-  hills: string;
-  hillsNear: string;
-  water: string;
-  waterDeep: string;
-  foam: string;
-  rock: string;
-  reed: string;
-  leaves: string[];
-  flowers: string[];
 }
 
 export interface MountainTheme extends BaseTheme {
@@ -135,16 +126,6 @@ export const RIVER: RiverTheme = {
   groundLight: '#8fd06e',
   path: '#e6cf98',
   pathEdge: '#b8995e',
-  cloud: '#ffffff',
-  hills: '#8cc9a0',
-  hillsNear: '#6fb585',
-  water: '#3aa0d8',
-  waterDeep: '#2376b0',
-  foam: '#e8f8ff',
-  rock: '#8a8d96',
-  reed: '#5f9a3a',
-  leaves: ['#3f9d4c', '#4fae55'],
-  flowers: ['#ffffff', '#ffd23f', '#ff70a6'],
 };
 
 export const MOUNTAIN: MountainTheme = {

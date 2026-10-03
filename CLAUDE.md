@@ -78,19 +78,24 @@ Use these to check art changes; they are left out of production builds.
   hero, `PROP_OUT` 3.2px on scene props) and thin ones inside (1.3, `PROP_IN` 1.5px), one crisp shadow shape per
   part and a rim light, lit from the upper right, made with `shade()` / `tint()`. Backgrounds, and the ground
   around his props (pits, ledges, rails, beams overhead), are **painted**: gradients and soft shapes without
-  outlines, detailed with the paint kit (`src/art/worlds/paintKit.tsx`). **No CSS or SVG `filter`** (slow on
+  outlines, detailed with the paint kit (`src/art/worlds/paintKit.tsx`); still water is painted too, while water
+  that acts (waves, splashes, jets) is cel-drawn with lines like an effect. **No CSS or SVG `filter`** (slow on
   tablets). A theme's `kind` picks the backdrop layers (`mine`, `forest`, `river`, `mountain`, `canyon`, each in
-  its own file in `src/art/worlds/`; shared tiling helpers in `sceneryKit.ts`; so far the forest and the mine are
-  painted, with their colors in `forestPalette.ts` and `minePalette.ts`). Backdrop layers are 1280px tiles:
-  ridges must start and end at the same height, and anything at a tile's edge is drawn the same at both ends.
+  its own file in `src/art/worlds/`; shared tiling helpers in `sceneryKit.ts`; so far the forest, the mine and the
+  river are painted, with their colors in `forestPalette.ts`, `minePalette.ts` and `riverPalette.ts`). Backdrop
+  layers are 1280px tiles: ridges must start and end at the same height, and anything at a tile's edge is drawn
+  the same at both ends.
   Scenes and the page strip draw each layer once as an image (`WorldBackdrop raster`), so detail costs nothing
   per frame; a `front` layer (big leaves, dark rocks) passes in front of the hero in scenes only (a scene that
   leaves its world, like the mine train bursting into daylight, sets `foreground: false`). Obstacles are drawn
-  every frame: memoize the static parts of anything drawn many times (a swarm of rats or bats), and sway or
-  turn things with a transform rather than rebuilding their shapes each frame.
+  every frame: memoize the static parts of anything drawn many times (a swarm of rats or bats), sway or turn
+  things with a transform rather than rebuilding their shapes each frame, and draw a cloud of small moving pieces
+  (foam, drops, bubbles) as one path (`circles()` / `ellipses()` in `sceneKit.ts`).
 - Obstacle art gets the scene's whole prop schedule (`events`); use `eventTime()` to time a motion to a later
-  event. Shared positions go in a layout module per world (`mineLayout.ts` … `canyonLayout.ts`) so art and
-  scripts agree; small motion helpers are in `sceneKit.ts`. An obstacle's `focus` picks what the page-strip preview shows.
+  event, and `heroPasses()` (cached) for a prop that waits for him (a stone that sinks once he's left it), so a
+  script can hold him for a close-up without the ground vanishing under him. Shared positions go in a layout
+  module per world (`mineLayout.ts` … `canyonLayout.ts`) so art and scripts agree; small motion helpers are in
+  `sceneKit.ts`. An obstacle's `focus` picks what the page-strip preview shows.
 - Only about 160px of a cut scene shows below the ground line, so put the action at or above it.
 - One `<Hero>` component renders the avatar everywhere (map, page strip, cut scenes, shop),
   driven by the avatar config, a `pose` and (optionally) an `expression`. He stands in a three-quarter view

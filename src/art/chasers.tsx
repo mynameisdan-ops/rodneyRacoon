@@ -158,9 +158,10 @@ function Bees() {
   );
 }
 
-/** World 3: a flood wave curling after him. */
+/** World 3: a flood wave curling after him, claws of foam on its lip, a happy fish leaping out. */
 function Wave() {
-  const water = '#3aa0d8';
+  const water = '#2ea6da';
+  const deep = '#15669f';
   return (
     <g className="chaser__bob">
       <path
@@ -168,19 +169,32 @@ function Wave() {
         fill={water}
         {...ink(4)}
       />
-      <path d="M0 124 V96 Q40 78 80 96 Q110 110 140 100 V124 Z" fill={shade(water, 0.3)} />
-      <path
-        d="M24 56 Q52 26 96 28"
-        fill="none"
-        stroke={tint(water, 0.5)}
-        strokeWidth={6}
-        strokeLinecap="round"
-      />
+      <path d="M2 124 V100 Q40 82 80 98 Q110 110 138 102 L140 124 Z" fill={shade(water, 0.25)} />
+      <path d="M126 48 Q112 36 96 44 Q86 52 100 64 Q92 50 104 46 Q116 42 126 48 Z" fill={deep} />
+      <g fill="none" stroke={tint(water, 0.55)} strokeLinecap="round">
+        <path d="M18 62 Q36 28 84 22" strokeWidth={6} />
+        <path d="M8 94 Q12 76 26 64" strokeWidth={3} />
+      </g>
+      {/* A little fish leaping out of the back of the wave. */}
+      <g transform="translate(34 4) rotate(-25)">
+        <path d="M-12 0 L-20 -6 L-19 6 Z" fill="#ff9a3c" {...ink(1.6)} />
+        <ellipse cx={0} cy={0} rx={13} ry={7} fill="#ffb347" {...ink(2)} />
+        <path d="M-6 4 Q2 8 10 3" stroke="#ff8a2a" strokeWidth={2} fill="none" />
+        <circle cx={6} cy={-2} r={2.2} fill="#fff" {...ink(1)} />
+        <circle cx={6.6} cy={-1.8} r={1.1} fill={INK} />
+      </g>
       <g fill="#ffffff" {...ink(2)}>
-        <circle cx={118} cy={46} r={9} />
-        <circle cx={104} cy={36} r={7} />
-        <circle cx={128} cy={62} r={6} />
-        <circle cx={132} cy={112} r={7} />
+        <circle cx={120} cy={42} r={9} />
+        <circle cx={106} cy={32} r={7.5} />
+        <circle cx={91} cy={26} r={6} />
+        <circle cx={129} cy={57} r={6} />
+        <circle cx={133} cy={112} r={7} />
+        <circle cx={119} cy={118} r={5.5} />
+      </g>
+      <g fill="#effbff" {...ink(1.6)}>
+        <ellipse cx={142} cy={34} rx={5} ry={3.4} transform="rotate(30 142 34)" />
+        <ellipse cx={150} cy={50} rx={4} ry={2.8} transform="rotate(50 150 50)" />
+        <ellipse cx={146} cy={96} rx={4} ry={2.8} />
       </g>
     </g>
   );

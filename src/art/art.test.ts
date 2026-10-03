@@ -11,6 +11,7 @@ import { ItemIcon } from './hero/ItemIcon';
 import { HERO_POSES } from './hero/poses';
 import { mix, shade, tint } from './style';
 import { PAINTED_MINE } from './worlds/minePalette';
+import { PAINTED_RIVER } from './worlds/riverPalette';
 import { getTheme, MEADOW } from './worlds/themes';
 import { WorldBackdrop } from './worlds/WorldBackdrop';
 
@@ -69,6 +70,25 @@ describe('world backdrops', () => {
     expect(render(1)).toContain(PAINTED_MINE.rail);
     expect(render(1)).not.toContain('NaN');
     expect(render(1)).not.toContain('filter');
+  });
+
+  it('draws World 3 as the painted river, with reeds in front in scenes only', () => {
+    expect(getTheme(3).kind).toBe('river');
+    expect(render(3)).toContain(PAINTED_RIVER.waterLight);
+    const front = (foreground: boolean) =>
+      renderToStaticMarkup(
+        createElement(WorldBackdrop, {
+          worldId: 3,
+          height: 800,
+          horizon: 330,
+          groundTop: 470,
+          pathY: 640,
+          foreground,
+        }),
+      );
+    // The reeds' cattail heads are the front layer's darkest brown.
+    expect(front(true)).toContain('#2a170e');
+    expect(front(false)).not.toContain('#2a170e');
   });
 
   it.each([1, 2, 3, 4, 5])('draws World %s in its own style, cleanly', (worldId) => {
