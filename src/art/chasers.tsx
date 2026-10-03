@@ -270,39 +270,65 @@ export function Snowball() {
   );
 }
 
-/** World 5: a twisting dust devil. */
+/** The dust devil's funnel: narrow at the ground (70, 124), wide at its top. */
+const DEVIL_EDGE = (() => {
+  const pts = Array.from({ length: 9 }, (_, i) => {
+    const y = 124 - i * 14;
+    const w = 8 + 50 * (i / 8) ** 1.4;
+    return { y, w };
+  });
+  const left = pts.map((p) => `${70 - p.w} ${p.y}`);
+  const right = pts.map((p) => `${70 + p.w} ${p.y}`).reverse();
+  return `M${left.join(' L')} Q70 0 ${right[0]} L${right.slice(1).join(' L')} Z`;
+})();
+
+/** World 5: a dust devil whirling after him (cel), a tumbleweed and leaves spinning round it. */
 export function DustDevil() {
-  const sand = '#e2b36e';
+  const sand = '#f2cc90';
+  const dark = '#d49a68';
   return (
     <g className="chaser__sway" style={{ transformOrigin: '70px 124px' }}>
-      {[
-        { y: 20, rx: 58 },
-        { y: 46, rx: 46 },
-        { y: 70, rx: 34 },
-        { y: 92, rx: 24 },
-        { y: 112, rx: 14 },
-      ].map((b, i) => (
-        <g key={i} className="chaser__whirl" style={{ animationDelay: `${-i * 0.12}s` }}>
-          <ellipse
-            cx={70}
-            cy={b.y}
-            rx={b.rx}
-            ry={11}
-            fill={i % 2 ? sand : tint(sand, 0.25)}
-            {...ink(3)}
-          />
-          <path
-            d={`M${70 - b.rx * 0.6} ${b.y} Q70 ${b.y + 6} ${70 + b.rx * 0.6} ${b.y}`}
-            fill="none"
-            stroke={shade(sand, 0.35)}
-            strokeWidth={3}
-          />
-        </g>
-      ))}
-      <g fill={shade(sand, 0.2)} {...ink(1.5)}>
-        <circle cx={130} cy={40} r={4} />
-        <circle cx={120} cy={90} r={3} />
-        <circle cx={12} cy={60} r={3.5} />
+      <ellipse cx={70} cy={124} rx={34} ry={6} fill={dark} opacity={0.5} />
+      <path d={DEVIL_EDGE} fill={sand} />
+      <path d="M62 124 L20 12 Q40 8 60 14 Q56 70 66 124 Z" fill={dark} opacity={0.7} />
+      {[0, 1, 2, 3].map((i) => {
+        const y = 30 + i * 24;
+        const w = 8 + 50 * ((124 - y) / 112) ** 1.4;
+        return (
+          <g key={i} className="chaser__whirl" style={{ animationDelay: `${-i * 0.12}s` }}>
+            <path
+              d={`M${70 - w} ${y} Q70 ${y + 8} ${70 + w} ${y - 2}`}
+              fill="none"
+              stroke={shade(sand, 0.35)}
+              strokeWidth={3}
+              strokeLinecap="round"
+            />
+            <path
+              d={`M${70 - w * 0.6} ${y - 6} Q70 ${y - 2} ${70 + w * 0.4} ${y - 8}`}
+              fill="none"
+              stroke={tint(sand, 0.6)}
+              strokeWidth={2.4}
+              strokeLinecap="round"
+            />
+          </g>
+        );
+      })}
+      <path d={DEVIL_EDGE} fill="none" {...ink(4)} />
+      {/* A little tumbleweed riding round it, and leaves. */}
+      <g className="chaser__whirl">
+        <circle cx={112} cy={60} r={11} fill="none" stroke="#6a4628" strokeWidth={3} />
+        <path
+          d="M103 56 Q112 68 121 56 M105 66 Q112 50 119 66"
+          stroke="#a8783e"
+          strokeWidth={2.4}
+          fill="none"
+        />
+      </g>
+      <path d="M22 40 q5 -5 12 0 q-5 5 -12 0 Z" fill="#6aa85a" {...ink(1.4)} />
+      <path d="M128 98 q5 -5 12 0 q-5 5 -12 0 Z" fill="#e8a040" {...ink(1.4)} />
+      <g fill={dark} {...ink(1.5)}>
+        <circle cx={132} cy={34} r={3.5} />
+        <circle cx={10} cy={84} r={3} />
       </g>
     </g>
   );

@@ -4,7 +4,7 @@ import { ArchBack } from './crumblingArch';
 import { DuneBack, DuneFront } from './duneSurf';
 import { FlashFloodBack } from './flashFlood';
 import { HomeBack, HomeFront } from './home';
-import { HillBack } from './lastHill';
+import { HillBack, HillFront } from './lastHill';
 import { ARCH, DUNE, FLASH_FLOOD, HILL, HOME, TRAIN, TUMBLEWEEDS, ZIP } from './layout';
 import { TumbleweedsBack, TumbleweedsFront } from './tumbleweeds';
 import { ZipLineBack, ZipLineFront } from './zipLine';
@@ -22,6 +22,6 @@ export const CANYON_OBSTACLES = {
   },
   'crumbling-arch': { back: ArchBack, width: ARCH.width, focus: 180 },
   'canyon-train': { back: TrainBack, front: TrainFront, width: TRAIN.width, focus: 1780 },
-  'last-hill': { back: HillBack, width: HILL.width },
+  'last-hill': { back: HillBack, front: HillFront, width: HILL.width, focus: 300 },
   home: { back: HomeBack, front: HomeFront, width: HOME.width, focus: 1150 },
 } satisfies Record<string, ObstacleArt>;

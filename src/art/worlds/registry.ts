@@ -1,6 +1,7 @@
 import { createElement, type FC, type ReactNode } from 'react';
 import { Bees, Boulder, DustDevil, Snowball, Wave } from '../chasers';
-import { CanyonFar, CanyonMid, CanyonNear, CanyonSky } from './canyon';
+import { CanyonFar, CanyonFront, CanyonMid, CanyonNear, CanyonSky } from './canyon';
+import { PAINTED_CANYON } from './canyonPalette';
 import { ForestCanopy, ForestFar, ForestFront, ForestMid, ForestNear } from './forest';
 import { PAINTED_FOREST } from './forestPalette';
 import { MineCeiling, MineFar, MineFront, MineMid, MineNear } from './mine';
@@ -91,8 +92,8 @@ export const WORLD_ART: Record<number, WorldArt> = {
   ),
   5: world(
     CANYON,
-    { clouds: CanyonSky, far: CanyonFar, mid: CanyonMid, near: CanyonNear },
-    { drift: false, chaser: DustDevil, timer: 'sun' },
+    { clouds: CanyonSky, far: CanyonFar, mid: CanyonMid, near: CanyonNear, front: CanyonFront },
+    { drift: false, chaser: DustDevil, timer: 'sun', sky: skyOf(PAINTED_CANYON) },
   ),
 };
 

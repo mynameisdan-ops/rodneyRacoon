@@ -11,6 +11,7 @@ import { ItemIcon } from './hero/ItemIcon';
 import { HERO_POSES } from './hero/poses';
 import { mix, shade, tint } from './style';
 import { PAINTED_MINE } from './worlds/minePalette';
+import { PAINTED_CANYON } from './worlds/canyonPalette';
 import { PAINTED_MOUNTAIN } from './worlds/mountainPalette';
 import { PAINTED_RIVER } from './worlds/riverPalette';
 import { getWorldArt, WORLD_ART } from './worlds/registry';
@@ -109,6 +110,25 @@ describe('world backdrops', () => {
     // The young pines in front of the camera are the front layer's darkest green.
     expect(front(true)).toContain('#0e2a24');
     expect(front(false)).not.toContain('#0e2a24');
+  });
+
+  it('draws World 5 as the painted canyon, with a saguaro and rocks in front in scenes only', () => {
+    expect(getWorldArt(5).theme.kind).toBe('canyon');
+    expect(render(5)).toContain(PAINTED_CANYON.sandTop);
+    const front = (foreground: boolean) =>
+      renderToStaticMarkup(
+        createElement(WorldBackdrop, {
+          worldId: 5,
+          height: 800,
+          horizon: 330,
+          groundTop: 470,
+          pathY: 640,
+          foreground,
+        }),
+      );
+    // The red boulder in front of the camera is the front layer's darkest red.
+    expect(front(true)).toContain('#4a1e28');
+    expect(front(false)).not.toContain('#4a1e28');
   });
 
   it.each([1, 2, 3, 4, 5])('draws World %s in its own style, cleanly', (worldId) => {

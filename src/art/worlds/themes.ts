@@ -44,16 +44,9 @@ export interface MountainTheme extends BaseTheme {
   kind: 'mountain';
 }
 
+/** The canyon is painted (M7b): its layers take their colors from `PAINTED_CANYON`. */
 export interface CanyonTheme extends BaseTheme {
   kind: 'canyon';
-  sun: string;
-  mesaFar: string;
-  mesaMid: string;
-  cliff: string;
-  strata: string;
-  cactus: string;
-  scrub: string;
-  rock: string;
 }
 
 export type WorldTheme = MineTheme | ForestTheme | RiverTheme | MountainTheme | CanyonTheme;
@@ -109,18 +102,10 @@ export const MOUNTAIN: MountainTheme = {
 
 export const CANYON: CanyonTheme = {
   kind: 'canyon',
-  skyTop: '#f08a4b',
-  skyBottom: '#ffe0a8',
-  ground: '#e0a765',
-  groundLight: '#f0c585',
-  path: '#f3d9a6',
-  pathEdge: '#c29056',
-  sun: '#fff1b8',
-  mesaFar: '#d88a7a',
-  mesaMid: '#b8553a',
-  cliff: '#c8663f',
-  strata: '#a24a33',
-  cactus: '#4f9a52',
-  scrub: '#8a9a4a',
-  rock: '#a86a48',
+  skyTop: '#4e6cc4',
+  skyBottom: '#ffe8b8',
+  ground: '#eab878',
+  groundLight: '#f6d29a',
+  path: '#d8a46c',
+  pathEdge: '#a8724a',
 };

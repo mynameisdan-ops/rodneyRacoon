@@ -3,17 +3,21 @@
  * local px from each scene's anchor (x right, y down, the ground line at 0).
  */
 
-/** Level 33: a flash flood roars down the canyon; he scrambles up the rock steps. */
+/**
+ * Level 33: a flash flood roars down the wash; he scrambles up the rock steps. The wave crashes
+ * against the first step's face (60px before it) and fills up against the second.
+ */
 export const FLASH_FLOOD = {
   steps: [
     [300, 80],
     [420, 160],
     [560, 240],
   ] as const,
-  floodStart: -800,
+  floodStart: -520,
   /** How high the muddy water rises, px. */
   depth: 120,
-  speed: 1.1,
+  /** px/ms: it reaches the steps 1400ms after 'flood'. */
+  speed: 0.54,
   width: 650,
 };
 
@@ -62,7 +66,7 @@ export const ARCH = {
 /** Level 38: he hops a canyon train and rides it to the station. */
 export const TRAIN = {
   /** Where the flatcar starts, so it reaches him at his ride speed when he lands on it. */
-  start: -965,
+  start: -1190,
   /** Flatcar deck, px up (his feet). */
   deck: 120,
   speed: 0.9,
@@ -75,14 +79,14 @@ export const TRAIN = {
 export const HILL = {
   top: 900,
   height: 260,
-  home: { x: 1500, y: -330 },
+  home: { x: 1420, y: -300 },
   width: 1050,
 };
 
 /** Level 40 (boss): the last storm clears and he's home. */
 export const HOME = {
   gate: 600,
-  twister: 780,
+  twister: 900,
   house: [1200, 1500] as const,
   width: 1000,
 };

@@ -42,14 +42,14 @@ export const STICKERS: readonly StickerDef[] = [
   { level: 30, name: 'Icicle Cave', moment: 0.6 },
   { level: 31, name: 'Ice Wall', moment: 0.4 },
   { level: 32, name: 'Storm Sled', moment: 0.6 },
-  { level: 33, name: 'Flash Flood', moment: 0.5 },
-  { level: 34, name: 'Zip Line', moment: 0.5 },
-  { level: 35, name: 'Dune Surfer', moment: 0.4 },
-  { level: 36, name: 'Tumbleweeds', moment: 0.6 },
-  { level: 37, name: 'Stone Arch', moment: 0.5 },
-  { level: 38, name: 'Canyon Train', moment: 0.7 },
-  { level: 39, name: 'The Last Hill', moment: 0.6 },
-  { level: 40, name: 'Home Sweet Home', moment: 0.7 },
+  { level: 33, name: 'Flash Flood', moment: 0.6 },
+  { level: 34, name: 'Zip Line', moment: 0.6 },
+  { level: 35, name: 'Dune Surfer', moment: 0.6 },
+  { level: 36, name: 'Tumbleweeds', moment: 0.7 },
+  { level: 37, name: 'Stone Arch', moment: 0.6 },
+  { level: 38, name: 'Canyon Train', moment: 0.5 },
+  { level: 39, name: 'The Last Hill', moment: 0.8 },
+  { level: 40, name: 'Home Sweet Home', moment: 0.8 },
 ];
 
 export function getSticker(levelId: number): StickerDef | undefined {
