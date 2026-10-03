@@ -5,7 +5,7 @@ import type { CutScene } from './types';
  * `art/obstacles/mine/layout.ts`; each level's comment says which numbers it relies on.
  */
 export const MINE_SCENES: Record<number, CutScene> = {
-  // Level 1: the cart race (numbers match CART_RACE in art/obstacles/mineLayout.ts, anchor 500).
+  // Level 1: the cart race (numbers match CART_RACE in art/obstacles/mine/layout.ts, anchor 500).
   // The cart waits at 560 and stops at the buffer at 2150; the pit spans 1500–1700.
   // He rides with his feet on the cart floor, 44px up. The three ride moves chain
   // (ease in, steady, steady) so the speed never jumps: 0.8px/ms at full speed.
@@ -229,6 +229,4 @@ export const MINE_SCENES: Record<number, CutScene> = {
       ],
     },
   },
-
-  // ---------- World 2: the Whispering Forest (layouts in art/obstacles/forestLayout.ts) ----------
 };

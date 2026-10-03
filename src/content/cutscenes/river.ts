@@ -221,6 +221,4 @@ export const RIVER_SCENES: Record<number, CutScene> = {
       ],
     },
   },
-
-  // ---------- World 4: the Misty Mountains (layouts in art/obstacles/mountainLayout.ts) ----------
 };

@@ -211,6 +211,4 @@ export const MOUNTAIN_SCENES: Record<number, CutScene> = {
       ],
     },
   },
-
-  // ---------- World 5: Canyon to Home (layouts in art/obstacles/canyonLayout.ts) ----------
 };

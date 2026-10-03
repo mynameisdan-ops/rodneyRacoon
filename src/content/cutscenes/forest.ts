@@ -220,6 +220,4 @@ export const FOREST_SCENES: Record<number, CutScene> = {
       ],
     },
   },
-
-  // ---------- World 3: the Rushing River (layouts in art/obstacles/riverLayout.ts) ----------
 };

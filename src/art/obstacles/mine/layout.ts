@@ -1,7 +1,7 @@
 /**
  * Positions shared by the World 1 obstacle art and the cut-scene scripts, in local
  * px from each scene's anchor (x right, y down, the ground line at 0). The scripts
- * in `content/cutscenes.ts` add the anchor to get world x.
+ * in `content/cutscenes/mine.ts` add the anchor to get world x.
  *
  * Riders sit with their feet on the cart floor, `CART_FLOOR` px above the rails.
  */

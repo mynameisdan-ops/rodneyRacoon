@@ -1,7 +1,9 @@
-import { INK, ink, shade, tint } from '../style';
-import { BOULDER_R, CRYSTALS, IRON, RAIL_TOP, ROCK, STEEL, WOOD } from './mineKit';
+import { INK, ink, shade, tint } from '../../style';
+import { BOULDER_R, CRYSTALS, IRON, RAIL_TOP, ROCK, STEEL, WOOD } from './kit';
 
-/** Shared pieces for the World 1 (mine) obstacles. Local coordinates, ground line at y = 0. */
+/** Shared pieces for the World 1 (mine) obstacles.
+ * Local coordinates, with the ground line at y = 0.
+ */
 
 /** A mine cart with its base `lift` px above the rails at x. Draw in front of the hero. */
 export function MineCart({

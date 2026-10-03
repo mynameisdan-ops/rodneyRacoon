@@ -4,7 +4,7 @@ import { Chaser } from '../art/chasers';
 import type { AvatarConfig } from '../art/hero/avatar';
 import { Hero, type HeroPose } from '../art/hero/Hero';
 import { OBSTACLES } from '../art/obstacles/registry';
-import type { ObstacleId } from '../art/obstacles/types';
+import type { ObstacleId } from '../art/obstacles/registry';
 import { getTheme } from '../art/worlds/themes';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 import { CONFIG } from '../game/config';

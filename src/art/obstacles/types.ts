@@ -1,54 +1,6 @@
 import type { FC } from 'react';
 import type { PropEvent } from '../../cutscenes/timeline';
 
-export const OBSTACLE_IDS = [
-  'cart-race',
-  'cart-jump',
-  'wall-smash',
-  'rat-swarm',
-  'crystal-cavern',
-  'bat-storm',
-  'runaway-lift',
-  'mine-train',
-  // World 2: the forest.
-  'log-roll',
-  'bramble-vault',
-  'root-slide',
-  'vine-swing',
-  'boar-charge',
-  'mushroom-bounce',
-  'falling-bridge',
-  'fireflies',
-  // World 3: the river.
-  'stepping-stones',
-  'beaver-dam',
-  'rapids',
-  'rope-bridge',
-  'geyser',
-  'waterfall-slide',
-  'rising-water',
-  'raft',
-  // World 4: the mountains.
-  'rock-slide',
-  'crumbling-ledge',
-  'avalanche',
-  'goat-ride',
-  'ice-bridge',
-  'icicle-cave',
-  'ice-wall',
-  'peak',
-  // World 5: the canyon, and home.
-  'flash-flood',
-  'zip-line',
-  'dune-surf',
-  'tumbleweeds',
-  'crumbling-arch',
-  'canyon-train',
-  'last-hill',
-  'home',
-] as const;
-export type ObstacleId = (typeof OBSTACLE_IDS)[number];
-
 /**
  * What an obstacle drawing is given each frame. Coordinates are local: the
  * anchor is (0, 0) on the ground line and up is negative y.

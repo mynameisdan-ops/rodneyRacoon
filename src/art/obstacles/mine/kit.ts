@@ -1,5 +1,5 @@
-import { CART_FLOOR } from './mineLayout';
-import { eventTime, type ObstacleProps } from './types';
+import { eventTime, type ObstacleProps } from '../types';
+import { CART_FLOOR } from './layout';
 
 /** Colors, sizes and motion helpers shared by the World 1 (mine) obstacles. */
 
@@ -42,3 +42,7 @@ export function flightTilt(t: number, flyAt: number, landAt: number) {
 }
 
 export const BOULDER_R = 62;
+/** Heights of the speed lines behind a racing cart. */
+export const SPEED_YS = [-60, -86, -100, -48];
+/** The dark of a hole in the rock. */
+export const HOLE = '#140b12';

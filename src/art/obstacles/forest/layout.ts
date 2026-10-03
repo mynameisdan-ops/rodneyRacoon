@@ -1,7 +1,7 @@
 /**
  * Positions shared by the World 2 (forest) obstacle art and the cut-scene scripts, in
  * local px from each scene's anchor (x right, y down, the ground line at 0). The
- * scripts in `content/cutscenes.ts` add the anchor to get world x.
+ * scripts in `content/cutscenes/forest.ts` add the anchor to get world x.
  */
 
 /** Level 9: a log rolls up behind him; he rides it until it hits a stump. */
