@@ -1,7 +1,7 @@
 /**
- * Colors for each world's backdrop. A theme's `kind` picks which set of layers
- * WorldBackdrop draws (the layer drawings live in mine.tsx, forest.tsx, river.tsx,
- * mountain.tsx and canyon.tsx). Unknown worlds fall back to the meadow.
+ * Colors for each world's backdrop. Each kind of theme has its own layer drawings
+ * (mine.tsx, forest.tsx, river.tsx, mountain.tsx, canyon.tsx); `registry.ts` pairs a
+ * world with its theme and layers, so a new world can reuse a kind with new colors.
  */
 interface BaseTheme {
   /** Top and bottom of the background gradient (sky, or the cave's back wall). */
@@ -12,16 +12,6 @@ interface BaseTheme {
   /** The trail on the map, and the walking path. */
   path: string;
   pathEdge: string;
-}
-
-export interface OutdoorTheme extends BaseTheme {
-  kind: 'outdoor';
-  cloud: string;
-  far: string;
-  mid: string;
-  trunk: string;
-  leaves: string[];
-  flowers: string[];
 }
 
 export interface MineTheme extends BaseTheme {
@@ -86,24 +76,7 @@ export interface CanyonTheme extends BaseTheme {
   rock: string;
 }
 
-export type WorldTheme =
-  OutdoorTheme | MineTheme | ForestTheme | RiverTheme | MountainTheme | CanyonTheme;
-
-export const MEADOW: OutdoorTheme = {
-  kind: 'outdoor',
-  skyTop: '#8fd3ff',
-  skyBottom: '#e3f5ff',
-  cloud: '#ffffff',
-  far: '#9fd3a8',
-  mid: '#78c47f',
-  ground: '#62b565',
-  groundLight: '#7fcb77',
-  path: '#e4c48a',
-  pathEdge: '#c9a263',
-  trunk: '#8a5a33',
-  leaves: ['#3f9d4c', '#4fae55', '#5cbf5f'],
-  flowers: ['#ffffff', '#ffd23f', '#ff70a6', '#ff9f43', '#b388ff'],
-};
+export type WorldTheme = MineTheme | ForestTheme | RiverTheme | MountainTheme | CanyonTheme;
 
 export const MINE: MineTheme = {
   kind: 'mine',
@@ -194,9 +167,3 @@ export const CANYON: CanyonTheme = {
   scrub: '#8a9a4a',
   rock: '#a86a48',
 };
-
-const THEMES: Record<number, WorldTheme> = { 1: MINE, 2: FOREST, 3: RIVER, 4: MOUNTAIN, 5: CANYON };
-
-export function getTheme(worldId: number): WorldTheme {
-  return THEMES[worldId] ?? MEADOW;
-}

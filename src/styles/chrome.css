@@ -1,0 +1,39 @@
+/* Chips and badges get the same ink outline as the art. */
+.player-chip,
+.map__stars,
+.page__level,
+.page__counter,
+.timer,
+.scene-screen__skip,
+.combo {
+  border: 3px solid var(--ink);
+  box-shadow: 0 4px 0 var(--ink);
+}
+
+/* The display face for titles, buttons and big moments (never the problem itself: it keeps
+   tabular digits so nothing shifts while answering). */
+.big-button,
+.stop,
+.map__world,
+.profiles__title,
+.editor__title,
+.results__title,
+.countdown,
+.page-over,
+.paused__title,
+.cheer,
+.scene-screen__banner,
+.scene__caption {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* Titles drawn over a world backdrop: light lettering with an ink outline reads on bright
+   skies and dark caves alike. */
+.map__world,
+.profiles__title {
+  color: var(--chip);
+  -webkit-text-stroke: 10px var(--ink);
+  paint-order: stroke fill;
+}

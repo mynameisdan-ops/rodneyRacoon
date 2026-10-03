@@ -1,0 +1,128 @@
+.results {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 30px 40px 40px;
+  text-align: center;
+}
+
+.results--pass {
+  background: linear-gradient(#fff6d6, #ffe7a8);
+}
+
+.results--retry {
+  background: linear-gradient(#e6f2ff, #cfe3fb);
+}
+
+.results__title {
+  margin: 0;
+  font-size: 64px;
+}
+
+.results__body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+}
+
+.results__middle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.results__score {
+  font-size: 34px;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+
+.results__actions {
+  display: flex;
+  gap: 28px;
+}
+
+.tally {
+  min-width: 380px;
+  padding: 12px 22px;
+  border: 4px solid var(--ink);
+  border-radius: 24px;
+  background: var(--chip);
+  box-shadow: 0 6px 0 var(--ink);
+}
+
+.tally__row {
+  display: grid;
+  grid-template-columns: 40px 1fr auto;
+  align-items: center;
+  gap: 14px;
+  height: 46px;
+  font-size: 26px;
+  font-weight: 800;
+  text-align: left;
+  animation: pop-in 360ms ease-out both;
+}
+
+.tally__coins {
+  color: #b87800;
+  font-size: 30px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.tally__total {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 3px dashed rgba(26, 18, 32, 0.25);
+  font-family: var(--font-display);
+  font-size: 56px;
+  color: #b87800;
+  font-variant-numeric: tabular-nums;
+}
+
+.tally__total span {
+  min-width: 3ch;
+  text-align: left;
+}
+
+.results__sticker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  animation: sticker-in 600ms 700ms cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.results__sticker-title,
+.results__sticker-name {
+  font-family: var(--font-display);
+  font-size: 40px;
+}
+
+.results__sticker-name {
+  font-size: 30px;
+}
+
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+
+@keyframes sticker-in {
+  from {
+    opacity: 0;
+    transform: scale(0.3) rotate(-20deg);
+  }
+}

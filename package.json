@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",
+    "check": "eslint . && tsc --noEmit && vitest run && vite build --logLevel warn",
     "format": "prettier --write ."
   },
   "dependencies": {

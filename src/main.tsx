@@ -25,6 +25,11 @@ if (import.meta.env.DEV && location.hash === '#gallery') {
   void import('./screens/ArtGallery').then(({ StickerMoments }) =>
     render(<StickerMoments from={from} to={to} />),
   );
+} else if (import.meta.env.DEV && location.hash.startsWith('#demo')) {
+  // Dev-only made-up players kept in memory, optionally opening a screen (see dev/demo.ts).
+  void import('./dev/demo').then(({ startDemo }) =>
+    render(<App start={startDemo(location.hash)} />),
+  );
 } else {
   render(<App />);
 }

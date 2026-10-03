@@ -1,0 +1,147 @@
+.book__title {
+  flex: none;
+}
+
+.book {
+  background: #6b4a2e;
+}
+
+.book__hud .book__title {
+  color: var(--chip);
+  -webkit-text-stroke: 8px var(--ink);
+  paint-order: stroke fill;
+}
+
+.book__tabs {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.book__tab {
+  width: 104px;
+  height: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--ink);
+  border-radius: 20px;
+  background: #d9c49a;
+  line-height: 1;
+}
+
+.book__tab--on {
+  background: var(--paper);
+  box-shadow: 0 5px 0 var(--ink);
+}
+
+.book__tab-num {
+  font-family: var(--font-display);
+  font-size: 38px;
+}
+
+.book__tab-got {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+
+.book__count {
+  padding: 10px 22px;
+  border: 3px solid var(--ink);
+  border-radius: 24px;
+  background: var(--chip);
+  box-shadow: 0 4px 0 var(--ink);
+  color: var(--ink);
+  font-size: 32px;
+  font-weight: 900;
+}
+
+.book__page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border: 4px solid var(--ink);
+  border-radius: 20px;
+  background: var(--paper);
+  box-shadow: inset 0 0 0 10px rgba(201, 138, 0, 0.12);
+}
+
+.book__world {
+  font-family: var(--font-display);
+  font-size: 36px;
+  color: var(--ink-soft);
+}
+
+.book__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 262px);
+  gap: 18px 26px;
+}
+
+.book__slot {
+  height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 0;
+  border: none;
+  border-radius: 22px;
+  background: none;
+  animation: pop-in 360ms ease-out both;
+}
+
+.book__slot:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+.book__name {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.book__slot--empty {
+  animation: none;
+}
+
+.book__empty {
+  width: 250px;
+  height: 197px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 4px dashed rgba(26, 18, 32, 0.25);
+  border-radius: 22px;
+  font-family: var(--font-display);
+  font-size: 72px;
+  color: rgba(26, 18, 32, 0.18);
+}
+
+.book__zoom {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  border: none;
+  background: rgba(20, 14, 30, 0.72);
+  animation: pop-in 300ms ease-out both;
+}
+
+.book__zoom-name {
+  font-family: var(--font-display);
+  font-size: 56px;
+  color: var(--chip);
+  -webkit-text-stroke: 8px var(--ink);
+  paint-order: stroke fill;
+}

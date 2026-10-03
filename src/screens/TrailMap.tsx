@@ -4,7 +4,7 @@ import { currentLevel, isPassed, isUnlocked, totalStars } from '../game/progress
 import type { Profile } from '../state/schema';
 import { avatarForProfile } from '../art/hero/avatar';
 import { Hero } from '../art/hero/Hero';
-import { getTheme } from '../art/worlds/themes';
+import { getWorldArt } from '../art/worlds/registry';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 import { BagIcon, BookIcon, Coin } from '../ui/icons';
 import { Stars } from '../ui/Stars';
@@ -77,7 +77,7 @@ export function TrailMap({
   const canGoNext =
     nextWorldFirst !== undefined &&
     isUnlocked(profile.progress, nextWorldFirst.id, profile.unlockAll);
-  const theme = getTheme(world.id);
+  const { theme } = getWorldArt(world.id);
 
   return (
     <div className="map">

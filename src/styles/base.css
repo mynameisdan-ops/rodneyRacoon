@@ -1,0 +1,59 @@
+:root {
+  --ink: #1a1220;
+  --ink-soft: #5a4a6a;
+  --paper: #fbf1dc;
+  --page-bg: #f1e3c4;
+  /* Light fill for chips, keys and quiet buttons. */
+  --chip: #fff8e8;
+  --accent: #2f7d4f;
+  --accent-dark: #1f5a37;
+  --warm: #e8743b;
+  --good: #2a9d5c;
+  --oops: #d9534f;
+  --reveal: #e8743b;
+  --gold: #ffc53d;
+  --key-bg: var(--chip);
+  --key-shadow: var(--ink);
+  --font: 'Trebuchet MS', 'Segoe UI', Roboto, system-ui, sans-serif;
+  /* Bundled with the app (no network), for titles, buttons and captions. */
+  --font-display: 'Lilita One', var(--font);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  background: #20344f;
+  color: var(--ink);
+  font-family: var(--font);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+button {
+  font-family: inherit;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The sun is the page timer, so it keeps moving. */
+  *:not(.trail__sun) {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

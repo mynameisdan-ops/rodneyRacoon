@@ -18,6 +18,8 @@ interface GameStore {
   status: 'loading' | 'ready' | 'blocked';
   /** Set when the last write failed (e.g. private browsing); gameplay continues in memory. */
   saveFailed: boolean;
+  /** Write changes to disk (off for the dev-only `#demo` players, who live in memory). */
+  persist: boolean;
   data: SaveData;
   activeProfileId: string | null;
 
@@ -55,6 +57,7 @@ export const useGame = create<GameStore>()((set, get) => {
     if (get().status === 'blocked') return;
     const data = update(get().data);
     set({ data });
+    if (!get().persist) return;
     writeSave(data).then(
       () => get().saveFailed && set({ saveFailed: false }),
       (err: unknown) => {
@@ -70,10 +73,13 @@ export const useGame = create<GameStore>()((set, get) => {
   return {
     status: 'loading',
     saveFailed: false,
+    persist: true,
     data: emptySave(),
     activeProfileId: null,
 
     async init() {
+      // Already set up (e.g. the dev-only #demo players).
+      if (get().status !== 'loading') return;
       try {
         const data = await loadSave();
         set({ data, status: 'ready' });

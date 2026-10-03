@@ -1,5 +1,5 @@
 import type { FC } from 'react';
-import { CHASER_BOX, CHASER_WORLDS } from './chaserData';
+import { CHASER_BOX } from './chaserData';
 import { ink, INK, shade, tint } from './style';
 import './chasers.css';
 
@@ -12,7 +12,7 @@ import './chasers.css';
 const ROCK = '#80705f';
 
 /** World 1: a boulder rolling down the tunnel, kicking up dust. */
-function Boulder() {
+export function Boulder() {
   return (
     <g>
       <DustPuffs color="#b89a82" />
@@ -50,7 +50,7 @@ const BEES = [
 ];
 
 /** World 2: a buzzing swarm of forest bees. */
-function Bees() {
+export function Bees() {
   return (
     <g>
       <path
@@ -73,7 +73,7 @@ function Bees() {
 }
 
 /** World 3: a flood wave curling after him. */
-function Wave() {
+export function Wave() {
   const water = '#3aa0d8';
   return (
     <g className="chaser__bob">
@@ -101,7 +101,7 @@ function Wave() {
 }
 
 /** World 4: an avalanche snowball, spraying snow. */
-function Snowball() {
+export function Snowball() {
   const snow = '#eef6ff';
   return (
     <g>
@@ -126,7 +126,7 @@ function Snowball() {
 }
 
 /** World 5: a twisting dust devil. */
-function DustDevil() {
+export function DustDevil() {
   const sand = '#e2b36e';
   return (
     <g className="chaser__sway" style={{ transformOrigin: '70px 124px' }}>
@@ -181,17 +181,8 @@ function DustPuffs({ color }: { color: string }) {
   );
 }
 
-const CHASERS: Record<(typeof CHASER_WORLDS)[number], FC> = {
-  1: Boulder,
-  2: Bees,
-  3: Wave,
-  4: Snowball,
-  5: DustDevil,
-};
-
-/** The chaser for a world (the boulder if the world has none of its own). */
-export function Chaser({ worldId, scale = 1 }: { worldId: number; scale?: number }) {
-  const Art = CHASERS[worldId as (typeof CHASER_WORLDS)[number]] ?? Boulder;
+/** A chaser drawing in its box (each world picks its own in `worlds/registry.ts`). */
+export function Chaser({ art: Art, scale = 1 }: { art: FC; scale?: number }) {
   const { w, h } = CHASER_BOX;
   return (
     <svg

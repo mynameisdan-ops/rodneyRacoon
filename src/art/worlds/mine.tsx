@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { createRng } from '../../game/rng';
 import { Glow } from '../fx';
 import { INK, ink, shade, tint } from '../style';
+import type { LayerProps } from './sceneryKit';
 import type { MineTheme } from './themes';
 
 /*
@@ -12,22 +13,13 @@ import type { MineTheme } from './themes';
 
 const W = 1280;
 
-export interface MineLayerProps {
-  theme: MineTheme;
-  horizon: number;
-  groundTop: number;
-  height: number;
-  pathY?: number;
-  /** Size of details relative to the full-screen scene. */
-  k: number;
-  seed: number;
-}
+type P = LayerProps<MineTheme>;
 
 /** How far the rock ceiling hangs down. */
 const ceilingDepth = (horizon: number) => Math.max(20, horizon * 0.28);
 
 /** The jagged rock ceiling with stalactites (uses the slow "clouds" parallax slot). */
-export function MineCeiling({ theme, horizon, k, seed }: MineLayerProps) {
+export function MineCeiling({ theme, horizon, k, seed }: P) {
   const depth = ceilingDepth(horizon);
   const d = useMemo(() => {
     const rng = createRng(seed * 101);
@@ -55,7 +47,7 @@ export function MineCeiling({ theme, horizon, k, seed }: MineLayerProps) {
 }
 
 /** Far cavern: hazy rock formations, distant scaffolds and lantern lights. */
-export function MineFar({ theme, horizon, height, k, seed }: MineLayerProps) {
+export function MineFar({ theme, horizon, height, k, seed }: P) {
   const h = horizon;
   const bits = useMemo(() => {
     const rng = createRng(seed * 131);
@@ -90,7 +82,7 @@ export function MineFar({ theme, horizon, height, k, seed }: MineLayerProps) {
 }
 
 /** Mid layer: the tunnel wall with timber frames, hanging lanterns and crystals. */
-export function MineMid({ theme, horizon, groundTop, height, k, seed }: MineLayerProps) {
+export function MineMid({ theme, horizon, groundTop, height, k, seed }: P) {
   const top = ceilingDepth(horizon);
   const base = horizon + (groundTop - horizon) * 0.35;
   const frames = useMemo(() => {
@@ -154,7 +146,7 @@ export function MineMid({ theme, horizon, groundTop, height, k, seed }: MineLaye
 }
 
 /** Near layer: the tunnel floor, loose rocks and (with `pathY`) the mine-cart rails. */
-export function MineNear({ theme, groundTop, height, pathY, k, seed }: MineLayerProps) {
+export function MineNear({ theme, groundTop, height, pathY, k, seed }: P) {
   const rocks = useMemo(() => {
     const rng = createRng(seed * 307);
     const count = Math.round(((height - groundTop) / 60) * 6);

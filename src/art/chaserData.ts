@@ -3,6 +3,3 @@
  * front (the side nearest the hero) at x ≈ 130. See `chasers.tsx`.
  */
 export const CHASER_BOX = { w: 140, h: 130, ground: 124 } as const;
-
-/** Worlds with a chaser of their own. */
-export const CHASER_WORLDS = [1, 2, 3, 4, 5] as const;

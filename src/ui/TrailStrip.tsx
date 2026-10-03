@@ -4,8 +4,8 @@ import { Chaser } from '../art/chasers';
 import type { AvatarConfig } from '../art/hero/avatar';
 import { Hero, type HeroPose } from '../art/hero/Hero';
 import { OBSTACLES } from '../art/obstacles/registry';
-import type { ObstacleId } from '../art/obstacles/types';
-import { getTheme } from '../art/worlds/themes';
+import type { ObstacleId } from '../art/obstacles/registry';
+import { getWorldArt } from '../art/worlds/registry';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 import { CONFIG } from '../game/config';
 import type { SessionState } from '../game/session';
@@ -68,6 +68,7 @@ export function TrailStrip({
   else if (endPose) pose = endPose;
 
   const heroX = trailX(progress);
+  const art = getWorldArt(worldId);
   return (
     <div className="trail">
       <WorldBackdrop
@@ -83,7 +84,7 @@ export function TrailStrip({
         <Goal obstacle={obstacle} />
       </WorldBackdrop>
       <div
-        className={getTheme(worldId).kind === 'mine' ? 'trail__sun trail__sun--mine' : 'trail__sun'}
+        className={art.timer === 'lantern' ? 'trail__sun trail__sun--mine' : 'trail__sun'}
         style={{
           animationDuration: `${CONFIG.pageSeconds}s`,
           animationPlayState: running ? 'running' : 'paused',
@@ -100,7 +101,7 @@ export function TrailStrip({
           top: PATH_Y + 6 - CHASER_BOX.ground * CHASER_SCALE,
         }}
       >
-        <Chaser worldId={worldId} scale={CHASER_SCALE} />
+        <Chaser art={art.chaser} scale={CHASER_SCALE} />
       </div>
       <div
         className="trail__hero"

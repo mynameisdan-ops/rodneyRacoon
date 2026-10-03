@@ -1,0 +1,22 @@
+/* A die-cut sticker: a thick white border and a hard shadow (no filter). */
+.sticker {
+  position: relative;
+  flex: none;
+  overflow: hidden;
+  border: 7px solid #fff;
+  border-radius: 22px;
+  box-shadow:
+    0 0 0 3px var(--ink),
+    0 6px 0 3px rgba(26, 18, 32, 0.35);
+  background: #fff;
+  pointer-events: none;
+}
+
+.sticker__scene {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 1280px;
+  height: 800px;
+  transform-origin: 0 0;
+}
