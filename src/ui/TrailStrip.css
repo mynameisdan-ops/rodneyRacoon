@@ -1,0 +1,51 @@
+.trail {
+  position: relative;
+  height: 240px;
+  flex: none;
+  overflow: hidden;
+  border-bottom: 5px solid var(--ink);
+}
+
+.trail__sun {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff6b0 20%, #ffd23f 60%, #ffb400);
+  box-shadow: 0 0 30px 8px rgba(255, 210, 63, 0.6);
+  animation-name: sun-arc;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+.trail__sun--mine {
+  border: 4px solid var(--ink);
+  background: radial-gradient(circle, #fff3c4 18%, #ffb347 58%, #e8743b);
+  box-shadow: 0 0 44px 16px rgba(255, 170, 60, 0.5);
+}
+
+.trail__chaser {
+  position: absolute;
+  left: 0;
+  transition:
+    transform 300ms linear,
+    opacity 300ms;
+}
+
+/* After a passed page the danger falls back and fades away. */
+.trail__chaser--gone {
+  opacity: 0;
+  transition:
+    transform 1200ms ease-in,
+    opacity 1200ms ease-in;
+  translate: -260px 0;
+}
+
+.trail__hero {
+  position: absolute;
+  left: 0;
+  margin-left: -34px;
+  transition: transform 560ms ease-in-out;
+}

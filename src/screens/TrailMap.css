@@ -1,0 +1,214 @@
+.map {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+}
+
+.map__hud {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.player-chip {
+  height: 72px;
+  padding: 0 22px 0 14px;
+  border: none;
+  border-radius: 36px;
+  background: var(--chip);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.player-chip__dot {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 4px solid #fff;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.player-chip__switch {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}
+
+.map__world {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 40px;
+}
+
+.map__right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.map__worlds-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.map__stars {
+  min-width: 120px;
+  padding: 10px 22px;
+  border-radius: 24px;
+  background: var(--chip);
+  font-size: 36px;
+  font-weight: 900;
+  color: #c98a00;
+  text-align: center;
+}
+
+.stop-wrap {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.stop {
+  position: absolute;
+  left: -58px;
+  top: -58px;
+  width: 116px;
+  height: 116px;
+  border: 5px solid var(--ink);
+  border-radius: 50%;
+  background: var(--warm);
+  color: #fff;
+  font-size: 52px;
+  box-shadow: 0 7px 0 var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stop:active:not(:disabled) {
+  transform: translateY(5px);
+  box-shadow: 0 2px 0 var(--ink);
+}
+
+.stop--passed {
+  background: var(--good);
+}
+
+.stop--locked {
+  background: #b8b2a3;
+  color: #f4efe3;
+  cursor: default;
+}
+
+.stop--boss {
+  left: -70px;
+  top: -70px;
+  width: 140px;
+  height: 140px;
+  border-color: #ffd23f;
+}
+
+.stop--here {
+  animation: here-pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes here-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 8px 0 rgba(0, 0, 0, 0.2),
+      0 0 0 0 rgba(255, 210, 63, 0.9);
+  }
+  50% {
+    box-shadow:
+      0 8px 0 rgba(0, 0, 0, 0.2),
+      0 0 0 18px rgba(255, 210, 63, 0);
+  }
+}
+
+.stop-wrap .stars {
+  position: absolute;
+  top: 62px;
+  left: 0;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.stop--boss ~ .stars {
+  top: 76px;
+}
+
+.stop__label {
+  position: absolute;
+  top: -124px;
+  left: 0;
+  transform: translateX(-50%);
+  padding: 6px 14px;
+  border-radius: 14px;
+  background: var(--chip);
+  font-size: 22px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.map__hero {
+  position: absolute;
+  left: -150px;
+  top: -112px;
+  pointer-events: none;
+}
+
+.save-warning {
+  position: absolute;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 10px 22px;
+  border-radius: 16px;
+  background: #fff3cd;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+/* The shop and sticker book buttons, bottom right of the trail map. */
+.map__dock {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  gap: 16px;
+}
+
+.dock-button {
+  height: 88px;
+  min-width: 96px;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 3px solid var(--ink);
+  border-radius: 26px;
+  background: var(--chip);
+  box-shadow: 0 5px 0 var(--ink);
+  font-size: 32px;
+  font-weight: 900;
+  color: #b87800;
+  font-variant-numeric: tabular-nums;
+}
+
+.dock-button:active {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--ink);
+}

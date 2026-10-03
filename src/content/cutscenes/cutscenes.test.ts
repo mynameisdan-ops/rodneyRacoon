@@ -1,11 +1,11 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { OBSTACLES } from '../art/obstacles/registry';
-import { OBSTACLE_IDS, type ObstacleProps } from '../art/obstacles/types';
-import { buildTimeline, cameraFor, sampleTimeline } from '../cutscenes/timeline';
-import { CUT_SCENES } from './cutscenes';
-import { LEVELS } from './levels';
+import { OBSTACLE_IDS, OBSTACLES } from '../../art/obstacles/registry';
+import type { ObstacleProps } from '../../art/obstacles/types';
+import { buildTimeline, cameraFor, sampleTimeline } from '../../cutscenes/timeline';
+import { CUT_SCENES } from '.';
+import { LEVELS } from '../levels';
 
 function draw(id: (typeof OBSTACLE_IDS)[number], props: ObstacleProps): string {
   const art = OBSTACLES[id];

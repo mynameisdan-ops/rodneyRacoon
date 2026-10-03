@@ -1,0 +1,286 @@
+.page {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+@keyframes sun-arc {
+  0% {
+    transform: translate(380px, 84px);
+  }
+  50% {
+    transform: translate(700px, 18px);
+  }
+  100% {
+    transform: translate(1096px, 92px);
+  }
+}
+
+.page__hud {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  pointer-events: none;
+}
+
+.page__hud > * {
+  pointer-events: auto;
+}
+
+.page__level,
+.page__counter {
+  padding: 8px 18px;
+  border-radius: 16px;
+  background: var(--chip);
+  font-size: 26px;
+  font-weight: 800;
+}
+
+.timer {
+  margin-left: auto;
+  min-width: 96px;
+  padding: 6px 18px;
+  border-radius: 18px;
+  background: var(--chip);
+  font-size: 44px;
+  font-weight: 900;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer--low {
+  color: #fff;
+  background: var(--warm);
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+.page__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+.page__main {
+  position: relative;
+  flex: 1;
+  background: radial-gradient(ellipse at center, var(--paper) 45%, #e6cf9f);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page__pad {
+  flex: none;
+  width: 460px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Wooden planks. */
+  background: repeating-linear-gradient(90deg, #7a5234 0 88px, #5e3d24 88px 92px);
+  border-left: 5px solid var(--ink);
+}
+
+.problem-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.problem {
+  display: flex;
+  align-items: center;
+  gap: 0.28em;
+  font-size: 124px;
+  font-weight: 900;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  animation: problem-in 220ms ease-out;
+}
+
+.problem__op {
+  color: var(--ink-soft);
+}
+
+@keyframes problem-in {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+}
+
+.answer-box {
+  display: inline-block;
+  /* A fixed width that fits two digits, so the box never hints at the answer's length. */
+  width: 1.45em;
+  padding: 0.06em 0.14em;
+  border-radius: 0.16em;
+  border: 6px dashed var(--ink-soft);
+  background: #fffdf6;
+  text-align: center;
+}
+
+/* A third digit (only 100 so far) shrinks the text, not the box: no layout shift. */
+.answer-box--3 {
+  width: calc(1.45em / 0.78);
+  font-size: 0.78em;
+}
+
+/* Problems with long numbers (27 + 47, 100 ÷ 10) get a slightly smaller size so they fit. */
+.problem--long {
+  font-size: 104px;
+}
+
+.answer-box--wrong {
+  border-color: var(--oops);
+  animation: shake 360ms ease-in-out;
+}
+
+.answer-box--reveal {
+  border-style: solid;
+  border-color: var(--reveal);
+  color: var(--reveal);
+}
+
+@keyframes shake {
+  20%,
+  60% {
+    transform: translateX(-14px);
+  }
+  40%,
+  80% {
+    transform: translateX(14px);
+  }
+}
+
+.retry-note,
+.reveal-note {
+  position: absolute;
+  bottom: 56px;
+  font-size: 36px;
+  font-weight: 800;
+}
+
+.retry-note {
+  color: var(--oops);
+}
+
+.reveal-note {
+  color: var(--reveal);
+}
+
+.cheer {
+  position: absolute;
+  top: 40px;
+  font-size: 90px;
+  font-weight: 900;
+  color: var(--good);
+  pointer-events: none;
+  animation: cheer 600ms ease-out forwards;
+}
+
+@keyframes cheer {
+  from {
+    opacity: 1;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-40px) scale(1.3);
+  }
+}
+
+.combo {
+  position: absolute;
+  top: 28px;
+  left: 28px;
+  padding: 10px 20px;
+  border-radius: 18px;
+  background: var(--gold);
+  font-size: 30px;
+  font-weight: 900;
+  animation: problem-in 250ms ease-out;
+}
+
+.countdown {
+  font-size: 260px;
+  font-weight: 900;
+  color: var(--accent);
+  animation: countdown 1s ease-out;
+}
+
+@keyframes countdown {
+  from {
+    opacity: 0;
+    transform: scale(1.8);
+  }
+  30% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.paused {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+}
+
+.paused__title {
+  font-size: 96px;
+  font-weight: 900;
+  color: var(--ink-soft);
+}
+
+.page-over {
+  font-size: 96px;
+  font-weight: 900;
+  color: var(--accent);
+  animation: countdown 700ms ease-out;
+}
+
+/* A combo burst on the page: 5, 10, 15 in a row pays coins. */
+.combo--burst {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gold);
+  font-size: 40px;
+  font-family: var(--font-display);
+  font-weight: 400;
+  transform-origin: left center;
+  animation: combo-burst 1200ms ease-out both;
+}
+
+@keyframes combo-burst {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-8deg);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.25) rotate(3deg);
+  }
+  35% {
+    transform: scale(1) rotate(0);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}
