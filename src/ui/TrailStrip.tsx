@@ -50,6 +50,8 @@ interface Props {
   feedback?: SessionState['feedback'];
   /** Whether the sun (the page timer) is moving. */
   running: boolean;
+  /** How long the sun takes to cross the sky: the page's seconds. */
+  pageSeconds?: number;
   /** Pose once the page is over. */
   endPose?: HeroPose;
   /** Right answers in a row (5, 10 and 15 get the cut-in). */
@@ -84,6 +86,7 @@ export function TrailStrip({
   elapsed,
   feedback,
   running,
+  pageSeconds = CONFIG.pageSeconds,
   endPose,
   combo = 0,
   debug,
@@ -190,7 +193,7 @@ export function TrailStrip({
             getWorldArt(worldId).timer === 'lantern' ? 'trail__sun trail__sun--mine' : 'trail__sun'
           }
           style={{
-            animationDuration: `${CONFIG.pageSeconds}s`,
+            animationDuration: `${pageSeconds}s`,
             animationPlayState: running ? 'running' : 'paused',
           }}
         />

@@ -1,7 +1,7 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Oct 3, 2026 (M9, audio, merged to `main`; M10 next; M8 waits for photos).
-History: `docs/decisions.md`.
+Last updated: Oct 3, 2026 (M9, audio, and M10's Settings, stats and install polish merged to
+`main`; the deploy waits on turning GitHub Pages on). History: `docs/decisions.md`.
 
 ## Goals
 
@@ -21,37 +21,37 @@ are playable with rewards, audio and parent settings.
 
 ## Current state
 
-- **On `main`:** M0–M7b. All 40 levels with cut scenes; adaptive difficulty with an age setting;
-  a danger chasing the hero on each page; the world overview; the "all open" switch; coins, the
-  21-item shop and the 40-sticker book (save format v5).
-- **M7b, the Saturday-morning cartoon look, is done:** the three-quarter-view hero with anime
-  eyes and expressions; all five worlds painted (mine, forest, river, mountains, canyon), their
-  40 obstacles and five chasers repainted and every scene directed (impacts, hit-stops,
-  close-ups, cut-ins, slow motion); the lively page strip; and the UI restyled to match
-  (`styles/cartoon.css`). The tablet check (Phase E) moved to M10 at the user's request.
-- **M9, audio, is done:** synthesized effects for every screen and cut scene, a theme per world
-  (no tune under a timed page), stings, per-device volumes and a mute button on the map (save
-  v6). `#sounds` plays and measures everything.
-- **M8 changed (Oct 2):** avatars drawn from photos the user provides (no builder, no photo
-  feature in the app). Skipped for now (Oct 3): M9 and M10 go first.
-- **Checks:** 490 unit tests, lint and build pass; CI runs them on every push.
-- **Known gaps:** parent controls for adaptive difficulty and the unlock switch's final home wait
-  for Settings (M10), as do PNG icons and the Pages `base` path. The repainted scenes haven't run
-  on the tablet: in the dev build at 5× CPU throttle they cost 15–20 ms a frame and the first
-  frame hitches 0.5–0.8 s while the backdrop is drawn into images (check in M10). The main JS
-  chunk is 722 kB (201 kB gzipped): fine for a precached PWA; splitting the art per world is an
-  M10 idea.
+- **On `main`:** M0–M7b, M9 and most of M10. All 40 levels with cut scenes; adaptive difficulty;
+  a danger chasing the hero on each page; the world overview; coins, the 21-item shop and the
+  40-sticker book; the Saturday-morning cartoon look (M7b) in all five worlds and the UI.
+- **M9, audio:** synthesized effects for every screen and cut scene, a theme per world (no tune
+  under a timed page), stings, per-device volumes and a mute button on the map (save v6).
+  `#sounds` plays and measures everything.
+- **M10 so far:** Settings (⚙ on the players screen): sound; per player the age, answers,
+  levels, time per page, difficulty adapts/stays put and a ceiling, start over and delete; a
+  Progress view (by fact family, the facts to practise, recent pages) (save v7). PNG icons drawn
+  from the hero's cut-in, a polished manifest, an Install button, and a Pages build under
+  `/rodneyRacoon/` that Chrome reports installable. `deploy.yml` deploys on pushes to `main`
+  once Pages is on.
+- **M8 (avatars from the user's photos)** waits for the photos; it will be save v8.
+- **Checks:** 500 unit tests, lint and build pass; CI runs them on every push.
+- **Known gaps:** GitHub Pages is off and the repo is private (Pages needs a public repo or a
+  paid plan). Nothing has run on the tablet yet: the repainted scenes cost 15–20 ms a frame in
+  the dev build at 5× CPU throttle and their first frame hitches 0.5–0.8 s; the audio is
+  untested on a real tablet speaker. The main JS chunk is 760 kB (about 210 kB gzipped), fine
+  for a precached PWA.
 - **Still open:** the final title and story opening; what comes after level 40.
 
 ## Next steps
 
-1. The user plays the new look (all 40 scenes; `#demo/scene/<level>` plays any one) and the
-   rewards (coin pace against prices, gear at tablet size). Notes go in `docs/feedback.md`.
-2. M8 (avatars drawn from the user's photos, a Look picker, save v6) on a new branch.
-3. M9 (audio), then M10 (settings, PWA polish, deploy, tablet testing).
+1. The user decides how to host: make the repo public, or a paid plan, then turn Pages on
+   (Settings → Pages → Source: GitHub Actions) and run the Deploy workflow.
+2. Install on the PC and the tablet from the Pages URL and play: scene frame rate and the
+   first-frame hitch, sound levels, Settings at tablet size. Notes go in `docs/feedback.md`.
+3. M8 (avatars from the user's photos) when the photos are ready.
 
 ## Handoff
 
-- **Branch:** `main`, pushed, with `m7b-cartoon-look` merged. On the user's PC, `handover.md` is
-  the user's own old file (out of date; leave it).
-- **Waiting on the user:** a play of the new look; photos for M8 whenever they're ready.
+- **Branch:** `main`, pushed, with `m9-audio` and `m10-settings-deploy` merged. On the user's
+  PC, `handover.md` is the user's own old file (out of date; leave it).
+- **Waiting on the user:** the hosting decision, a play on the tablet, photos for M8.

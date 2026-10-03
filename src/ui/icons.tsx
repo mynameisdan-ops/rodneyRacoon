@@ -155,3 +155,29 @@ export function SpeakerIcon({ size = 40, on }: IconProps & { on: boolean }) {
     </svg>
   );
 }
+
+/** A cog: the parent's settings. */
+export function GearIcon({ size = 40 }: IconProps) {
+  const teeth = Array.from({ length: 8 }, (_, i) => i * 45);
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden>
+      <g transform="translate(20 20)">
+        {teeth.map((a) => (
+          <rect
+            key={a}
+            x={-4}
+            y={-17}
+            width={8}
+            height={9}
+            rx={2}
+            fill="#9fb3c8"
+            {...stroke}
+            transform={`rotate(${a})`}
+          />
+        ))}
+        <circle r={12} fill="#9fb3c8" {...stroke} />
+        <circle r={5} fill="#fff8e8" {...stroke} />
+      </g>
+    </svg>
+  );
+}

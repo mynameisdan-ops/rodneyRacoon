@@ -67,6 +67,15 @@ describe('pageCoins', () => {
     );
   });
 
+  it("counts time left as on a standard page, so a longer timer doesn't pay more", () => {
+    const results = Array(10).fill(right);
+    const standard = evaluatePage(results, 10, 20);
+    const relaxed = evaluatePage(results, 10, 40, CONFIG.pageSeconds * 2);
+    expect(pageCoins(results, relaxed, undefined).time).toBe(
+      pageCoins(results, standard, undefined).time,
+    );
+  });
+
   it('pays the boss bonus for a boss level', () => {
     const results = Array(10).fill(right);
     const evaluation = evaluatePage(results, 10, 0);

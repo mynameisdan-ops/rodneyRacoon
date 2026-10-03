@@ -28,6 +28,10 @@ export interface AdaptiveState {
   /** Ratings for the skills played so far; others start from the age. */
   ratings: Partial<Record<SkillId, number>>;
   weakFacts: WeakFact[];
+  /** A parent setting: ratings move after each page (default) or stay where they are. */
+  adapts?: boolean;
+  /** A parent setting: the highest rating pages use, 0..1 (default 1, no limit). */
+  hardest?: number;
 }
 
 /** One answered problem on a finished page. */
@@ -74,7 +78,7 @@ export function weakFactsFor(state: AdaptiveState, skill: SkillId): WeakFact[] {
 
 /** The page a player gets on a level: size and difficulty from their rating, plus weak facts. */
 export function planPage(level: LevelDef, state: AdaptiveState, rng: Rng): PagePlan {
-  const rating = skillRating(state, level.skill);
+  const rating = Math.min(state.hardest ?? 1, skillRating(state, level.skill));
   // The rating runs from the level's easy end to its top, raised for older players.
   const reach = olderReach(level.skill, state.age);
   const count = Math.round(lerp(level.problems[0], level.problems[1] + reach.problems, rating));
@@ -134,12 +138,13 @@ export function applyPage(
   answers: readonly Answer[],
   now: number,
 ): AdaptiveState {
-  return {
-    ...state,
-    ratings: {
-      ...state.ratings,
-      [level.skill]: nextRating(skillRating(state, level.skill), evaluation),
-    },
-    weakFacts: updateWeakFacts(state.weakFacts, answers, now),
-  };
+  // Missed facts are still practised when a parent holds the difficulty steady.
+  const ratings =
+    state.adapts === false
+      ? state.ratings
+      : {
+          ...state.ratings,
+          [level.skill]: nextRating(skillRating(state, level.skill), evaluation),
+        };
+  return { ...state, ratings, weakFacts: updateWeakFacts(state.weakFacts, answers, now) };
 }

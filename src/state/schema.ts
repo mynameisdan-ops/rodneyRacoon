@@ -1,13 +1,22 @@
 import type { AdaptiveState, WeakFact } from '../game/adaptive';
-import { isMix, SKILL_IDS, type BaseSkillId, type Problem, type SkillId } from '../game/problems';
+import { CONFIG } from '../game/config';
+import {
+  BASE_SKILL_IDS,
+  isMix,
+  SKILL_IDS,
+  type BaseSkillId,
+  type Problem,
+  type SkillId,
+} from '../game/problems';
 import type { LevelProgress, ProgressMap } from '../game/progress';
+import { emptyStats, type PageRecord, type PlayerStats, type SkillStats } from '../game/stats';
 import { AGES } from '../content/skills';
 import { GEAR_SLOTS, getItem, type Gear } from '../content/shop';
 
 /**
  * Save format. Bump SAVE_VERSION and add a step to `migrate` whenever this shape changes.
  */
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 
 /** A player. The adaptive fields (`age`, `ratings`, `weakFacts`) were added in v3. */
 export interface Profile extends AdaptiveState {
@@ -27,6 +36,14 @@ export interface Profile extends AdaptiveState {
   owned: string[];
   /** What the hero wears, from `owned` (added in v5). */
   gear: Gear;
+  /** A parent setting: seconds on a timed page, one of `CONFIG.pageChoices` (added in v7). */
+  pageSeconds: number;
+  /** A parent setting: difficulty adapts after each page, or stays put (added in v7). */
+  adapts: boolean;
+  /** A parent setting: the hardest pages get, one of `CONFIG.adaptive.hardestChoices` (v7). */
+  hardest: number;
+  /** For the parent: answers by fact family and recent pages (added in v7). */
+  stats: PlayerStats;
 }
 
 /** A volume step: 0 is off, 3 is loudest. */
@@ -76,7 +93,8 @@ export function migrate(raw: unknown): SaveData {
   // Each version only added fields, and sanitizing fills in their defaults: v2 added
   // `autoSubmit` (Enter), v3 added `age` (not set), `ratings` and `weakFacts` (empty),
   // v4 added `unlockAll` (off), v5 added `coins` (0), `owned` and `gear` (none), v6 added
-  // `audio` (the default volumes).
+  // `audio` (the default volumes), v7 added `pageSeconds` (60), `adapts` (on), `hardest` (no
+  // limit) and `stats` (empty).
   const profiles = Array.isArray(raw.profiles)
     ? raw.profiles.map(sanitizeProfile).filter((p): p is Profile => p !== null)
     : [];
@@ -122,6 +140,58 @@ function sanitizeProfile(raw: unknown): Profile | null {
       : [],
     progress,
     ...sanitizeShop(raw),
+    pageSeconds: oneOf(raw.pageSeconds, CONFIG.pageChoices, CONFIG.pageSeconds),
+    adapts: raw.adapts !== false,
+    hardest: oneOf(raw.hardest, CONFIG.adaptive.hardestChoices, 1),
+    stats: sanitizeStats(raw.stats),
+  };
+}
+
+function oneOf(raw: unknown, choices: readonly number[], fallback: number): number {
+  return typeof raw === 'number' && choices.includes(raw) ? raw : fallback;
+}
+
+const count = (v: unknown) => (typeof v === 'number' && v >= 0 ? Math.floor(v) : 0);
+
+function sanitizeStats(raw: unknown): PlayerStats {
+  if (!isObject(raw)) return emptyStats();
+  const skills: PlayerStats['skills'] = {};
+  if (isObject(raw.skills)) {
+    for (const skill of BASE_SKILL_IDS) {
+      const s = raw.skills[skill];
+      if (!isObject(s)) continue;
+      const answered = count(s.answered);
+      const right = Math.min(answered, count(s.right));
+      const row: SkillStats = {
+        answered,
+        right,
+        firstTry: Math.min(right, count(s.firstTry)),
+        ms: Number.isFinite(s.ms) ? count(s.ms) : 0,
+      };
+      if (answered > 0) skills[skill] = row;
+    }
+  }
+  const recent = Array.isArray(raw.recent)
+    ? raw.recent
+        .map(sanitizePage)
+        .filter((p): p is PageRecord => p !== null)
+        .slice(0, CONFIG.recentPages)
+    : [];
+  return { skills, recent };
+}
+
+function sanitizePage(raw: unknown): PageRecord | null {
+  if (!isObject(raw) || !Number.isInteger(raw.level)) return null;
+  const total = count(raw.total);
+  const stars = count(raw.stars);
+  return {
+    at: count(raw.at),
+    level: raw.level as number,
+    right: Math.min(total, count(raw.right)),
+    total,
+    stars: (stars <= 3 ? stars : 0) as PageRecord['stars'],
+    passed: raw.passed === true,
+    seconds: count(raw.seconds),
   };
 }
 
@@ -182,7 +252,6 @@ function sanitizeWeakFact(raw: unknown): WeakFact | null {
   if (typeof p.key !== 'string' || !isSkill(p.skill) || isMix(p.skill)) return null;
   if (!factHolds(p.a as number, p.op, p.b as number, p.result as number)) return null;
   if (p.answer !== (p.unknown === 'result' ? p.result : p.b)) return null;
-  const count = (v: unknown) => (typeof v === 'number' && v >= 0 ? Math.floor(v) : 0);
   const problem: Problem = {
     a: p.a as number,
     op: p.op,
@@ -204,7 +273,6 @@ function sanitizeWeakFact(raw: unknown): WeakFact | null {
 function sanitizeLevelProgress(raw: unknown): LevelProgress | null {
   if (!isObject(raw)) return null;
   const stars = Number(raw.bestStars);
-  const count = (v: unknown) => (typeof v === 'number' && v >= 0 ? Math.floor(v) : 0);
   return {
     bestStars: (stars >= 0 && stars <= 3 ? Math.floor(stars) : 0) as LevelProgress['bestStars'],
     plays: count(raw.plays),

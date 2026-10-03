@@ -111,3 +111,16 @@ mine and forest). The design is in `docs/PLAN.md`; the current snapshot is in `S
     theme without its tune on a timed page (so it doesn't distract) and soft under a scene;
     stings for results and bosses. Save v6 adds per-device volumes and the map's mute button.
     Levels measured offline on `#sounds` (effects peak 0.1–0.7, the limiter takes the rest).
+
+- **2026-10-03: M10, Settings, stats and install polish** (`m10-settings-deploy`).
+  - **Settings** (⚙ on the players screen, for the parent): this device's sound; per player the
+    age, answers, levels, time per page (60/90/120 s; the 3-star time and time coins scale, so
+    more time doesn't pay more), difficulty adapts/stays put (missed facts still come back), a
+    ceiling (`hardest`), name & color, start over (keeps coins, gear and settings) and delete.
+    The player editor now only does name and color (and age for a new player).
+  - **Progress:** right %, first try and seconds per answer by fact family, the 10 most-missed
+    facts and the last pages (`game/stats.ts`, save v7; stats start with v7).
+  - **Install:** PNG icons drawn from the hero's cut-in (`npm run icons`, headless Chrome), a
+    manifest with an `id` and relative paths, an Install button where the browser offers one.
+    Chrome's installability check passes for a `/rodneyRacoon/` build. `deploy.yml` publishes to
+    Pages on pushes to `main`, and skips until Pages is turned on (the repo is private).

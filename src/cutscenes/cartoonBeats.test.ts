@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest';
-import { EMOTE_MS, IMPACT_MS, buildTimeline, realTime, sampleTimeline, scriptTime } from './timeline';
+import {
+  EMOTE_MS,
+  IMPACT_MS,
+  buildTimeline,
+  realTime,
+  sampleTimeline,
+  scriptTime,
+} from './timeline';
 
 /** The M7b cartoon beats: faces, squash and stretch, impacts, focus lines and emotes. */
 

@@ -132,6 +132,13 @@ describe('evaluatePage', () => {
     expect(evaluatePage(Array(10).fill(right), 10, 5).stars).toBe(2);
   });
 
+  it("scales the 3-star time with the player's timer", () => {
+    // Twice as long a page needs twice the time left.
+    expect(evaluatePage(Array(10).fill(right), 10, 12, 120).stars).toBe(2);
+    expect(evaluatePage(Array(10).fill(right), 10, 24, 120).stars).toBe(3);
+    expect(evaluatePage(Array(10).fill(right), 10, 24, 120).pageSeconds).toBe(120);
+  });
+
   it('2 stars at 90%+, 1 star at 80%+', () => {
     expect(evaluatePage([...Array(9).fill(right), secondTry], 10, 30).stars).toBe(2);
     expect(evaluatePage([...Array(9).fill(right), wrong], 10, 30).stars).toBe(2);

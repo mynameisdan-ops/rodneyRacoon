@@ -44,12 +44,19 @@
     repeating-conic-gradient(from 3deg at 16% 56%, #fff1c8 0deg 7.5deg, #ffe39e 7.5deg 15deg);
 }
 
+.settings {
+  background:
+    var(--burst-vignette),
+    repeating-conic-gradient(from 3deg at 10% 20%, #e2efff 0deg 7.5deg, #cfe2fa 7.5deg 15deg);
+}
+
 /* ---------- Titles ---------- */
 
 .results__title,
 .shop__title,
 .book__title,
-.editor__title {
+.editor__title,
+.settings__title {
   color: #fff8e8;
   -webkit-text-stroke: 10px var(--ink);
   paint-order: stroke fill;
@@ -92,6 +99,8 @@
 .pad__key,
 .shop__tab,
 .book__tab,
+.settings__tab,
+.settings__view,
 .choice,
 .item-card,
 .profile-card,

@@ -1,9 +1,13 @@
 import { StrictMode, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from './App';
+import { watchInstall } from './pwa';
 import { Stage } from './ui/Stage';
 import '@fontsource/lilita-one/latin-400.css';
 import './styles.css';
+
+// Catch the browser's install prompt early, so Settings can offer an "Install" button.
+watchInstall();
 
 const rootEl = document.getElementById('root');
 if (!rootEl) throw new Error('Missing #root element');
@@ -57,6 +61,15 @@ if (import.meta.env.DEV && location.hash.startsWith('#gallery')) {
   const [from = 1, to = from] = location.hash.split('-').slice(1).map(Number);
   void import('./screens/ArtGallery').then(({ StickerMoments }) =>
     render(<StickerMoments from={from} to={to} />),
+  );
+} else if (import.meta.env.DEV && location.hash.startsWith('#icon')) {
+  // Dev-only: the app icon alone on a clear page (#icon-round-512, #icon-full-180), which
+  // `npm run icons` screenshots into public/.
+  const [, shape = 'round', size = '512'] = location.hash.split('-');
+  document.documentElement.style.background = 'transparent';
+  document.body.style.background = 'transparent';
+  void import('./art/AppIcon').then(({ AppIcon }) =>
+    render(<AppIcon shape={shape === 'full' ? 'full' : 'round'} size={Number(size)} />),
   );
 } else if (import.meta.env.DEV && location.hash.startsWith('#sounds')) {
   // Dev-only sound board: every effect, theme and sting, and their measured levels.

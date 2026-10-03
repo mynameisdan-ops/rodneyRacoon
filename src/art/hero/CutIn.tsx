@@ -137,7 +137,7 @@ export function CutIn({
 }
 
 /** His neck and the top of his tunic under the close-up (head-local units). */
-function Shoulders({ avatar }: { avatar: AvatarConfig }) {
+export function Shoulders({ avatar }: { avatar: AvatarConfig }) {
   const { skin, shirt } = avatar;
   return (
     <g>

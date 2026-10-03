@@ -6,6 +6,8 @@ import { recordPlay } from '../game/progress';
 import { pageCoins, type CoinReward } from '../game/rewards';
 import type { PageEvaluation } from '../game/scoring';
 import { buy, toggleWear } from '../game/shop';
+import { emptyStats, recordStats } from '../game/stats';
+import { CONFIG } from '../game/config';
 import { loadSave, requestPersistentStorage, writeSave } from './persistence';
 import {
   emptySave,
@@ -16,9 +18,12 @@ import {
   type SaveData,
 } from './schema';
 
-/** The per-player settings a parent picks in the player editor. */
-export type ProfileSettings = Pick<Profile, 'autoSubmit' | 'age' | 'unlockAll'>;
-/** Everything the player editor can change. */
+/** The per-player settings a parent picks in Settings (age also in the new-player editor). */
+export type ProfileSettings = Pick<
+  Profile,
+  'autoSubmit' | 'age' | 'unlockAll' | 'pageSeconds' | 'adapts' | 'hardest'
+>;
+/** Everything that can be changed about a player. */
 export type ProfileFields = Pick<Profile, 'name' | 'color'> & ProfileSettings;
 
 interface GameStore {
@@ -35,6 +40,11 @@ interface GameStore {
   /** Changing `age` restarts the skill ratings from the new age (weak facts are kept). */
   updateProfile(id: string, patch: Partial<ProfileFields>): void;
   deleteProfile(id: string): void;
+  /**
+   * Starts a player's journey over: levels, stars, stickers, difficulty, missed facts and stats
+   * are cleared; name, settings, coins and gear are kept.
+   */
+  resetProgress(id: string): void;
   selectProfile(id: string | null): void;
   /** Records a finished page and pays its coins; returns what it paid (undefined if no player). */
   recordResult(
@@ -121,6 +131,10 @@ export const useGame = create<GameStore>()((set, get) => {
         coins: 0,
         owned: [],
         gear: {},
+        pageSeconds: settings.pageSeconds ?? CONFIG.pageSeconds,
+        adapts: settings.adapts ?? true,
+        hardest: settings.hardest ?? 1,
+        stats: emptyStats(),
       };
       commit((d) => ({ ...d, profiles: [...d.profiles, profile], lastProfileId: id }));
       set({ activeProfileId: id });
@@ -148,6 +162,13 @@ export const useGame = create<GameStore>()((set, get) => {
       if (get().activeProfileId === id) set({ activeProfileId: null });
     },
 
+    resetProgress(id) {
+      updateProfiles(
+        (p) => ({ ...p, progress: {}, ratings: {}, weakFacts: [], stats: emptyStats() }),
+        id,
+      );
+    },
+
     selectProfile(id) {
       set({ activeProfileId: id });
       if (id) commit((d) => ({ ...d, lastProfileId: id }));
@@ -164,6 +185,7 @@ export const useGame = create<GameStore>()((set, get) => {
           ...p,
           ...applyPage(p, level, evaluation, answers, now),
           progress: recordPlay(p.progress, level.id, evaluation, now),
+          stats: recordStats(p.stats, level.id, evaluation, answers, now),
           coins: p.coins + reward.total,
         }),
         id,

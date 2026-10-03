@@ -7,6 +7,9 @@ import { cleanName, type ProfileFields } from '../state/store';
 import { avatarForProfile } from '../art/hero/avatar';
 import { Hero } from '../art/hero/Hero';
 
+/** What the editor sets: name and color, and the age for a new player. */
+export type EditorFields = Pick<ProfileFields, 'name' | 'color'> & { age?: number | null };
+
 interface Props {
   /** Undefined when creating a new player. */
   profile?: Profile;
@@ -14,60 +17,31 @@ interface Props {
   takenColors: string[];
   /** Hide Cancel when this is the very first player. */
   canCancel: boolean;
-  onSave: (fields: ProfileFields) => void;
-  onDelete?: () => void;
+  onSave: (fields: EditorFields) => void;
   onCancel: () => void;
 }
 
-export function ProfileEditor({
-  profile,
-  takenColors,
-  canCancel,
-  onSave,
-  onDelete,
-  onCancel,
-}: Props) {
+/**
+ * A player's name and color (the kids can change these). A new player also gets an age, which
+ * sets where the difficulty starts; the parent's other settings are in Settings.
+ */
+export function ProfileEditor({ profile, takenColors, canCancel, onSave, onCancel }: Props) {
   const [name, setName] = useState(profile?.name ?? '');
   const [color, setColor] = useState<string>(
     () =>
       profile?.color ??
       (PROFILE_COLORS.find((c) => !takenColors.includes(c.value)) ?? PROFILE_COLORS[0]).value,
   );
-  const [autoSubmit, setAutoSubmit] = useState(profile?.autoSubmit ?? false);
-  // New players start at a middle age; players saved before ages existed show none picked.
-  const [age, setAge] = useState<number | null>(profile ? profile.age : DEFAULT_AGE);
-  const [unlockAll, setUnlockAll] = useState(profile?.unlockAll ?? false);
-  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [age, setAge] = useState<number>(DEFAULT_AGE);
   useMusic('title');
   const valid = cleanName(name).length > 0;
-
-  if (confirmingDelete && profile && onDelete) {
-    return (
-      <div className="editor editor--confirm">
-        <h1>Delete {profile.name}?</h1>
-        <p className="editor__warning">All of {profile.name}'s stars and progress will be gone.</p>
-        <div className="editor__actions">
-          <button
-            type="button"
-            className="big-button big-button--quiet"
-            onClick={() => setConfirmingDelete(false)}
-          >
-            Keep
-          </button>
-          <button type="button" className="big-button big-button--danger" onClick={onDelete}>
-            Delete
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <form
       className="editor"
       onSubmit={(e) => {
         e.preventDefault();
-        if (valid) onSave({ name, color, autoSubmit, age, unlockAll });
+        if (valid) onSave(profile ? { name, color } : { name, color, age });
       }}
     >
       {/* Name sits at the top so a tablet's on-screen keyboard doesn't cover it. */}
@@ -107,75 +81,31 @@ export function ProfileEditor({
               />
             ))}
           </div>
-          {/* For the parent: whether answers wait for ✓ / Enter or are checked as soon as they're typed. */}
-          <div className="editor__label editor__label--gap">Answers</div>
-          <div className="editor__submit" role="radiogroup" aria-label="Answers">
-            {[
-              { auto: false, icon: '✓', text: 'Press to check' },
-              { auto: true, icon: '⚡', text: 'Automatic' },
-            ].map((o) => (
-              <button
-                key={o.text}
-                type="button"
-                role="radio"
-                aria-checked={autoSubmit === o.auto}
-                className={autoSubmit === o.auto ? 'choice choice--on' : 'choice'}
-                onClick={() => setAutoSubmit(o.auto)}
-              >
-                <span className="choice__icon">{o.icon}</span>
-                {o.text}
-              </button>
-            ))}
-          </div>
-          {/* For the parent: the age sets where each skill's difficulty starts. */}
-          <div className="editor__label editor__label--gap">Age</div>
-          <div className="editor__ages" role="radiogroup" aria-label="Age">
-            {AGES.map((a, i) => (
-              <button
-                key={a}
-                type="button"
-                role="radio"
-                aria-checked={age === a}
-                className={age === a ? 'choice choice--age choice--on' : 'choice choice--age'}
-                onClick={() => setAge(a)}
-              >
-                {i === AGES.length - 1 ? `${a}+` : a}
-              </button>
-            ))}
-          </div>
-          {/* For the parent: open every level, e.g. to jump ahead to the right difficulty. */}
-          <div className="editor__label editor__label--gap">Levels</div>
-          <div className="editor__submit" role="radiogroup" aria-label="Levels">
-            {[
-              { all: false, icon: '🔒', text: 'One by one' },
-              { all: true, icon: '🔓', text: 'All open' },
-            ].map((o) => (
-              <button
-                key={o.text}
-                type="button"
-                role="radio"
-                aria-checked={unlockAll === o.all}
-                className={unlockAll === o.all ? 'choice choice--on' : 'choice'}
-                onClick={() => setUnlockAll(o.all)}
-              >
-                <span className="choice__icon">{o.icon}</span>
-                {o.text}
-              </button>
-            ))}
-          </div>
+          {!profile && (
+            <>
+              {/* For the parent: the age sets where each skill's difficulty starts. */}
+              <div className="editor__label editor__label--gap">Age</div>
+              <div className="editor__ages" role="radiogroup" aria-label="Age">
+                {AGES.map((a, i) => (
+                  <button
+                    key={a}
+                    type="button"
+                    role="radio"
+                    aria-checked={age === a}
+                    className={age === a ? 'choice choice--age choice--on' : 'choice choice--age'}
+                    onClick={() => setAge(a)}
+                  >
+                    {i === AGES.length - 1 ? `${a}+` : a}
+                  </button>
+                ))}
+              </div>
+              <p className="editor__hint">More settings for grown-ups: ⚙ on the players screen.</p>
+            </>
+          )}
         </div>
       </div>
 
       <div className="editor__actions">
-        {profile && onDelete && (
-          <button
-            type="button"
-            className="big-button big-button--quiet editor__delete"
-            onClick={() => setConfirmingDelete(true)}
-          >
-            Delete
-          </button>
-        )}
         {canCancel && (
           <button type="button" className="big-button big-button--quiet" onClick={onCancel}>
             Cancel

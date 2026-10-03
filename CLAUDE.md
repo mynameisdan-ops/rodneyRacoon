@@ -21,8 +21,10 @@ each right answer moves the hero along the trail, and each passed page ends in a
 
 Vite, TypeScript (strict), React 19, zustand, `idb-keyval` (IndexedDB saves with versioned
 migrations), `vite-plugin-pwa`, Vitest. Art is SVG in React components; animation is CSS, and cut
-scenes sample a pure timeline on a `requestAnimationFrame` clock. Hosted on GitHub Pages; runs as
-an installed PWA on Windows (Edge/Chrome) and an Android tablet (Chrome), landscape only.
+scenes sample a pure timeline on a `requestAnimationFrame` clock. Hosted on GitHub Pages
+(`.github/workflows/deploy.yml` builds with `--base=/<repo>/` on every push to `main`, once Pages
+is on); runs as an installed PWA on Windows (Edge/Chrome) and an Android tablet (Chrome),
+landscape only.
 
 ## Commands
 
@@ -35,13 +37,15 @@ npm run lint
 npm run build      # type-check + production build
 npm run preview    # serve the build (add -- --host for the tablet on the LAN)
 npm run format     # prettier --write
+npm run icons      # redraw the PNG icons in public/ from #icon-… (needs the dev server running)
 ```
 
 Dev-only pages: `#demo/<screen>` opens any screen with made-up players in memory (list in
 `src/screens/CLAUDE.md`); `#gallery` (or one section, e.g. `#gallery-gear`) shows all the art;
 `#scene-12` scrubs a level's scene and `#scene-12-2600` shows one frame; `#strip` plays the page
 strip by itself; `#moments-1-4` is the sticker contact sheet (details in `src/art/CLAUDE.md`);
-`#sounds` plays and measures every sound effect, theme and sting (`src/audio/CLAUDE.md`).
+`#sounds` plays and measures every sound effect, theme and sting (`src/audio/CLAUDE.md`);
+`#icon-round-512` / `#icon-full-180` draw the app icon alone (`npm run icons` screenshots them).
 (Keep this section in sync with `package.json`.)
 
 ## Code map
@@ -49,7 +53,8 @@ strip by itself; `#moments-1-4` is the sticker contact sheet (details in `src/ar
 | Path | What |
 | --- | --- |
 | `src/App.tsx`, `src/main.tsx` | Screen router (a `Screen` union, no URL routing); entry and dev pages |
-| `src/game/` | Pure logic: problems, adaptive difficulty, scoring, coins, shop, progress, `config.ts` |
+| `src/pwa.ts`, `vite.config.ts`, `public/` | Install prompt, the PWA manifest and service worker, icons |
+| `src/game/` | Pure logic: problems, adaptive difficulty, scoring, coins, shop, progress, stats, `config.ts` |
 | `src/content/` | Data: levels, skills, stickers, shop items, music, scene sounds; `cutscenes/` has a script file per world |
 | `src/cutscenes/` | The pure timeline, `CutSceneView` and the scene clock |
 | `src/art/` | Style kit, `<Hero>` (body, faces, cut-in) and gear, painted backdrops and their registry, chasers, fx |
@@ -57,7 +62,7 @@ strip by itself; `#moments-1-4` is the sticker contact sheet (details in `src/ar
 | `src/audio/` | Synthesized sound effects and music: pure notation and scene cues, the Web Audio engine |
 | `src/screens/`, `src/ui/` | Screens and shared UI, each with its own CSS file (order: `src/styles.css`) |
 | `src/state/` | zustand store, save schema and migrations, IndexedDB |
-| `src/dev/` | Dev-only helpers (`#demo`) |
+| `src/dev/`, `scripts/` | Dev-only helpers (`#demo`), the icon renderer |
 
 ## Rules that always apply
 
