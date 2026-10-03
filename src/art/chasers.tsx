@@ -79,7 +79,57 @@ const BEES = [
   { x: 116, y: 18, d: 0.9 },
 ];
 
-/** World 2: a buzzing swarm of forest bees. */
+/** One round, fuzzy bee with big shiny eyes, flying right (no stinger: busy, not scary). */
+function Bee() {
+  const body = '#ffc93c';
+  return (
+    <g>
+      <path d="M-14 0 L-20 -4 L-20 4 Z" fill={INK} />
+      <ellipse
+        cx={-6}
+        cy={-12}
+        rx={9}
+        ry={6}
+        fill="#e8f6ff"
+        opacity={0.85}
+        {...ink(1.4)}
+        transform="rotate(-20 -6 -12)"
+      />
+      <ellipse cx={0} cy={0} rx={13} ry={10} fill={body} {...ink(2.6)} />
+      <path d="M-13 3 Q0 13 13 2 Q8 9 0 9 Q-8 9 -13 3 Z" fill={shade(body, 0.3)} />
+      <path d="M-5 -9 V9 M2 -10 V10" stroke={INK} strokeWidth={3.6} />
+      <path
+        d="M2 -8 Q8 -9 11 -4"
+        stroke={tint(body, 0.6)}
+        strokeWidth={1.6}
+        fill="none"
+        strokeLinecap="round"
+      />
+      <ellipse
+        cx={4}
+        cy={-14}
+        rx={8}
+        ry={5.5}
+        fill="#f4fbff"
+        opacity={0.9}
+        {...ink(1.4)}
+        transform="rotate(-35 4 -14)"
+      />
+      <circle cx={9} cy={-2} r={3.6} fill="#fff" {...ink(1)} />
+      <circle cx={10} cy={-1.6} r={2} fill={INK} />
+      <circle cx={10.6} cy={-2.6} r={0.7} fill="#fff" />
+      <path
+        d="M11 -9 q3 -6 7 -6 M8 -10 q0 -6 3 -8"
+        stroke={INK}
+        strokeWidth={1.3}
+        fill="none"
+        strokeLinecap="round"
+      />
+    </g>
+  );
+}
+
+/** World 2: a buzzing swarm of round forest bees, with a dotted flight trail. */
 function Bees() {
   return (
     <g>
@@ -88,13 +138,19 @@ function Bees() {
         fill="#ffd35a"
         opacity={0.12}
       />
+      <path
+        d="M-10 70 Q20 40 46 62 Q70 82 96 52"
+        stroke="#fff6c0"
+        strokeWidth={3}
+        strokeDasharray="1 9"
+        strokeLinecap="round"
+        fill="none"
+        opacity={0.8}
+      />
       {BEES.map((b, i) => (
         <g key={i} className="chaser__buzz" style={{ animationDelay: `${-b.d}s` }}>
           <g transform={`translate(${b.x} ${b.y})`}>
-            <ellipse cx={-4} cy={-10} rx={8} ry={6} fill="#e8f6ff" opacity={0.9} {...ink(1.5)} />
-            <ellipse cx={0} cy={0} rx={12} ry={9} fill="#ffc93c" {...ink(2.5)} />
-            <path d="M-3 -8 V8 M4 -8 V8" stroke={INK} strokeWidth={3.5} />
-            <circle cx={9} cy={-2} r={1.8} fill={INK} />
+            <Bee />
           </g>
         </g>
       ))}

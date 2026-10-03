@@ -432,3 +432,29 @@ itself is in `docs/PLAN.md`; the current snapshot is in `STATUS.md`.
     spires (only their transforms change per frame) brought the mine scenes to ~17–19.6 ms,
     level 12's range (17–20 ms). A scene's first-frame hitch (drawing the backdrop into images)
     is ~210 ms for the mine vs ~330 ms for the forest. The tablet decides (Phase E).
+
+- **2026-10-02: M7b Phase C, the forest's other seven scenes** (`m7b-cartoon-look`). The forest's
+  backdrop was already painted (Phase B) and level 12 directed; this did levels 9–11 and 13–16.
+  - **Obstacles repainted** (`obstacles/forestScenes.tsx`), the World 1 way: what he touches and
+    the animals are lined (`PROP_OUT`/`PROP_IN`, a crisp shadow and a rim light); the ground around
+    them is painted. The log rolls end-on with its rings, a crack, moss and a little mushroom
+    riding round on the bark; a mossy stump with roots; curling bramble stems with thorns, leaves
+    and berries; a sapling pole with a leafy tip; a painted hollow with glowing mushrooms under a
+    lined root chute, and the path breaking up into it; a grumpy-cute boar (bristly mane, pink
+    snout, tiny tusks, shiny eyes, dizzy stars) with a lined tree, branch and bush (new
+    `LinedFoliage`: lobes under one bold outline with leaf tips poking out); spotted mushroom caps
+    with gills over a bog that darkens into glossy, bubbling mud; lined planks, posts and rope
+    over a painted misty ravine; and for the boss a looping root, a mossy arch, a painted chasm,
+    a painted night sky and moon, and softly glowing fireflies. The page-strip bees are round and
+    fuzzy with big shiny eyes and a dotted flight trail (no stingers).
+  - **Directed scripts** for levels 9, 10, 11, 13, 14, 15 and 16: impacts with hit-stops, close-ups,
+    cut-ins (9, 10, 14, 16), slow motion under focus lines and a tilted camera, sparkling
+    landings, timed to the props (the log arrives under him as he lands; the boar passes beneath
+    the branch ~60 ms after he lands there, in slow motion; the bridge's planks still fall at his
+    heels). The log's slam and level 16's landing split a move so the freeze lands without a
+    speed jump. Level 16's root burst was moved on screen after a check showed it firing outside
+    the close-up. Sticker 9 moved to 0.5 (0.3 now lands on the cut-in).
+  - **Performance** (dev build, 5× CPU throttle, main-thread work per frame, same method as
+    World 1): levels 9 14.9 ms, 10 17.9, 11 14.1, 13 14.9, 14 18.0, 15 14.2, 16 18.5. The bramble
+    vault first cost 24.0 ms (each stem's curve rebuilt every frame to sway); drawing each stem
+    once per height (memoized) and swaying it with a rotation brought it below the old art's 20.3.

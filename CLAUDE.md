@@ -86,7 +86,8 @@ Use these to check art changes; they are left out of production builds.
   Scenes and the page strip draw each layer once as an image (`WorldBackdrop raster`), so detail costs nothing
   per frame; a `front` layer (big leaves, dark rocks) passes in front of the hero in scenes only (a scene that
   leaves its world, like the mine train bursting into daylight, sets `foreground: false`). Obstacles are drawn
-  every frame: memoize the static parts of anything drawn many times (a swarm of rats or bats).
+  every frame: memoize the static parts of anything drawn many times (a swarm of rats or bats), and sway or
+  turn things with a transform rather than rebuilding their shapes each frame.
 - Obstacle art gets the scene's whole prop schedule (`events`); use `eventTime()` to time a motion to a later
   event. Shared positions go in a layout module per world (`mineLayout.ts` … `canyonLayout.ts`) so art and
   scripts agree; small motion helpers are in `sceneKit.ts`. An obstacle's `focus` picks what the page-strip preview shows.
