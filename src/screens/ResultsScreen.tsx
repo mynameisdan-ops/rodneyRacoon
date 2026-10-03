@@ -1,5 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { AvatarConfig } from '../art/hero/avatar';
+import { playSfx, playSting } from '../audio/engine';
+import { useMusic } from '../audio/hooks';
 import { Hero } from '../art/hero/Hero';
 import type { LevelDef } from '../content/levels';
 import { getSticker } from '../content/stickers';
@@ -33,6 +35,8 @@ const RETRY_LINES = [
 /** How long the coin total takes to count up, and the gap between tally rows, in ms. */
 const COUNT_MS = 1100;
 const ROW_MS = 220;
+/** When the new sticker swings in (its CSS animation delay). */
+const STICKER_IN_MS = 700;
 
 export function ResultsScreen({
   level,
@@ -57,6 +61,11 @@ export function ResultsScreen({
     { key: 'stars', icon: <StarIcon />, label: 'New stars', coins: reward.newStars },
   ].filter((r) => r.coins > 0);
   const shown = useCountUp(reward.total, rows.length * ROW_MS);
+  useResultSounds(passed, passed ? stars : 0, rows.length, sticker !== undefined);
+  const counted = reward.total > 0 && shown === reward.total;
+  useEffect(() => {
+    if (counted) playSfx('coin');
+  }, [counted]);
 
   return (
     <div className={passed ? 'results results--pass' : 'results results--retry'}>
@@ -119,6 +128,23 @@ export function ResultsScreen({
       </div>
     </div>
   );
+}
+
+/**
+ * A fanfare (or a gentle "let's go again"), a chime as each star lands, a tick per tally row
+ * and a sparkle for a new sticker. Timers, like the tally's own animation delays.
+ */
+function useResultSounds(passed: boolean, stars: number, rows: number, sticker: boolean) {
+  useMusic(null);
+  useEffect(() => {
+    playSting(passed ? 'win' : 'retry');
+    const sounds: [number, () => void][] = [];
+    for (let i = 0; i < stars; i++) sounds.push([350 + i * 220, () => playSfx('star', { n: i })]);
+    for (let i = 0; i < rows; i++) sounds.push([120 + i * ROW_MS, () => playSfx('tally')]);
+    if (sticker) sounds.push([STICKER_IN_MS, () => playSfx('sticker')]);
+    const ids = sounds.map(([ms, play]) => window.setTimeout(play, ms));
+    return () => ids.forEach((id) => window.clearTimeout(id));
+  }, [passed, stars, rows, sticker]);
 }
 
 /** Counts from 0 up to `target` after `delay` ms (a timer, so it runs in a hidden window too). */

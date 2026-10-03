@@ -7,7 +7,7 @@ import { pageCoins } from '../game/rewards';
 import { createRng } from '../game/rng';
 import { evaluatePage } from '../game/scoring';
 import { useGame } from '../state/store';
-import { SAVE_VERSION, type Profile, type SaveData } from '../state/schema';
+import { DEFAULT_AUDIO, SAVE_VERSION, type Profile, type SaveData } from '../state/schema';
 
 /*
  * Dev-only shortcuts for checking screens (never in a production build). `#demo` opens the
@@ -116,7 +116,12 @@ function screenFor(hash: string): Screen {
 
 /** Puts the demo players in the store (in memory only) and returns the screen to open. */
 export function startDemo(hash: string): Screen {
-  const data: SaveData = { version: SAVE_VERSION, profiles: [SAM, AVA], lastProfileId: SAM.id };
+  const data: SaveData = {
+    version: SAVE_VERSION,
+    profiles: [SAM, AVA],
+    lastProfileId: SAM.id,
+    audio: DEFAULT_AUDIO,
+  };
   useGame.setState({ status: 'ready', persist: false, data, activeProfileId: SAM.id });
   return screenFor(hash);
 }

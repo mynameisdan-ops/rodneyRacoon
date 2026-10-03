@@ -7,7 +7,7 @@ import { GEAR_SLOTS, getItem, type Gear } from '../content/shop';
 /**
  * Save format. Bump SAVE_VERSION and add a step to `migrate` whenever this shape changes.
  */
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 
 /** A player. The adaptive fields (`age`, `ratings`, `weakFacts`) were added in v3. */
 export interface Profile extends AdaptiveState {
@@ -29,16 +29,31 @@ export interface Profile extends AdaptiveState {
   gear: Gear;
 }
 
+/** A volume step: 0 is off, 3 is loudest. */
+export type VolumeLevel = 0 | 1 | 2 | 3;
+
+/** This device's sound (not per player). */
+export interface AudioSettings {
+  sound: VolumeLevel;
+  music: VolumeLevel;
+  /** The speaker button on the map: silences both without losing the volumes. */
+  muted: boolean;
+}
+
+export const DEFAULT_AUDIO: AudioSettings = { sound: 2, music: 2, muted: false };
+
 export interface SaveData {
   version: typeof SAVE_VERSION;
   profiles: Profile[];
   lastProfileId: string | null;
+  /** Sound settings for this device (added in v6). */
+  audio: AudioSettings;
 }
 
 export const MAX_NAME_LENGTH = 12;
 
 export function emptySave(): SaveData {
-  return { version: SAVE_VERSION, profiles: [], lastProfileId: null };
+  return { version: SAVE_VERSION, profiles: [], lastProfileId: null, audio: DEFAULT_AUDIO };
 }
 
 /** Thrown when the save was written by a newer version of the game; it must not be overwritten. */
@@ -60,7 +75,8 @@ export function migrate(raw: unknown): SaveData {
 
   // Each version only added fields, and sanitizing fills in their defaults: v2 added
   // `autoSubmit` (Enter), v3 added `age` (not set), `ratings` and `weakFacts` (empty),
-  // v4 added `unlockAll` (off), v5 added `coins` (0), `owned` and `gear` (none).
+  // v4 added `unlockAll` (off), v5 added `coins` (0), `owned` and `gear` (none), v6 added
+  // `audio` (the default volumes).
   const profiles = Array.isArray(raw.profiles)
     ? raw.profiles.map(sanitizeProfile).filter((p): p is Profile => p !== null)
     : [];
@@ -68,7 +84,18 @@ export function migrate(raw: unknown): SaveData {
     typeof raw.lastProfileId === 'string' && profiles.some((p) => p.id === raw.lastProfileId)
       ? raw.lastProfileId
       : null;
-  return { version: SAVE_VERSION, profiles, lastProfileId };
+  return { version: SAVE_VERSION, profiles, lastProfileId, audio: sanitizeAudio(raw.audio) };
+}
+
+function sanitizeAudio(raw: unknown): AudioSettings {
+  if (!isObject(raw)) return DEFAULT_AUDIO;
+  const level = (v: unknown, fallback: VolumeLevel): VolumeLevel =>
+    v === 0 || v === 1 || v === 2 || v === 3 ? v : fallback;
+  return {
+    sound: level(raw.sound, DEFAULT_AUDIO.sound),
+    music: level(raw.music, DEFAULT_AUDIO.music),
+    muted: raw.muted === true,
+  };
 }
 
 function sanitizeProfile(raw: unknown): Profile | null {

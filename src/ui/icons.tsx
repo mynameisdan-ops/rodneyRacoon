@@ -130,3 +130,28 @@ export function BookIcon({ size = 48 }: IconProps) {
     </svg>
   );
 }
+
+/** A speaker with sound waves, or crossed out when the sound is off. */
+export function SpeakerIcon({ size = 40, on }: IconProps & { on: boolean }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 40 40" aria-hidden>
+      <path d="M6 15 H13 L22 7 V33 L13 25 H6 Z" fill="#ffc53d" {...stroke} />
+      {on ? (
+        <path
+          d="M27 14 Q31 20 27 26 M31 10 Q38 20 31 30"
+          fill="none"
+          stroke={INK}
+          strokeWidth={3.5}
+          strokeLinecap="round"
+        />
+      ) : (
+        <path
+          d="M27 14 L36 26 M36 14 L27 26"
+          stroke="#e63946"
+          strokeWidth={4.5}
+          strokeLinecap="round"
+        />
+      )}
+    </svg>
+  );
+}

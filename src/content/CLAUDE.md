@@ -11,6 +11,8 @@ change. `content.test.ts` checks that every world and level has everything it ne
 | `shop.ts` | One row per shop item: slot, `art` (which drawing), name, price, colors |
 | `cutscenes/` | One cut-scene script file per world (see `cutscenes/CLAUDE.md`) |
 | `avatar.ts`, `profiles.ts` | Avatar options and player colors |
+| `music.ts` | The themes (title and one per world) and stings, in the notation of `audio/notation.ts` |
+| `sounds.ts` | What each cut-scene prop state and emote sounds like (every prop state needs a row) |
 
 Ids are saved in players' progress, so never renumber or reorder levels, and never rename a shop
 item id. New levels go at the end (in a new world).

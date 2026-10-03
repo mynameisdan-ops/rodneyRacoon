@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMusic } from '../audio/hooks';
 import { PROFILE_COLORS } from '../content/profiles';
 import { AGES, DEFAULT_AGE } from '../content/skills';
 import { MAX_NAME_LENGTH, type Profile } from '../state/schema';
@@ -37,6 +38,7 @@ export function ProfileEditor({
   const [age, setAge] = useState<number | null>(profile ? profile.age : DEFAULT_AGE);
   const [unlockAll, setUnlockAll] = useState(profile?.unlockAll ?? false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  useMusic('title');
   const valid = cleanName(name).length > 0;
 
   if (confirmingDelete && profile && onDelete) {

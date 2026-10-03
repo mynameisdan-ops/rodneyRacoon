@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { avatarForProfile } from '../art/hero/avatar';
+import { useMusic } from '../audio/hooks';
 import { LEVELS, WORLDS } from '../content/levels';
+import { worldSong } from '../content/music';
 import { getSticker, STICKERS } from '../content/stickers';
 import { isPassed } from '../game/progress';
 import type { Profile } from '../state/schema';
@@ -21,6 +23,8 @@ export function StickerBook({ profile, initialWorld, onBack }: Props) {
   const collected = STICKERS.filter((s) => isPassed(profile.progress, s.level)).length;
   const levels = LEVELS.filter((l) => l.world === worldId);
   const zoomedSticker = zoomed === null ? undefined : getSticker(zoomed);
+  // The map's theme carries on (turning the book's pages doesn't change it).
+  useMusic(worldSong(initialWorld));
 
   return (
     <div className="book">

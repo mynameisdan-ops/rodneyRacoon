@@ -12,9 +12,9 @@ each right answer moves the hero along the trail, and each passed page ends in a
   Older entries are in `docs/archive/` (grep it for the history of a decision).
 - `docs/feedback.md`: play-test notes waiting to be handled.
 - Area guides: `src/game/`, `src/content/`, `src/content/cutscenes/`, `src/art/`,
-  `src/art/obstacles/`, `src/screens/` and `src/state/` each have a `CLAUDE.md` with that area's
-  rules and step-by-step recipes (add a skill, level, world, obstacle, shop item, screen, save
-  field). They load when you read files there; read one directly when planning work in an area.
+  `src/art/obstacles/`, `src/audio/`, `src/screens/` and `src/state/` each have a `CLAUDE.md`
+  with that area's rules and step-by-step recipes (add a skill, level, world, obstacle, shop item,
+  sound, screen, save field). They load when you read files there; read one directly when planning work in an area.
 - Skip `package-lock.json` (use `npm ls <pkg>`), `dist/` and `node_modules/`.
 
 ## Stack
@@ -40,7 +40,8 @@ npm run format     # prettier --write
 Dev-only pages: `#demo/<screen>` opens any screen with made-up players in memory (list in
 `src/screens/CLAUDE.md`); `#gallery` (or one section, e.g. `#gallery-gear`) shows all the art;
 `#scene-12` scrubs a level's scene and `#scene-12-2600` shows one frame; `#strip` plays the page
-strip by itself; `#moments-1-4` is the sticker contact sheet (details in `src/art/CLAUDE.md`).
+strip by itself; `#moments-1-4` is the sticker contact sheet (details in `src/art/CLAUDE.md`);
+`#sounds` plays and measures every sound effect, theme and sting (`src/audio/CLAUDE.md`).
 (Keep this section in sync with `package.json`.)
 
 ## Code map
@@ -49,10 +50,11 @@ strip by itself; `#moments-1-4` is the sticker contact sheet (details in `src/ar
 | --- | --- |
 | `src/App.tsx`, `src/main.tsx` | Screen router (a `Screen` union, no URL routing); entry and dev pages |
 | `src/game/` | Pure logic: problems, adaptive difficulty, scoring, coins, shop, progress, `config.ts` |
-| `src/content/` | Data: levels, skills, stickers, shop items; `cutscenes/` has a script file per world |
+| `src/content/` | Data: levels, skills, stickers, shop items, music, scene sounds; `cutscenes/` has a script file per world |
 | `src/cutscenes/` | The pure timeline, `CutSceneView` and the scene clock |
 | `src/art/` | Style kit, `<Hero>` (body, faces, cut-in) and gear, painted backdrops and their registry, chasers, fx |
 | `src/art/obstacles/` | Obstacle art: a folder per world, one file per obstacle |
+| `src/audio/` | Synthesized sound effects and music: pure notation and scene cues, the Web Audio engine |
 | `src/screens/`, `src/ui/` | Screens and shared UI, each with its own CSS file (order: `src/styles.css`) |
 | `src/state/` | zustand store, save schema and migrations, IndexedDB |
 | `src/dev/` | Dev-only helpers (`#demo`) |

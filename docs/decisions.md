@@ -98,3 +98,16 @@ mine and forest). The design is in `docs/PLAN.md`; the current snapshot is in `S
     river's 720. Level 30's icicles first cost 38 ms because they wobbled every frame; they now
     shiver only in the rumble.
 
+
+- **2026-10-03: M9, audio** (`m9-audio`; M8 skipped for now at the user's request, as it waits
+  for photos). Everything is synthesized with Web Audio (`src/audio/`), with no files.
+  - **Effects:** 47 recipes (`sfx.ts`), all in C major and gentle (a miss is a soft "bwom").
+    Pad digits play notes of a pentatonic scale; the right-answer chime climbs with the streak.
+    Buttons click through one delegated listener (`data-sound` picks another sound or `off`).
+  - **Scenes:** `sceneCues` (pure, tested) turns each timeline into sounds in real time: jumps,
+    landings, impacts sized like their bursts, rumbles for shakes, cut-in slashes, emotes, and
+    a table of the props' states (`content/sounds.ts`; a test makes every prop state pick one).
+  - **Music:** a small notation and sequencer: the title theme and one per world, the world's
+    theme without its tune on a timed page (so it doesn't distract) and soft under a scene;
+    stings for results and bosses. Save v6 adds per-device volumes and the map's mute button.
+    Levels measured offline on `#sounds` (effects peak 0.1–0.7, the limiter takes the rest).

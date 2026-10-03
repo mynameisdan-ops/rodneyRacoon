@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { avatarForProfile } from './art/hero/avatar';
+import { installAudio, setAudioSettings } from './audio/engine';
 import { getCutScene } from './content/cutscenes';
 import { getLevel } from './content/levels';
 import { planPage, type Answer, type PagePlan } from './game/adaptive';
@@ -50,9 +51,13 @@ export function App({ start }: { start?: Screen }) {
   const status = useGame((s) => s.status);
   const init = useGame((s) => s.init);
 
+  const audio = useGame((s) => s.data.audio);
+
   useEffect(() => {
     void init();
+    installAudio();
   }, [init]);
+  useEffect(() => setAudioSettings(audio), [audio]);
 
   return (
     <Stage>
@@ -78,6 +83,8 @@ function Game({ start }: { start?: Screen }) {
   const recordResult = useGame((s) => s.recordResult);
   const buyItem = useGame((s) => s.buyItem);
   const toggleItem = useGame((s) => s.toggleItem);
+  const muted = useGame((s) => s.data.audio.muted);
+  const setAudio = useGame((s) => s.setAudio);
   const profile = useActiveProfile();
 
   const [screen, setScreen] = useState<Screen>(
@@ -165,6 +172,8 @@ function Game({ start }: { start?: Screen }) {
           profile={profile!}
           initialWorld={current.worldId}
           saveFailed={saveFailed}
+          muted={muted}
+          onToggleSound={() => setAudio({ muted: !muted })}
           onPlay={play}
           onWorlds={() => setScreen({ name: 'worlds' })}
           onShop={(worldId) => setScreen({ name: 'shop', worldId })}
@@ -177,6 +186,7 @@ function Game({ start }: { start?: Screen }) {
       return (
         <ShopScreen
           profile={profile!}
+          worldId={current.worldId}
           onBuy={buyItem}
           onToggle={toggleItem}
           onBack={() => setScreen({ name: 'map', worldId: current.worldId })}

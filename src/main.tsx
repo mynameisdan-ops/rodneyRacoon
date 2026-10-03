@@ -58,6 +58,15 @@ if (import.meta.env.DEV && location.hash.startsWith('#gallery')) {
   void import('./screens/ArtGallery').then(({ StickerMoments }) =>
     render(<StickerMoments from={from} to={to} />),
   );
+} else if (import.meta.env.DEV && location.hash.startsWith('#sounds')) {
+  // Dev-only sound board: every effect, theme and sting, and their measured levels.
+  void import('./screens/SoundBoard').then(({ SoundBoard }) =>
+    render(
+      <Stage>
+        <SoundBoard />
+      </Stage>,
+    ),
+  );
 } else if (import.meta.env.DEV && location.hash.startsWith('#demo')) {
   // Dev-only made-up players kept in memory, optionally opening a screen (see dev/demo.ts).
   void import('./dev/demo').then(({ startDemo }) =>

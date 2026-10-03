@@ -1,7 +1,7 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Oct 3, 2026 (M7b finished and merged to `main`: all five worlds painted and
-directed, the UI restyled). History: `docs/decisions.md`.
+Last updated: Oct 3, 2026 (M9, audio, merged to `main`; M10 next; M8 waits for photos).
+History: `docs/decisions.md`.
 
 ## Goals
 
@@ -29,9 +29,12 @@ are playable with rewards, audio and parent settings.
   40 obstacles and five chasers repainted and every scene directed (impacts, hit-stops,
   close-ups, cut-ins, slow motion); the lively page strip; and the UI restyled to match
   (`styles/cartoon.css`). The tablet check (Phase E) moved to M10 at the user's request.
+- **M9, audio, is done:** synthesized effects for every screen and cut scene, a theme per world
+  (no tune under a timed page), stings, per-device volumes and a mute button on the map (save
+  v6). `#sounds` plays and measures everything.
 - **M8 changed (Oct 2):** avatars drawn from photos the user provides (no builder, no photo
-  feature in the app).
-- **Checks:** 421 unit tests, lint and build pass; CI runs them on every push.
+  feature in the app). Skipped for now (Oct 3): M9 and M10 go first.
+- **Checks:** 490 unit tests, lint and build pass; CI runs them on every push.
 - **Known gaps:** parent controls for adaptive difficulty and the unlock switch's final home wait
   for Settings (M10), as do PNG icons and the Pages `base` path. The repainted scenes haven't run
   on the tablet: in the dev build at 5× CPU throttle they cost 15–20 ms a frame and the first

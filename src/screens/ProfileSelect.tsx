@@ -1,3 +1,4 @@
+import { useMusic } from '../audio/hooks';
 import { totalStars } from '../game/progress';
 import type { Profile } from '../state/schema';
 import { avatarForProfile } from '../art/hero/avatar';
@@ -15,6 +16,7 @@ interface Props {
 export const MAX_PROFILES = 6;
 
 export function ProfileSelect({ profiles, lastProfileId, onSelect, onEdit, onAdd }: Props) {
+  useMusic('title');
   return (
     <div className="profiles">
       <WorldBackdrop worldId={1} height={800} horizon={420} groundTop={520} />

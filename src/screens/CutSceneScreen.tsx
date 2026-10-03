@@ -1,6 +1,9 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { playSting } from '../audio/engine';
+import { useMusic, useSceneSounds } from '../audio/hooks';
 import type { AvatarConfig } from '../art/hero/avatar';
 import type { CutScene } from '../content/cutscenes';
+import { worldSong } from '../content/music';
 import { getWorld, LEVELS, type LevelDef } from '../content/levels';
 import { CutSceneView } from '../cutscenes/CutSceneView';
 import { buildTimeline, scriptTime } from '../cutscenes/timeline';
@@ -22,6 +25,14 @@ export function CutSceneScreen({ level, scene, avatar, hasNext, nextLabel, onNex
   // The clock runs in real time; slow motion and freeze frames stretch scene time.
   const [real, skip] = useSceneClock(timeline.realDuration);
   const over = real >= timeline.realDuration;
+  const home = level.id === LEVELS[LEVELS.length - 1]!.id;
+
+  // The world's theme plays softly under the scene's own sounds; a boss ends in a fanfare.
+  useMusic(worldSong(level.world), 'quiet');
+  useSceneSounds(timeline, real);
+  useEffect(() => {
+    if (over && level.boss) playSting(home ? 'home' : 'world');
+  }, [over, level.boss, home]);
 
   return (
     <div className="scene-screen">
@@ -42,9 +53,7 @@ export function CutSceneScreen({ level, scene, avatar, hasNext, nextLabel, onNex
         <div className="scene-screen__end">
           {level.boss && (
             <div className="scene-screen__banner">
-              {level.id === LEVELS[LEVELS.length - 1]!.id
-                ? 'You made it home!'
-                : `${getWorld(level.world)?.name} complete!`}
+              {home ? 'You made it home!' : `${getWorld(level.world)?.name} complete!`}
             </div>
           )}
           <div className="scene-screen__actions">

@@ -1,12 +1,14 @@
 import { useState } from 'react';
+import { useMusic } from '../audio/hooks';
 import { LEVELS, WORLDS, getLevel } from '../content/levels';
+import { worldSong } from '../content/music';
 import { currentLevel, isPassed, isUnlocked, totalStars } from '../game/progress';
 import type { Profile } from '../state/schema';
 import { avatarForProfile } from '../art/hero/avatar';
 import { Hero } from '../art/hero/Hero';
 import { getWorldArt } from '../art/worlds/registry';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
-import { BagIcon, BookIcon, Coin } from '../ui/icons';
+import { BagIcon, BookIcon, Coin, SpeakerIcon } from '../ui/icons';
 import { Stars } from '../ui/Stars';
 
 interface Props {
@@ -14,6 +16,9 @@ interface Props {
   /** The world to show first; defaults to the one the player is up to. */
   initialWorld?: number;
   saveFailed: boolean;
+  /** The sound is off (the speaker button turns it back on). */
+  muted: boolean;
+  onToggleSound: () => void;
   onPlay: (levelId: number) => void;
   /** Open the overview of all the worlds. */
   onWorlds: () => void;
@@ -60,6 +65,8 @@ export function TrailMap({
   profile,
   initialWorld,
   saveFailed,
+  muted,
+  onToggleSound,
   onPlay,
   onWorlds,
   onShop,
@@ -78,6 +85,7 @@ export function TrailMap({
     nextWorldFirst !== undefined &&
     isUnlocked(profile.progress, nextWorldFirst.id, profile.unlockAll);
   const { theme } = getWorldArt(world.id);
+  useMusic(worldSong(world.id));
 
   return (
     <div className="map">
@@ -130,6 +138,15 @@ export function TrailMap({
           )}
         </div>
         <div className="map__right">
+          <button
+            type="button"
+            className="icon-button map__sound-button"
+            aria-label={muted ? 'Sound on' : 'Sound off'}
+            aria-pressed={!muted}
+            onClick={onToggleSound}
+          >
+            <SpeakerIcon size={44} on={!muted} />
+          </button>
           <button
             type="button"
             className="icon-button map__worlds-button"
