@@ -4,6 +4,7 @@ import type { Profile } from '../state/schema';
 import { avatarForProfile } from '../art/hero/avatar';
 import { Hero } from '../art/hero/Hero';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
+import { GearIcon } from '../ui/icons';
 
 interface Props {
   profiles: Profile[];
@@ -11,15 +12,32 @@ interface Props {
   onSelect: (id: string) => void;
   onEdit: (id: string) => void;
   onAdd: () => void;
+  /** The parent's settings. */
+  onSettings: () => void;
 }
 
 export const MAX_PROFILES = 6;
 
-export function ProfileSelect({ profiles, lastProfileId, onSelect, onEdit, onAdd }: Props) {
+export function ProfileSelect({
+  profiles,
+  lastProfileId,
+  onSelect,
+  onEdit,
+  onAdd,
+  onSettings,
+}: Props) {
   useMusic('title');
   return (
     <div className="profiles">
       <WorldBackdrop worldId={1} height={800} horizon={420} groundTop={520} />
+      <button
+        type="button"
+        className="icon-button profiles__settings"
+        aria-label="Settings"
+        onClick={onSettings}
+      >
+        <GearIcon size={44} />
+      </button>
       <h1 className="profiles__title">Who's playing?</h1>
       <div className="profiles__grid">
         {profiles.map((p) => (

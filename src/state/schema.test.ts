@@ -15,7 +15,7 @@ describe('migrate', () => {
 
   it('keeps valid data unchanged', () => {
     const save = {
-      version: 6,
+      version: 7,
       lastProfileId: 'a',
       audio: { sound: 3, music: 0, muted: true },
       profiles: [
@@ -49,6 +49,13 @@ describe('migrate', () => {
           coins: 42,
           owned: ['bandana', 'puppy'],
           gear: { hat: 'bandana', pet: 'puppy' },
+          pageSeconds: 90,
+          adapts: false,
+          hardest: 0.5,
+          stats: {
+            skills: { doubles: { answered: 10, right: 9, firstTry: 7, ms: 31000 } },
+            recent: [{ at: 9, level: 1, right: 9, total: 10, stars: 2, passed: true, seconds: 41 }],
+          },
         },
       ],
     };
@@ -103,6 +110,47 @@ describe('migrate', () => {
   it('migrates a v5 save: the sound starts at the default volumes', () => {
     const out = migrate({ version: 5, lastProfileId: null, profiles: [] });
     expect(out.audio).toEqual(DEFAULT_AUDIO);
+  });
+
+  it('migrates a v6 save: the standard timer, adapting, no ceiling, no stats yet', () => {
+    const out = migrate({ version: 6, profiles: [{ id: 'a', name: 'Sam', progress: {} }] });
+    expect(out.profiles[0]).toMatchObject({
+      pageSeconds: 60,
+      adapts: true,
+      hardest: 1,
+      stats: { skills: {}, recent: [] },
+    });
+  });
+
+  it('cleans up damaged player settings and stats', () => {
+    const out = migrate({
+      version: 7,
+      profiles: [
+        {
+          id: 'a',
+          name: 'Sam',
+          pageSeconds: 75,
+          adapts: 'no',
+          hardest: 7,
+          stats: {
+            skills: {
+              doubles: { answered: 4, right: 9, firstTry: 5, ms: -3 },
+              nonsense: { answered: 1 },
+              'make-10': { answered: 0 },
+            },
+            recent: [{ level: 2, total: 5, right: 8, stars: 9 }, { level: 'x' }, null],
+          },
+        },
+        { id: 'b', name: 'Kim', stats: 'junk' },
+      ],
+    });
+    const [a, b] = out.profiles;
+    expect(a).toMatchObject({ pageSeconds: 60, adapts: true, hardest: 1 });
+    expect(a!.stats.skills).toEqual({ doubles: { answered: 4, right: 4, firstTry: 4, ms: 0 } });
+    expect(a!.stats.recent).toEqual([
+      { at: 0, level: 2, right: 5, total: 5, stars: 0, passed: false, seconds: 0 },
+    ]);
+    expect(b!.stats).toEqual({ skills: {}, recent: [] });
   });
 
   it('cleans up damaged sound settings', () => {

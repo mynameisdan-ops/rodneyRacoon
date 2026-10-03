@@ -1,6 +1,6 @@
 import { CONFIG } from './config';
 import type { LevelProgress } from './progress';
-import type { PageEvaluation, ProblemResult } from './scoring';
+import { standardSeconds, type PageEvaluation, type ProblemResult } from './scoring';
 
 /** The coins a page paid, line by line, for the results tally. */
 export interface CoinReward {
@@ -55,7 +55,9 @@ export function pageCoins(
   const c = CONFIG.coins;
   const answers = evaluation.correct * c.perCorrect;
   const combo = comboCoins(results);
-  const time = evaluation.passed ? Math.floor(evaluation.secondsLeft / c.secondsPerTimeCoin) : 0;
+  // Time left counts as on a standard page, so a parent's longer timer doesn't pay more.
+  const left = standardSeconds(evaluation.secondsLeft, evaluation.pageSeconds);
+  const time = evaluation.passed ? Math.floor(left / c.secondsPerTimeCoin) : 0;
   const firstPass =
     evaluation.passed && (before?.passes ?? 0) === 0 ? (boss ? c.firstPassBoss : c.firstPass) : 0;
   const newStars = Math.max(0, evaluation.stars - (before?.bestStars ?? 0)) * c.perNewStar;

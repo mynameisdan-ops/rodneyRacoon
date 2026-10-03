@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "lint": "eslint .",
     "check": "eslint . && tsc --noEmit && vitest run && vite build --logLevel warn",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "icons": "node scripts/icons.mjs"
   },
   "dependencies": {
     "@fontsource/lilita-one": "^5.3.0",

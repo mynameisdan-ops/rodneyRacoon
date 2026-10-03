@@ -38,6 +38,7 @@ const evaluation = (passed: boolean, stars: PageEvaluation['stars']): PageEvalua
   accuracy: 0,
   answeredAll: true,
   secondsLeft: 0,
+  pageSeconds: 60,
 });
 const answer = (problem: Problem, correct: boolean, tries: number, ms: number): Answer => ({
   problem,
@@ -119,6 +120,18 @@ describe('planPage', () => {
     expect(top(9).difficulty).toBeGreaterThan(top(7).difficulty);
   });
 
+  it("holds pages at or under a parent's ceiling", () => {
+    const level = getLevel(3)!; // add-within-10, band [0.4, 1]
+    const state: AdaptiveState = { ...fresh(), ratings: { 'add-within-10': 0.9 } };
+    const free = planPage(level, state, createRng(1));
+    const capped = planPage(level, { ...state, hardest: 0.25 }, createRng(1));
+    const atCap = planPage(level, { ...state, ratings: { 'add-within-10': 0.25 } }, createRng(1));
+    expect(capped.difficulty).toBeLessThan(free.difficulty);
+    expect(capped).toEqual(atCap);
+    // A ceiling above the rating changes nothing.
+    expect(planPage(level, { ...state, hardest: 1 }, createRng(1))).toEqual(free);
+  });
+
   it('the same rating plays harder on a later level of the same skill', () => {
     const state: AdaptiveState = { ...fresh(), ratings: { 'add-within-10': 0.5 } };
     const l2 = planPage(getLevel(2)!, state, createRng(1));
@@ -165,6 +178,15 @@ describe('ratings', () => {
     );
     expect(Object.keys(next.ratings)).toEqual(['doubles']);
     expect(skillRating(next, 'make-10')).toBe(startRating('make-10', 6));
+  });
+
+  it('keeps ratings where they are when a parent turns adapting off, but tracks missed facts', () => {
+    const level = getLevel(4)!; // doubles
+    const state: AdaptiveState = { ...fresh(6), ratings: { doubles: 0.4 }, adapts: false };
+    const missed = answer(add(3, 3, 'doubles'), false, 2, 9000);
+    const next = applyPage(state, level, evaluation(false, 0), [missed], 100);
+    expect(next.ratings).toEqual({ doubles: 0.4 });
+    expect(next.weakFacts.map((w) => w.problem.key)).toEqual(['3+3']);
   });
 });
 

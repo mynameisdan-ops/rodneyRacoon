@@ -81,11 +81,6 @@
   margin-top: 20px;
 }
 
-.editor__submit {
-  display: flex;
-  gap: 20px;
-}
-
 .choice {
   display: flex;
   align-items: center;
@@ -127,24 +122,10 @@
   gap: 28px;
 }
 
-.editor__delete {
-  color: var(--oops);
-}
-
-.editor--confirm {
-  justify-content: center;
-  gap: 36px;
-  text-align: center;
-}
-
-.editor--confirm h1 {
-  margin: 0;
-  font-size: 64px;
-}
-
-.editor__warning {
-  margin: 0;
-  font-size: 34px;
+/* For the parent, under the ages of a new player. */
+.editor__hint {
+  margin: 16px 0 0;
+  font-size: 22px;
   font-weight: 700;
   color: var(--ink-soft);
 }

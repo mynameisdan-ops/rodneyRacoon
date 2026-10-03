@@ -32,7 +32,13 @@ coins and gear; Ava, 6, just starting). Nothing is saved. Reload after changing 
 
 `#demo` (map) · `#demo/profiles` · `#demo/editor` · `#demo/new` · `#demo/map/3` ·
 `#demo/worlds/2` (walks on from world 2) · `#demo/shop` · `#demo/stickers/2` · `#demo/page/12` ·
-`#demo/results/9` · `#demo/retry/9` · `#demo/scene/16`
+`#demo/results/9` · `#demo/retry/9` · `#demo/scene/16` · `#demo/settings` · `#demo/settings/sam`
+(Sam has made-up stats and missed facts)
+
+Settings (⚙ on the players screen) is for the parent: this device's sound, each player's
+settings (age, answers, levels, timer, difficulty, hardest), progress, start over and delete,
+and installing the app. The player editor (✎) only changes a name and color (and an age when
+creating a player).
 
 Check at 1280×800 and a phone size such as 915×412. Kid-UX rules are in the root `CLAUDE.md`.
 Art-only dev pages (`#gallery-<section>`, `#scene-<level>-<ms>`, `#strip`) are listed in

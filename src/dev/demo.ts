@@ -1,11 +1,13 @@
 import type { Screen } from '../App';
 import { getLevel } from '../content/levels';
-import { planPage, type Answer } from '../game/adaptive';
+import { planPage, updateWeakFacts, type Answer, type WeakFact } from '../game/adaptive';
+import { CONFIG } from '../game/config';
 import { generatePage } from '../game/problems';
 import type { ProgressMap } from '../game/progress';
 import { pageCoins } from '../game/rewards';
 import { createRng } from '../game/rng';
 import { evaluatePage } from '../game/scoring';
+import { emptyStats, recordStats, type PlayerStats } from '../game/stats';
 import { useGame } from '../state/store';
 import { DEFAULT_AUDIO, SAVE_VERSION, type Profile, type SaveData } from '../state/schema';
 
@@ -17,6 +19,7 @@ import { DEFAULT_AUDIO, SAVE_VERSION, type Profile, type SaveData } from '../sta
  *
  *   #demo  #demo/profiles  #demo/editor  #demo/new  #demo/map/3  #demo/worlds/2
  *   #demo/shop  #demo/stickers/2  #demo/page/12  #demo/results/9  #demo/retry/9  #demo/scene/16
+ *   #demo/settings  #demo/settings/sam (a player's page)
  */
 
 /** Levels 1..`upTo` passed, with a mix of stars. */
@@ -33,7 +36,43 @@ function passed(upTo: number): ProgressMap {
   return progress;
 }
 
-const base = { createdAt: 0, autoSubmit: false, unlockAll: false, ratings: {}, weakFacts: [] };
+const base = {
+  createdAt: 0,
+  autoSubmit: false,
+  unlockAll: false,
+  ratings: {},
+  weakFacts: [],
+  pageSeconds: CONFIG.pageSeconds,
+  adapts: true,
+  hardest: 1,
+  stats: emptyStats(),
+};
+
+/** Made-up pages on `levels` (a miss now and then), for the stats and the facts to practise. */
+function history(levels: number[], age: number): { stats: PlayerStats; weakFacts: WeakFact[] } {
+  const rng = createRng(7);
+  let stats = emptyStats();
+  let weakFacts: WeakFact[] = [];
+  levels.forEach((id, i) => {
+    const level = getLevel(id)!;
+    const plan = planPage(level, { ...base, age }, rng);
+    const problems = generatePage(level.skill, plan.count, rng, plan.difficulty);
+    const answers: Answer[] = problems.map((problem) => {
+      const miss = rng.next() < 0.12;
+      return {
+        problem,
+        correct: !miss || rng.next() < 0.5,
+        tries: miss ? 2 : 1,
+        ms: 1500 + rng.next() * 4000,
+      };
+    });
+    const now = Date.UTC(2026, 9, 1, 15) + i * 3_600_000 * 7;
+    const evaluation = evaluatePage(answers, problems.length, 4 + rng.next() * 20);
+    stats = recordStats(stats, id, evaluation, answers, now);
+    weakFacts = updateWeakFacts(weakFacts, answers, now);
+  });
+  return { stats, weakFacts };
+}
 
 const SAM: Profile = {
   ...base,
@@ -41,6 +80,7 @@ const SAM: Profile = {
   name: 'Sam',
   color: '#3a86ff',
   age: 9,
+  ...history([12, 13, 13, 14, 15, 16, 17, 18, 18, 19, 20, 20], 9),
   progress: passed(19),
   coins: 640,
   owned: ['explorer-hat', 'leaf-cape', 'star-cape', 'backpack', 'fox'],
@@ -109,6 +149,8 @@ function screenFor(hash: string): Screen {
       return results(levelId, false);
     case 'scene':
       return { name: 'scene', levelId };
+    case 'settings':
+      return { name: 'settings', playerId: arg ? `demo-${arg}` : undefined };
     default:
       return { name: 'map', worldId: n };
   }

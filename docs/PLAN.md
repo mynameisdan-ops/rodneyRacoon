@@ -1,6 +1,7 @@
 # Project Plan: "The Long Way Home" (working title)
 
-Last updated Oct 3, 2026 (M9, audio, merged; M10 under way; M8 waits for the photos). The forward plan: design, milestones with their status, and open
+Last updated Oct 3, 2026 (M9, audio, and M10's settings and PWA polish merged; the deploy waits
+on turning GitHub Pages on, the tablet test on the user; M8 waits for the photos). The forward plan: design, milestones with their status, and open
 questions. Update it when a design decision changes or a milestone moves. Current state:
 `STATUS.md`. History: `docs/decisions.md` (older entries in `docs/archive/`). Where code lives
 and how to extend it: `CLAUDE.md` and the area guides it lists.
@@ -23,11 +24,11 @@ each finished page ends in a cut scene where he gets past a big obstacle on his 
 | Failing | **Gentle retry**: the hero is knocked back, sees an encouraging message and replays the level with new problems. No lives, no game over |
 | Structure | **5 worlds × 8 levels = 40 levels**; each level is 1 page + 1 obstacle cut scene; every 8th level is a bigger boss scene |
 | Age tuning | Adaptive difficulty inside each level's allowed range. A parent sets each player's age (5 to 10+), which sets where every skill starts |
-| Unlocking | Levels unlock strictly in order. A per-player "levels: one by one / all open" switch opens them all (in the player editor until Settings in M10) |
+| Unlocking | Levels unlock strictly in order. A per-player "levels: one by one / all open" switch in Settings opens them all |
 | Submitting | Enter / ✓ checks the answer; auto-submit is a per-profile switch |
 | Rewards | Coins spent in an avatar shop, 1–3 stars per level, combo streaks, and a sticker per level |
 | Audio | Sound effects and music only (no voice), all synthesized with Web Audio (M9): a theme per world plus the title, played without its tune on a timed page; stings for results and bosses; scene sounds worked out from each scene's beats. Volumes are per device. Scenes tell the story through visuals and very short captions |
-| Parent tools | Stats and difficulty settings live in the normal **Settings** screen (not locked) |
+| Parent tools | Stats and difficulty settings live in the normal **Settings** screen (⚙ on the players screen, not locked) |
 | Hero look before M8 | The player's chosen shirt color on the default avatar, plus shop gear |
 
 ## 2. Core game loop
@@ -131,11 +132,21 @@ Numbers in `CONFIG.adaptive`.
 - **Sticker book**: one sticker per level, collected on the first pass: a still of the level's
   cut scene with the player's own hero (and gear) in it, shown by world, 8 to a page.
 
-## 7. Settings (M10, includes the parent tools)
+## 7. Settings (built in M10, includes the parent tools)
 
-Profiles (add, rename, delete, change avatar, age) · per-profile timer override · adaptive on/off
-and limits · the unlock switch · stats: accuracy and average answer time by fact family, the 10
-weakest facts, recent sessions · sound and music volume · reset progress.
+- **Sound** (this device): effects and music, each off / low / medium / high. The map's speaker
+  button mutes both.
+- **Each player**: age (a new age restarts the difficulty), answers (press ✓ / automatic), levels
+  (one by one / all open), time per page (60 / 90 / 120 s: the 3-star time and time coins scale
+  with it, so more time doesn't pay more), difficulty (adapts / stays put; missed facts are
+  practised either way) and the hardest it gets (easy / medium / hard / no limit). Name & color
+  (the player editor), **start over** (levels, stars, stickers, difficulty and stats; coins, gear
+  and settings are kept) and delete, each confirmed.
+- **Progress**: levels passed, stars, pages played, right %, seconds per answer; a row per fact
+  family (answered, right, right first try, seconds per answer); the 10 most-missed facts; the
+  last 10 pages. Stats begin with save v7 (older pages count in levels and stars only).
+- **The app**: an Install button where the browser offers one, what offline and privacy mean, the
+  build date.
 
 ## 8. Technical notes
 
@@ -143,9 +154,16 @@ weakest facts, recent sessions · sound and music volume · reset progress.
   60fps on a mid-range Android tablet.
 - **Offline/PWA**: `vite-plugin-pwa` precaches everything, including the bundled font. After the
   first load no network is needed.
-- **Hosting**: GitHub Pages (HTTPS is needed for install and camera access). On Windows, install
-  from Edge or Chrome; on Android, Chrome → "Add to Home screen". A later option is wrapping it
-  with Capacitor for an APK. The repo is private, so Pages needs a paid plan or a public repo.
+- **Hosting**: GitHub Pages (HTTPS is needed to install). `deploy.yml` builds with
+  `--base=/<repo>/` and publishes on every push to `main` once Pages is on (Settings → Pages →
+  Source: GitHub Actions); until then it skips. The repo is private, so Pages needs a paid plan or
+  a public repo (a Pages site is public either way). On Windows, install from Edge or Chrome; on
+  Android, Chrome → "Install app" / "Add to Home screen". A later option is Capacitor for an APK.
+- **Install polish (M10)**: PNG icons drawn from the hero's cut-in (192 and 512, a maskable 512,
+  the Apple touch icon, a favicon; `npm run icons`), a manifest with a stable `id`, fullscreen
+  landscape, and relative `start_url`/`scope` so any base path works. Chrome reports it
+  installable with no errors. A new version installs in the background and takes over on the
+  next launch, never mid-page.
 - **Privacy**: no analytics, no network calls at runtime, photos only in local IndexedDB.
 
 ## 9. Milestones
@@ -168,11 +186,11 @@ branch, ⬜ not started.
 | M7b | Saturday-morning cartoon look: style test (approved) → the new hero and animation beats (Phase B) → each world's backdrop, obstacles, chaser and scenes repainted (Phase C) → the UI to match (D) → the tablet check (E) | The game looks and moves like a cartoon | ✅ (Phase E, the tablet check, moved to M10's tablet testing at the user's request) |
 | M8 | Avatars drawn from the parent's photos, a Look picker, a new save version | Kids play as themselves | ⬜ (waits for the photos; M9 and M10 went first, Oct 3) |
 | M9 | Audio: synthesized SFX and music loops, the map's speaker button, save v6 | Sound on | ✅ |
-| M10 | Settings and stats (with the unlock switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing (including M7b's: scene frame rate and the first-frame hitch) | Installed on PC and tablet | ⬜ |
+| M10 | Settings and stats (with the unlock switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing (including M7b's: scene frame rate and the first-frame hitch) | Installed on PC and tablet | 🟡 Settings, stats and PWA polish merged (Oct 3); the deploy waits on Pages being turned on; the tablet test is the user's |
 
-**Open gaps:** PNG icons (192/512) for the best Android install and the GitHub Pages `base` path
-(M10). The repainted scenes haven't been checked on the tablet yet (M10); if the first frame of
-a scene hitches there, warm its backdrop images during the results screen.
+**Open gaps:** turning GitHub Pages on (then the deploy runs by itself). The repainted scenes
+and the new audio haven't been checked on the tablet yet (M10); if the first frame of a scene
+hitches there, warm its backdrop images during the results screen.
 
 ## 10. Open items
 

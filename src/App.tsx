@@ -13,6 +13,7 @@ import { PageScreen } from './screens/PageScreen';
 import { ProfileEditor } from './screens/ProfileEditor';
 import { ProfileSelect } from './screens/ProfileSelect';
 import { ResultsScreen } from './screens/ResultsScreen';
+import { SettingsScreen } from './screens/SettingsScreen';
 import { ShopScreen } from './screens/ShopScreen';
 import { StickerBook } from './screens/StickerBook';
 import { TrailMap } from './screens/TrailMap';
@@ -22,8 +23,10 @@ import { Stage } from './ui/Stage';
 
 export type Screen =
   | { name: 'profiles' }
-  /** `profileId` undefined = creating a new player. */
-  | { name: 'editProfile'; profileId?: string }
+  /** `profileId` undefined = creating a new player; `from` = where to go back to. */
+  | { name: 'editProfile'; profileId?: string; from?: 'settings' }
+  /** The parent's settings, open on a player's page if `playerId` is set. */
+  | { name: 'settings'; playerId?: string }
   /** One world's trail; `worldId` undefined = the world the player is up to. */
   | { name: 'map'; worldId?: number }
   /** The overview of all worlds; `from` = the world just finished (the hero walks on from it). */
@@ -44,7 +47,7 @@ export type Screen =
   | { name: 'stickers'; worldId: number };
 
 /** Screens that work before a player is picked; every other screen needs one. */
-const NO_PLAYER: ReadonlySet<Screen['name']> = new Set(['profiles', 'editProfile']);
+const NO_PLAYER: ReadonlySet<Screen['name']> = new Set(['profiles', 'editProfile', 'settings']);
 
 /** `start` opens a screen other than player selection (the dev-only #demo links use it). */
 export function App({ start }: { start?: Screen }) {
@@ -79,11 +82,13 @@ function Game({ start }: { start?: Screen }) {
   const createProfile = useGame((s) => s.createProfile);
   const updateProfile = useGame((s) => s.updateProfile);
   const deleteProfile = useGame((s) => s.deleteProfile);
+  const resetProgress = useGame((s) => s.resetProgress);
   const selectProfile = useGame((s) => s.selectProfile);
   const recordResult = useGame((s) => s.recordResult);
   const buyItem = useGame((s) => s.buyItem);
   const toggleItem = useGame((s) => s.toggleItem);
-  const muted = useGame((s) => s.data.audio.muted);
+  const audio = useGame((s) => s.data.audio);
+  const muted = audio.muted;
   const setAudio = useGame((s) => s.setAudio);
   const profile = useActiveProfile();
 
@@ -131,37 +136,52 @@ function Game({ start }: { start?: Screen }) {
           }}
           onEdit={(id) => setScreen({ name: 'editProfile', profileId: id })}
           onAdd={() => setScreen({ name: 'editProfile' })}
+          onSettings={() => setScreen({ name: 'settings' })}
+        />
+      );
+
+    case 'settings':
+      return (
+        <SettingsScreen
+          profiles={profiles}
+          audio={audio}
+          initialPlayer={current.playerId}
+          onAudio={setAudio}
+          onUpdate={updateProfile}
+          onEditLook={(id) => setScreen({ name: 'editProfile', profileId: id, from: 'settings' })}
+          onReset={resetProgress}
+          onDelete={(id) => {
+            deleteProfile(id);
+            if (profiles.length <= 1) setScreen({ name: 'editProfile' });
+          }}
+          onBack={() => setScreen({ name: 'profiles' })}
         />
       );
 
     case 'editProfile': {
       const editing = profiles.find((p) => p.id === current.profileId);
-      const toProfiles = () => setScreen({ name: 'profiles' });
+      const back = () =>
+        setScreen(
+          current.from === 'settings' && editing
+            ? { name: 'settings', playerId: editing.id }
+            : { name: 'profiles' },
+        );
       return (
         <ProfileEditor
           key={current.profileId ?? 'new'}
           profile={editing}
           takenColors={profiles.map((p) => p.color)}
           canCancel={profiles.length > 0}
-          onSave={(fields) => {
+          onSave={({ name, color, age }) => {
             if (editing) {
-              updateProfile(editing.id, fields);
-              toProfiles();
+              updateProfile(editing.id, { name, color });
+              back();
             } else {
-              const { name, color, ...settings } = fields;
-              createProfile(name, color, settings);
+              createProfile(name, color, { age: age ?? null });
               toMap();
             }
           }}
-          onDelete={
-            editing
-              ? () => {
-                  deleteProfile(editing.id);
-                  setScreen(profiles.length > 1 ? { name: 'profiles' } : { name: 'editProfile' });
-                }
-              : undefined
-          }
-          onCancel={toProfiles}
+          onCancel={back}
         />
       );
     }
@@ -221,6 +241,7 @@ function Game({ start }: { start?: Screen }) {
           level={level}
           avatar={avatarForProfile(profile!)}
           autoSubmit={profile!.autoSubmit}
+          pageSeconds={profile!.pageSeconds}
           plan={current.plan}
           onFinish={finish}
           onQuit={toMap}

@@ -1,4 +1,4 @@
-import type { SkillId } from '../game/problems';
+import type { BaseSkillId, SkillId } from '../game/problems';
 
 /**
  * The age at which a child typically has each skill down (data only). A player's age
@@ -45,3 +45,27 @@ export const AGES = [5, 6, 7, 8, 9, 10] as const;
 
 /** Used for players saved before age was asked (and until a parent sets it). */
 export const DEFAULT_AGE = 7;
+
+/** What each fact family is called in the parent's stats (Settings → a player → Progress). */
+export const SKILL_LABEL: Record<BaseSkillId, string> = {
+  'add-within-5': 'Adding to 5',
+  'add-within-10': 'Adding to 10',
+  doubles: 'Doubles',
+  'make-10': 'Making 10',
+  'add-within-20': 'Adding to 20',
+  'sub-within-10': 'Taking away within 10',
+  'sub-within-20': 'Taking away within 20',
+  'missing-addend': 'Missing numbers',
+  'add-sub-tens': 'Adding and taking tens',
+  'add-2digit': '2-digit adding',
+  'sub-2digit': '2-digit taking away',
+  'add-2digit-regroup': '2-digit adding, carrying',
+  'sub-2digit-regroup': '2-digit taking away, borrowing',
+  'mul-0-1-2-10': 'Times 0, 1, 2, 10',
+  'mul-5': 'Times 5',
+  'mul-3-4': 'Times 3 and 4',
+  'mul-6-9': 'Times 6 to 9',
+  'div-1-2-5-10': 'Dividing by 1, 2, 5, 10',
+  'div-3-4': 'Dividing by 3 and 4',
+  'div-6-9': 'Dividing by 6 to 9',
+};

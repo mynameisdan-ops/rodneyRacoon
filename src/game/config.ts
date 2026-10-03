@@ -1,7 +1,11 @@
 /** Every tunable number for gameplay lives here. */
 export const CONFIG = {
-  /** Length of a timed page, in seconds. */
+  /**
+   * Length of a timed page, in seconds. A parent can give a player more time (`pageChoices`);
+   * the star and time-coin rules scale with it, so a longer page doesn't pay more.
+   */
   pageSeconds: 60,
+  pageChoices: [60, 90, 120],
   /** "3, 2, 1" before a page starts, in seconds. */
   countdownSeconds: 3,
   /** Tries per problem; after the last miss the answer is shown and the page moves on. */
@@ -53,5 +57,12 @@ export const CONFIG = {
     retireStreak: 3,
     /** Remember at most this many weak facts per player (the stalest go first). */
     maxWeakFacts: 30,
+    /**
+     * A parent's ceiling on how hard pages get ("Hardest"): the rating is held at or below it.
+     * 1 is no limit.
+     */
+    hardestChoices: [0.25, 0.5, 0.75, 1],
   },
+  /** The parent's stats: how many recent pages to remember per player. */
+  recentPages: 20,
 } as const;

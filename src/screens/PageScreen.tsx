@@ -22,6 +22,8 @@ interface Props {
   avatar: AvatarConfig;
   /** Check answers once enough digits are typed, instead of waiting for Enter / ✓. */
   autoSubmit: boolean;
+  /** Seconds on the clock (a parent can give a player more than the standard page). */
+  pageSeconds: number;
   /** How many problems, how hard, and which missed facts to bring back (adaptive difficulty). */
   plan: PagePlan;
   onFinish: (evaluation: PageEvaluation, answers: Answer[]) => void;
@@ -37,7 +39,7 @@ const PORTRAIT = '(orientation: portrait)';
 const shouldAutoPause = () => document.hidden || window.matchMedia(PORTRAIT).matches;
 
 export function PageScreen(props: Props) {
-  const { level, avatar, onQuit } = props;
+  const { level, avatar, pageSeconds, onQuit } = props;
   const [countdown, setCountdown] = useState<number>(CONFIG.countdownSeconds);
   // The world's theme without its tune, so it doesn't pull attention from the math.
   useMusic(worldSong(level.world), 'groove');
@@ -55,7 +57,8 @@ export function PageScreen(props: Props) {
         level={level}
         avatar={avatar}
         onQuit={onQuit}
-        secondsLeft={CONFIG.pageSeconds}
+        pageSeconds={pageSeconds}
+        secondsLeft={pageSeconds}
         running={false}
       >
         <div className="countdown" key={countdown}>
@@ -67,7 +70,7 @@ export function PageScreen(props: Props) {
   return <TimedPage {...props} />;
 }
 
-function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props) {
+function TimedPage({ level, avatar, autoSubmit, pageSeconds, plan, onFinish, onQuit }: Props) {
   const [problems] = useState<Problem[]>(() =>
     generatePage(level.skill, plan.count, createRng(randomSeed()), plan.difficulty, plan.weak),
   );
@@ -75,7 +78,7 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
   const [state, dispatch] = useReducer(sessionReducer, startedAt, (t) =>
     createSession(problems, t, { autoSubmit }),
   );
-  const [secondsLeft, setSecondsLeft] = useState<number>(CONFIG.pageSeconds);
+  const [secondsLeft, setSecondsLeft] = useState<number>(pageSeconds);
   const done = state.phase === 'done';
 
   // Pausing: the clock stops, the problem is hidden, and it resumes only on Continue.
@@ -109,12 +112,8 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
   }, [done, pause]);
 
   const remaining = useCallback(
-    () =>
-      Math.max(
-        0,
-        CONFIG.pageSeconds - (performance.now() - startedAt - pausedTotal.current) / 1000,
-      ),
-    [startedAt],
+    () => Math.max(0, pageSeconds - (performance.now() - startedAt - pausedTotal.current) / 1000),
+    [startedAt, pageSeconds],
   );
 
   // Page clock.
@@ -141,12 +140,12 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
   // When the page ends, show it briefly, then report the result.
   useEffect(() => {
     if (!done) return;
-    const evaluation = evaluatePage(state.results, problems.length, remaining());
+    const evaluation = evaluatePage(state.results, problems.length, remaining(), pageSeconds);
     // Results line up with the problems they answer (unanswered ones have none).
     const answers = state.results.map((r, i) => ({ ...r, problem: problems[i]! }));
     const id = setTimeout(() => onFinish(evaluation, answers), FINISH_PAUSE_MS);
     return () => clearTimeout(id);
-  }, [done, state.results, problems, remaining, onFinish]);
+  }, [done, state.results, problems, remaining, pageSeconds, onFinish]);
 
   const playing = state.phase === 'playing';
   const handleKey = useCallback(
@@ -219,6 +218,7 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
       level={level}
       avatar={avatar}
       onQuit={onQuit}
+      pageSeconds={pageSeconds}
       onPause={done ? undefined : pause}
       secondsLeft={secondsLeft}
       running={!done && !paused}
@@ -308,6 +308,7 @@ interface LayoutProps {
   level: LevelDef;
   avatar: AvatarConfig;
   onQuit: () => void;
+  pageSeconds: number;
   /** Shows the pause button when set. */
   onPause?: () => void;
   secondsLeft: number;
@@ -325,6 +326,7 @@ function PageLayout({
   level,
   avatar,
   onQuit,
+  pageSeconds,
   onPause,
   secondsLeft,
   running,
@@ -342,7 +344,8 @@ function PageLayout({
     obstacle: getCutScene(level.id)?.obstacle,
     avatar,
     progress,
-    elapsed: 1 - secondsLeft / CONFIG.pageSeconds,
+    elapsed: 1 - secondsLeft / pageSeconds,
+    pageSeconds,
     feedback,
     running,
     endPose,

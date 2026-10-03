@@ -10,6 +10,7 @@ const evalOf = (passed: boolean, stars: PageEvaluation['stars']): PageEvaluation
   accuracy: 0,
   answeredAll: true,
   secondsLeft: 0,
+  pageSeconds: 60,
 });
 
 const IDS = [1, 2, 3, 4, 5, 6, 7, 8];
