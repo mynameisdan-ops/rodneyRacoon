@@ -73,3 +73,28 @@ mine and forest). The design is in `docs/PLAN.md`; the current snapshot is in `S
   - Merging into M7b, the repainted art was split the same way: all 3,227 renders (every scene
     frame, backdrop, pose, face, item, cut-in, strip moment and screen) match M7b's, and the built
     CSS has the same rules. Dropped the unused meadow backdrop (an unknown world draws World 1).
+
+- **2026-10-03: M7b finished: Worlds 4 and 5 repainted and directed, the UI restyled, merged**
+  (`m7b-cartoon-look` → `main`).
+  - **World 4, the mountains:** painted peaks lit from the upper right with mist at their feet,
+    snowy pine slopes with a log cabin, a sunlit snowfield with a snow hare, and young pines in
+    front. Obstacles repainted (rock slide off a cliff's snowy top, crumbling ledge over a misty
+    valley, avalanche under a lined pine, a cute mountain goat, an ice bridge over a painted
+    crevasse, a glowing icicle cave, a frozen waterfall of ice columns, the storm sled with
+    lightning) and levels 25–32 directed; a snowball chaser with a bunting riding on top.
+  - **World 5, the canyon home:** golden hour (low sun, pink-lit clouds, a far balloon), banded
+    mesas, a red canyon wall with a windmill, a desert floor with saguaros, prickly pears and a
+    lizard. A gorge that runs off into the distance; flood, zip line (with a hawk), sandstorm and
+    sandboard, tumbleweeds, a stone arch, a steam train over a trestle, the windy last hill with
+    home in view, and the homestead with a twister, the family, the dog and fireworks; levels
+    33–40 directed; a dust-devil chaser. The chunk-size warning moved to 800 kB (722 kB, 201 kB
+    gzipped).
+  - **Phase D, the UI:** `styles/cartoon.css`, last in the cascade, restyles looks only: sunburst
+    backdrops, outlined titles that pop in, lit buttons, keys and cards with a squash, cel-shaded
+    map stops, faint halftone paper behind the problem. Checked at 1280×800 and 915×412.
+  - **Phase E (the tablet check) skipped at the user's request:** M10's tablet testing covers it
+    (frame cost and the first-frame hitch). Dev-build frame cost at 5× CPU throttle over each
+    scene: levels 25–40 run 14.7–19.9 ms vs level 12's 20 ms; the hitch is 470–530 ms vs the
+    river's 720. Level 30's icicles first cost 38 ms because they wobbled every frame; they now
+    shiver only in the rumble.
+

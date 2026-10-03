@@ -1,7 +1,7 @@
 # Project Plan: "The Long Way Home" (working title)
 
-Last updated Oct 3, 2026 (M7b Phase C: Worlds 1–3 painted and directed; M8 changed to avatars
-drawn from photos). The forward plan: design, milestones with their status, and open
+Last updated Oct 3, 2026 (M7b finished and merged: all five worlds painted and directed, the
+UI restyled; M8 is next). The forward plan: design, milestones with their status, and open
 questions. Update it when a design decision changes or a milestone moves. Current state:
 `STATUS.md`. History: `docs/decisions.md` (older entries in `docs/archive/`). Where code lives
 and how to extend it: `CLAUDE.md` and the area guides it lists.
@@ -165,13 +165,14 @@ branch, ⬜ not started.
 | M5 | Skills for Worlds 2–5, all 40 levels, the remaining scenes, world overview | All 40 levels playable | ✅ |
 | M6 | Adaptive difficulty, weak facts, the age setting | Difficulty adjusts for each kid | ✅ (parent controls in M10) |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ✅ |
-| M7b | Saturday-morning cartoon look: style test (approved) → the new hero and animation beats (Phase B) → each world's backdrop, obstacles, chaser and scenes repainted (Phase C) → the UI to match (D) → the tablet check (E) | The game looks and moves like a cartoon | 🟡 on `m7b-cartoon-look`: Phase B done; Phase C has Worlds 1–3 (mine, forest, river) done; next Mountains, Canyon |
+| M7b | Saturday-morning cartoon look: style test (approved) → the new hero and animation beats (Phase B) → each world's backdrop, obstacles, chaser and scenes repainted (Phase C) → the UI to match (D) → the tablet check (E) | The game looks and moves like a cartoon | ✅ (Phase E, the tablet check, moved to M10's tablet testing at the user's request) |
 | M8 | Avatars drawn from the parent's photos, a Look picker, save v6 | Kids play as themselves | ⬜ |
 | M9 | Audio: synthesized SFX and music loops | Sound on | ⬜ |
-| M10 | Settings and stats (with the unlock switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing | Installed on PC and tablet | ⬜ |
+| M10 | Settings and stats (with the unlock switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing (including M7b's: scene frame rate and the first-frame hitch) | Installed on PC and tablet | ⬜ |
 
 **Open gaps:** PNG icons (192/512) for the best Android install and the GitHub Pages `base` path
-(M10). The busier World 2–5 scenes haven't been checked on the tablet yet.
+(M10). The repainted scenes haven't been checked on the tablet yet (M10); if the first frame of
+a scene hitches there, warm its backdrop images during the results screen.
 
 ## 10. Open items
 

@@ -39,9 +39,10 @@ painted. **No CSS or SVG `filter`**, blur or drop shadows: they are slow on tabl
   (`clouds`, `far`, `mid`, `near`, and an optional `front`), a painted sky (three stops), whether
   the top layer drifts, its chaser, and the timer (sun or lantern). An unknown id gets World 1's.
 - Layers live in one file per kind (`mine.tsx`, `forest.tsx`, `river.tsx`, `mountain.tsx`,
-  `canyon.tsx`); each gets `LayerProps<Theme>` (`sceneryKit.ts`). The painted worlds (mine,
-  forest, river so far) take their colors from `minePalette.ts`, `forestPalette.ts`,
-  `riverPalette.ts`. A new world can reuse a kind with a new theme, or add a kind: a theme in
+  `canyon.tsx`); each gets `LayerProps<Theme>` (`sceneryKit.ts`). All five are painted and take
+  their colors from a palette file (`minePalette.ts`, `forestPalette.ts`, `riverPalette.ts`,
+  `mountainPalette.ts`, `canyonPalette.ts`; the obstacles' `kit.ts` reads the same palette). A
+  new world can reuse a kind with a new theme, or add a kind: a theme in
   `themes.ts`, a palette, the layers in `<kind>.tsx`, and a `world(...)` entry in `registry.ts`.
 - Each layer is a 1280px tile drawn twice side by side: ridges start and end at the same height,
   and anything at a tile's edge is drawn the same at both ends. Scenery is placed with the seeded
@@ -52,7 +53,7 @@ painted. **No CSS or SVG `filter`**, blur or drop shadows: they are slow on tabl
 - Chasers (`chasers.tsx`) are the dangers behind him on the page strip, drawn in `CHASER_BOX`
   and animated with CSS only. Thrilling, never scary.
 
-## Repaint a world (how Worlds 1–3 were done)
+## Repaint a world (how Worlds 1–5 were done)
 
 Paint the layers with the paint kit and a palette file; line only what he touches and the animals,
 painting the ground around them; then direct each script from its props' event times

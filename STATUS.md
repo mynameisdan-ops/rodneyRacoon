@@ -1,7 +1,7 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Oct 3, 2026 (M7b Phase C: Worlds 1–3 painted and directed; `main`'s restructure
-merged into this branch). History: `docs/decisions.md`.
+Last updated: Oct 3, 2026 (M7b finished and merged to `main`: all five worlds painted and
+directed, the UI restyled). History: `docs/decisions.md`.
 
 ## Goals
 
@@ -21,38 +21,34 @@ are playable with rewards, audio and parent settings.
 
 ## Current state
 
-- **On `main`:** M0–M7 (all 40 levels, adaptive difficulty, the world overview, the "all open"
-  switch, coins, the 21-item shop and the 40-sticker book; save format v5), plus the Oct 3
-  restructure (area guides, one file per obstacle and a script file per world, a world art
-  registry, a CSS file per screen, `#demo` links, `npm run check`).
-- **M7b, a Saturday-morning cartoon look (`m7b-cartoon-look`, pushed, not merged):** Phase B made
-  the three-quarter-view hero with anime eyes and expressions, the 21 shop items redrawn for him,
-  scenes directed on a real-time clock (squash and stretch, smears, impacts, cut-ins, slow
-  motion, freezes) and the lively page strip. **Phase C, world by world:** Worlds 1–3 (mine,
-  forest, river) are painted, their 24 obstacles and three chasers repainted, and levels 1–24
-  directed. Still to come: Mountains, Canyon. `main`'s restructure is merged in (nothing a player
-  sees changed).
-- **M8 changed:** avatars drawn from photos the user provides (no builder, no photo feature).
-- **Checks:** 419 unit tests, lint and build pass on the branch; CI runs them on every push.
+- **On `main`:** M0–M7b. All 40 levels with cut scenes; adaptive difficulty with an age setting;
+  a danger chasing the hero on each page; the world overview; the "all open" switch; coins, the
+  21-item shop and the 40-sticker book (save format v5).
+- **M7b, the Saturday-morning cartoon look, is done:** the three-quarter-view hero with anime
+  eyes and expressions; all five worlds painted (mine, forest, river, mountains, canyon), their
+  40 obstacles and five chasers repainted and every scene directed (impacts, hit-stops,
+  close-ups, cut-ins, slow motion); the lively page strip; and the UI restyled to match
+  (`styles/cartoon.css`). The tablet check (Phase E) moved to M10 at the user's request.
+- **M8 changed (Oct 2):** avatars drawn from photos the user provides (no builder, no photo
+  feature in the app).
+- **Checks:** 421 unit tests, lint and build pass; CI runs them on every push.
 - **Known gaps:** parent controls for adaptive difficulty and the unlock switch's final home wait
-  for Settings (M10), as do PNG icons and the Pages `base` path. A scene's first frame draws the
-  backdrop into images (0.2–1s under 5× CPU throttle, the forest heaviest): check it on the
-  tablet (Phase E). The main JS chunk is past Vite's 500 kB advisory (613 kB, 176 kB gzipped):
-  harmless for a precached PWA, but splitting the art per world is worth a look in M10.
+  for Settings (M10), as do PNG icons and the Pages `base` path. The repainted scenes haven't run
+  on the tablet: in the dev build at 5× CPU throttle they cost 15–20 ms a frame and the first
+  frame hitches 0.5–0.8 s while the backdrop is drawn into images (check in M10). The main JS
+  chunk is 722 kB (201 kB gzipped): fine for a precached PWA; splitting the art per world is an
+  M10 idea.
 - **Still open:** the final title and story opening; what comes after level 40.
 
 ## Next steps
 
-1. The user plays the branch (Worlds 1–3 are directed) and looks at the gear in the shop. On the
-   tablet: `npm run dev -- --host`.
-2. M7b Phase C continues, one world per commit: Mountains, then Canyon ("Repaint a world" in
-   `src/art/CLAUDE.md`). Then Phase D (the UI) and Phase E (the tablet check), then merge.
-3. M8 (avatars from the user's photos), then M9 and M10. The rewards play-through is still welcome
-   any time (coin pace against prices, gear at tablet size, sticker book speed).
+1. The user plays the new look (all 40 scenes; `#demo/scene/<level>` plays any one) and the
+   rewards (coin pace against prices, gear at tablet size). Notes go in `docs/feedback.md`.
+2. M8 (avatars drawn from the user's photos, a Look picker, save v6) on a new branch.
+3. M9 (audio), then M10 (settings, PWA polish, deploy, tablet testing).
 
 ## Handoff
 
-- **Branch:** `m7b-cartoon-look`, pushed, with `main` merged in. On the user's PC, `handover.md`
-  is the user's own old file (out of date; leave it).
-- **Waiting on the user:** a play of Worlds 1–3; photos for M8 whenever they're ready (M8 follows
-  M7b).
+- **Branch:** `main`, pushed, with `m7b-cartoon-look` merged. On the user's PC, `handover.md` is
+  the user's own old file (out of date; leave it).
+- **Waiting on the user:** a play of the new look; photos for M8 whenever they're ready.

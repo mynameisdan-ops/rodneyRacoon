@@ -9,9 +9,11 @@ data and callbacks as props; state changes go through the store (`src/state/stor
 
 Each screen and UI piece has its own CSS file next to it, imported in cascade order by
 `src/styles.css` (base, stage, shared bits, screens, then `styles/chrome.css`, which restyles
-chips and titles, then the sticker, shop and book files). A later file wins over an earlier one,
-so keep that order. Class names follow BEM (`block__part--state`). Art components import their
-own CSS (`hero.css`, `chasers.css`, `backdrop.css`, `cutscene.css`).
+chips and titles, then the sticker, shop and book files, and last `styles/cartoon.css`, the M7b
+cartoon look: sunburst backdrops, outlined titles, buttons and cards lit along their tops). A
+later file wins over an earlier one, so keep that order; `cartoon.css` changes looks only, never
+sizes or layout. Class names follow BEM (`block__part--state`). Art components import their own
+CSS (`hero.css`, `chasers.css`, `backdrop.css`, `cutscene.css`).
 
 ## Add a screen
 
