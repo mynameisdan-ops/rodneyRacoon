@@ -1,10 +1,5 @@
-tablet playthrough was a success, no bugs to report.
+# Play-test feedback
 
-difficulty should be slightly higher for older ages.
-
-as the player tries answers the questions on a given level, there should be some danger the avatar is escaping from as they move to the right.
-
-at the end of world 1, there was no way to progress to the next world. user should be returned to an overview map.
-
-ability to unlock levels in settings should be added.
-
+Notes from playing the game, newest last. A session acts on them, records what it changed in
+`docs/decisions.md`, and deletes the notes it handled. (Everything up to Sep 30, 2026 has been
+handled; see `docs/archive/decisions-2026-09.md`.)
