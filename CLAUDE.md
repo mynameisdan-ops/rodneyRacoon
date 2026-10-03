@@ -89,10 +89,13 @@ strip by itself; `#moments-1-4` is the sticker contact sheet (details in `src/ar
   milestone (`mN-short-name`) that is pushed as it goes and merged to `main` after a browser check
   at 1280×800 and a phone or tablet size. CI runs lint, tests and build on every push.
 - One session at a time: check `git status` first and ask before building on uncommitted work.
+  Also check `git branch -r --no-merged main`: work that touches the same files belongs on an
+  unmerged milestone branch, or must wait for it.
 - Gotchas: a hidden browser pane barely runs `requestAnimationFrame` (pages auto-pause, scenes
-  crawl): screenshot `#scene-N-ms` or `#gallery-<section>` frames with headless Chrome instead. The dev server sometimes misses edits made by tools: `touch`
-  the file. On Windows, long Bash heredocs fail (run a script file instead), and Python must open
-  files with `encoding='utf-8'` and `newline=''` (the files contain −, × and ÷; CRLF otherwise).
+  crawl): screenshot `#scene-N-ms` or `#gallery-<section>` frames with headless Chrome instead.
+  The dev server sometimes misses edits made by tools: `touch` the file. On Windows, long Bash
+  heredocs fail (run a script file instead), and Python must open files with `encoding='utf-8'`
+  and `newline=''` (the files contain −, × and ÷; CRLF otherwise).
 
 ## Before ending a session
 
