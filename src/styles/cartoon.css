@@ -1,0 +1,184 @@
+/*
+ * The Saturday-morning cartoon chrome (M7b Phase D), last in the cascade so it wins: sunburst
+ * backdrops behind the menu screens, titles with a thick ink outline and a hard shadow that pop
+ * in, buttons, keys, chips and cards lit along their tops with a squash when pressed, and
+ * cel-shaded map stops. It changes looks only, never sizes or layout. No `filter` (slow on
+ * tablets): flat gradients, outlines and hard shadows only.
+ */
+
+:root {
+  /* A lit band across the top of anything raised, like the rim light on the art. */
+  --lit-top: linear-gradient(rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0) 46%);
+  /* A soft bright middle and darker edges over a sunburst. */
+  --burst-vignette: radial-gradient(
+    ellipse 80% 78% at 50% 40%,
+    rgba(255, 255, 255, 0.55) 0,
+    rgba(255, 255, 255, 0) 46%,
+    rgba(90, 40, 10, 0.16) 100%
+  );
+}
+
+/* ---------- Sunburst backdrops ---------- */
+
+.results--pass {
+  background:
+    var(--burst-vignette),
+    repeating-conic-gradient(from 3deg at 50% 34%, #ffe9a6 0deg 7.5deg, #ffd474 7.5deg 15deg);
+}
+
+.results--retry {
+  background:
+    var(--burst-vignette),
+    repeating-conic-gradient(from 3deg at 50% 40%, #e2efff 0deg 7.5deg, #c8ddf8 7.5deg 15deg);
+}
+
+.shop {
+  background:
+    var(--burst-vignette),
+    repeating-conic-gradient(from 0deg at 18% 58%, #ffe6c0 0deg 7.5deg, #ffd29c 7.5deg 15deg);
+}
+
+.editor {
+  background:
+    var(--burst-vignette),
+    repeating-conic-gradient(from 3deg at 16% 56%, #fff1c8 0deg 7.5deg, #ffe39e 7.5deg 15deg);
+}
+
+/* ---------- Titles ---------- */
+
+.results__title,
+.shop__title,
+.book__title,
+.editor__title {
+  color: #fff8e8;
+  -webkit-text-stroke: 10px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 7px 0 var(--ink);
+  animation: title-pop 520ms cubic-bezier(0.3, 1.6, 0.5, 1) both;
+}
+
+.results--pass .results__title {
+  color: #ffd23f;
+  transform: rotate(-2deg);
+}
+
+.results--retry .results__title {
+  color: #bfe6ff;
+}
+
+.results__sticker-title {
+  color: #fff8e8;
+  -webkit-text-stroke: 8px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 5px 0 var(--ink);
+}
+
+.profiles__title,
+.map__world {
+  text-shadow: 0 7px 0 var(--ink);
+}
+
+@keyframes title-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-8deg);
+  }
+}
+
+/* ---------- Buttons, keys, chips and cards ---------- */
+
+.big-button,
+.icon-button,
+.pad__key,
+.shop__tab,
+.book__tab,
+.choice,
+.item-card,
+.profile-card,
+.player-chip,
+.coin-chip,
+.map__stars,
+.timer,
+.page__level,
+.page__counter,
+.tally,
+.combo {
+  background-image: var(--lit-top);
+}
+
+/* White lettering on colored buttons gets an ink outline, like the titles. */
+.big-button:not(.big-button--quiet),
+.pad__key--enter {
+  -webkit-text-stroke: 7px var(--ink);
+  paint-order: stroke fill;
+}
+
+/* A squash as it's pressed, as quick as before. */
+.big-button:active:not(:disabled) {
+  transform: translateY(5px) scale(1.03, 0.95);
+}
+
+.pad__key:active:not(:disabled) {
+  transform: translateY(5px) scale(1.04, 0.94);
+}
+
+.icon-button:active:not(:disabled) {
+  transform: translateY(3px) scale(1.04, 0.95);
+  box-shadow: 0 1px 0 var(--ink);
+}
+
+.tally,
+.profile-card {
+  box-shadow:
+    0 6px 0 var(--ink),
+    inset 0 -7px 0 rgba(26, 18, 32, 0.08);
+}
+
+.item-card {
+  box-shadow:
+    0 5px 0 var(--ink),
+    inset 0 -7px 0 rgba(26, 18, 32, 0.08);
+}
+
+/* ---------- The map ---------- */
+
+/* Stops are cel-shaded like the art: a shine at the upper left and a crisp shadow beneath. */
+.stop {
+  background-image:
+    radial-gradient(circle at 34% 28%, rgba(255, 255, 255, 0.65) 0 13%, rgba(255, 255, 255, 0) 14%),
+    linear-gradient(165deg, rgba(255, 255, 255, 0.2) 0 42%, rgba(26, 18, 32, 0.18) 64%);
+}
+
+.stop:not(.stop--locked) {
+  -webkit-text-stroke: 8px var(--ink);
+  paint-order: stroke fill;
+}
+
+/* ---------- The page ---------- */
+
+/* Halftone dots, faint, like a comic's paper: the problem keeps its plain, strong contrast. */
+.page__main {
+  background:
+    radial-gradient(circle, rgba(232, 116, 59, 0.08) 0 1.8px, transparent 2.4px) 0 0 / 22px 22px,
+    radial-gradient(ellipse at center, var(--paper) 45%, #e6cf9f);
+}
+
+.countdown,
+.page-over {
+  -webkit-text-stroke: 14px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 9px 0 var(--ink);
+}
+
+.cheer {
+  -webkit-text-stroke: 10px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 6px 0 var(--ink);
+}
+
+.paused__title {
+  color: #fff8e8;
+  -webkit-text-stroke: 10px var(--ink);
+  paint-order: stroke fill;
+  text-shadow: 0 7px 0 var(--ink);
+}

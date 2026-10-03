@@ -1,6 +1,7 @@
 # Project Plan: "The Long Way Home" (working title)
 
-Last updated Oct 3, 2026. The forward plan: design, milestones with their status, and open
+Last updated Oct 3, 2026 (M7b finished and merged: all five worlds painted and directed, the
+UI restyled; M8 is next). The forward plan: design, milestones with their status, and open
 questions. Update it when a design decision changes or a milestone moves. Current state:
 `STATUS.md`. History: `docs/decisions.md` (older entries in `docs/archive/`). Where code lives
 and how to extend it: `CLAUDE.md` and the area guides it lists.
@@ -13,11 +14,11 @@ each finished page ends in a cut scene where he gets past a big obstacle on his 
 
 | Topic | Decision |
 |---|---|
-| Hero | The child's own avatar: a young adventurer (tunic in the player's color, satchel, boots, cape) making his own journey home |
+| Hero | The child's own avatar: a young adventurer (tunic in the player's color, satchel, boots, cape) making his own journey home; from M7b a three-quarter view (the lean build) with anime eyes and expressions |
 | Platforms | Windows PC and Android tablet, as one installable web app (PWA) that works offline |
 | Stack | Vite, TypeScript, React; art drawn in code as SVG; CSS animation; cut scenes sample a pure timeline on a `requestAnimationFrame` clock (no animation library) |
-| Art style | **Cel-shaded adventure** ("between Math Pirates and Zelda"): ink outlines, two-tone shading as overlay shapes (no `filter`), dramatic light. It should engage a 9-year-old, not look preschool |
-| Avatar | A cartoon avatar builder (skin, hair, eyes, clothes) plus an **optional photo face**, cropped into a circle, that stays on the device |
+| Art style | **Saturday-morning cartoon** (M7b, Oct 2, 2026; Pokémon is the reference), replacing M4b's cel-shaded adventure: painted, detailed backgrounds (drawn once as images) with only the hero and his props lined; directed scenes with squash and stretch, crouches and leans, wind in his cape and hair, smears and afterimages, impact bursts and freeze frames, focus lines, close-ups and tilts, slow motion, emotes and anime cut-ins. No `filter`. It should engage a 9-year-old, not look preschool |
+| Avatar | **Drawn from photos the parent provides** (decided Oct 2, 2026, replacing an in-app builder with a photo-face crop). The likenesses become generic art parts and unnamed presets; a small Look picker chooses one and the clothing colors. The photos are never committed or stored by the app |
 | Profiles | Local profiles on each device (IndexedDB). No accounts, no cloud |
 | Page | A fixed number of problems in a **60-second** page; the count grows across levels |
 | Failing | **Gentle retry**: the hero is knocked back, sees an encouraging message and replays the level with new problems. No lives, no game over |
@@ -42,8 +43,10 @@ Profile select → Trail map → Level intro (3-2-1)
 ```
 
 **Page layout (landscape):**
-- **Top strip (about 30%)**: the world scene. The hero walks toward the obstacle a step per
-  correct answer and stumbles on a wrong one. The timer is a sun crossing the sky (a lantern glow
+- **Top strip (about 30%)**: the world scene. The hero dashes toward the obstacle a step per
+  correct answer (a crouch, a dash with dust and a smear, a springy landing) and stumbles on a
+  wrong one while the strip shakes; 5, 10 and 15 in a row slam in a cut-in of his face, and his
+  face watches the danger behind him (M7b). The timer is a sun crossing the sky (a lantern glow
   in the mine), with a small countdown. A **danger chases him** (boulder, bee swarm, flood wave,
   snowball, dust devil: one per world) at 85% of the pace that finishes the page at time's up, so
   a child on pace pulls away and a slow one sees it close in, but it never reaches him; after a
@@ -102,15 +105,18 @@ run off, and it ends in a cheer.
 
 Numbers in `CONFIG.adaptive`.
 
-## 5. Avatar (M8)
+## 5. Avatar (M8, changed Oct 2, 2026)
 
-- **Builder**: a layered SVG paper doll: skin tone, hair style and color, eyes, shirt, pants and
-  shoes. Shop items (hats, capes, packs, pets) are extra layers.
-- **Optional photo face**: take a photo or pick a file
-  (`<input type="file" accept="image/*" capture="user">`), then drag and zoom it into a circular
-  crop. Saved as a small (256px) image in IndexedDB, replacing the drawn face. **It never leaves
-  the device.**
-- The same `<Hero>` is used everywhere (map, page strip, cut scenes, shop), posed by a prop.
+- **Drawn from photos**: the parent shares photos of each child with Claude (in chat, or from a
+  folder outside the repo). Claude draws each child's head in the M7b style from what reads at
+  cartoon size (face shape, hair, eyes, brows, skin tone, freckles, glasses, smile), and the
+  parent approves each one in `#gallery`. The likenesses become generic art parts (hair styles,
+  eye shapes, glasses, freckles) and unnamed presets in `content/avatar.ts`, so no names or photos
+  are in the repo. The app has no camera or photo feature.
+- **Look picker** in the player editor: pick a preset, then the shirt, pants and shoe colors.
+  Shop items (hats, capes, packs, pets) are extra layers on top. Save v6 adds `avatar`.
+- The same `<Hero>` is used everywhere (map, page strip, cut scenes, shop), posed by a prop and
+  (from M7b) given an expression.
 
 ## 6. Rewards (built in M7)
 
@@ -159,12 +165,14 @@ branch, ⬜ not started.
 | M5 | Skills for Worlds 2–5, all 40 levels, the remaining scenes, world overview | All 40 levels playable | ✅ |
 | M6 | Adaptive difficulty, weak facts, the age setting | Difficulty adjusts for each kid | ✅ (parent controls in M10) |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ✅ |
-| M8 | Avatar builder and photo-face crop | Kids play as themselves | ⬜ |
+| M7b | Saturday-morning cartoon look: style test (approved) → the new hero and animation beats (Phase B) → each world's backdrop, obstacles, chaser and scenes repainted (Phase C) → the UI to match (D) → the tablet check (E) | The game looks and moves like a cartoon | ✅ (Phase E, the tablet check, moved to M10's tablet testing at the user's request) |
+| M8 | Avatars drawn from the parent's photos, a Look picker, save v6 | Kids play as themselves | ⬜ |
 | M9 | Audio: synthesized SFX and music loops | Sound on | ⬜ |
-| M10 | Settings and stats (with the unlock switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing | Installed on PC and tablet | ⬜ |
+| M10 | Settings and stats (with the unlock switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing (including M7b's: scene frame rate and the first-frame hitch) | Installed on PC and tablet | ⬜ |
 
 **Open gaps:** PNG icons (192/512) for the best Android install and the GitHub Pages `base` path
-(M10). The busier World 2–5 scenes haven't been checked on the tablet yet.
+(M10). The repainted scenes haven't been checked on the tablet yet (M10); if the first frame of
+a scene hitches there, warm its backdrop images during the results screen.
 
 ## 10. Open items
 

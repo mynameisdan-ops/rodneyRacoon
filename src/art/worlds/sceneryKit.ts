@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { createRng } from '../../game/rng';
 
 /*
- * Shared helpers for the world backdrops (the mine uses only `LayerProps`).
+ * Shared helpers for the world backdrops.
  * Every layer is a 1280px tile drawn twice side by side (see WorldBackdrop), so
  * ridges start and end at the same height and details stay clear of the edges.
  */

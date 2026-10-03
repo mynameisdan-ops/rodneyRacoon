@@ -2,7 +2,9 @@
  * Global styles, one file per screen or component, in cascade order: a later file wins
  * over an earlier one. `styles/chrome.css` restyles chips and titles from the files above
  * it, and the shop and sticker book build on it. A new screen's file goes before the chrome.
- * (Art components import their own CSS: hero.css, chasers.css, backdrop.css, cutscene.css.)
+ * `styles/cartoon.css` comes last: the M7b cartoon look (backdrops, titles, lit buttons).
+ * (Art components import their own CSS: hero.css, CutIn.css, chasers.css, backdrop.css,
+ * cutscene.css.)
  */
 @import './styles/base.css';
 @import './ui/Stage.css';
@@ -18,7 +20,9 @@
 @import './screens/ArtGallery.css';
 @import './screens/CutSceneScreen.css';
 @import './screens/ScenePreview.css';
+@import './screens/StripDemo.css';
 @import './styles/chrome.css';
 @import './ui/Sticker.css';
 @import './screens/ShopScreen.css';
 @import './screens/StickerBook.css';
+@import './styles/cartoon.css';

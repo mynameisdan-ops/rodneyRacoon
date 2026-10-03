@@ -1,122 +1,214 @@
 import { ink, shade, tint } from '../../style';
-import { type Item, LW, STAR } from './kit';
+import { type Item, OUT, IN, STAR } from './kit';
 
-export function Hat({ item }: { item: Item<'hat'> }) {
+/** A hat, in head units; `s` is the head's scale (lines match the body's) and `weight` thins them. */
+export function Hat({ item, s, weight = 1 }: { item: Item<'hat'>; s: number; weight?: number }) {
   const { color: c, accent: a } = item;
+  const lw = (IN / s) * weight;
+  const o = ink((OUT / s) * weight);
+  const i = ink(lw);
   switch (item.art) {
     case 'bandana':
       return (
         <g className="gear-hat">
           {/* Tails of the knot, flying out behind. */}
           <path
-            d="M39 22 Q30 24 24 32 Q30 30 33 33 Q36 27 41 25 Z"
+            d="M-29 -16 Q-38 -23 -48 -20 Q-42 -15 -43 -9 Q-36 -14 -29 -12 Z"
             fill={shade(c, 0.2)}
-            {...ink(LW)}
+            {...o}
           />
-          <path d="M39 20 Q31 15 25 17 Q30 20 29 24 Q35 21 40 23 Z" fill={c} {...ink(LW)} />
           <path
-            d="M37.5 27 Q38 7 56 6.5 Q74 7 75 25 Q66 20 56 20.5 Q45 21 37.5 27 Z"
-            fill={c}
-            {...ink(LW)}
+            d="M-30 -11 Q-37 -7 -42 2 Q-36 0 -33 4 Q-31 -4 -26 -8 Z"
+            fill={shade(c, 0.34)}
+            {...o}
           />
-          <path d="M40 22 Q41 10 52 8 Q44 13 44 21 Z" fill={shade(c, 0.3)} />
+          <path
+            d="M-29 -13 C-32 -28 -20 -41 2 -41 C20 -41 31 -31 31.5 -17 Q16 -22 2 -20.5 Q-14 -19 -29 -13 Z"
+            fill={c}
+            {...o}
+          />
+          {/* Shade on the back of the head, a shine across the top, a fold. */}
+          <path
+            d="M-29 -13 C-32 -28 -20 -41 2 -41 C-11 -36 -17 -27 -17 -17.8 Q-23 -16 -29 -13 Z"
+            fill={shade(c, 0.3)}
+          />
+          <path d="M-8 -36.5 Q5 -40.5 19 -35.5 L17 -32.5 Q5 -36.5 -7 -33.5 Z" fill={tint(c, 0.4)} />
+          <path
+            d="M-16 -19.5 Q-6 -27 6 -21"
+            fill="none"
+            stroke={shade(c, 0.32)}
+            strokeWidth={lw}
+            strokeLinecap="round"
+          />
           <g fill={a}>
-            <circle cx={50} cy={13} r={1.6} />
-            <circle cx={60} cy={11} r={1.6} />
-            <circle cx={68} cy={15} r={1.6} />
-            <circle cx={57} cy={17} r={1.4} />
-            <circle cx={46} cy={18} r={1.4} />
+            <circle cx={-1} cy={-31} r={2.3} />
+            <circle cx={11} cy={-33} r={2.1} />
+            <circle cx={21} cy={-26} r={2.1} />
+            <circle cx={-11} cy={-26} r={2} />
+            <circle cx={6} cy={-25} r={1.9} />
+            <circle cx={-21} cy={-20} r={1.7} />
+            <circle cx={25} cy={-20.5} r={1.6} />
+            <circle cx={-9} cy={-37} r={1.5} />
           </g>
-          <circle cx={39} cy={22} r={3.2} fill={c} {...ink(1.6)} />
+          {/* The knot. */}
+          <ellipse cx={-28.5} cy={-13.5} rx={4.8} ry={4.2} fill={c} {...o} />
+          <path
+            d="M-31 -12 Q-28.5 -15 -26 -12.5"
+            fill="none"
+            stroke={shade(c, 0.35)}
+            strokeWidth={lw}
+          />
         </g>
       );
     case 'explorer':
       return (
         <g className="gear-hat">
-          <path d="M39 18 Q37 1 56 0 Q73 1 72.5 15 Q56 12 39 18 Z" fill={c} {...ink(LW)} />
-          <path d="M42 16 Q41 4 52 2 Q46 8 47 15 Z" fill={shade(c, 0.25)} />
-          <path d="M40 17 Q56 11 72.5 14 L72.5 18 Q56 15 40 21 Z" fill={a} {...ink(1.4)} />
+          <ellipse cx={3} cy={-18} rx={43} ry={10} fill={tint(c, 0.15)} {...o} />
           <path
-            d="M26 22 Q55 11 86 17 Q88 22 81 23 Q56 18 31 27 Q24 27 26 22 Z"
-            fill={tint(c, 0.15)}
-            {...ink(LW)}
+            d="M-38 -15 Q3 -2 44 -15"
+            fill="none"
+            stroke={shade(c, 0.2)}
+            strokeWidth={lw * 1.4}
+            strokeLinecap="round"
           />
-          <path d="M31 26 Q56 17 81 22" fill="none" stroke={shade(c, 0.3)} strokeWidth={1.6} />
+          <path
+            d="M-26 -19 C-27 -39 -13 -48 3 -48 C20 -48 32 -39 31 -19 Q3 -12 -26 -19 Z"
+            fill={c}
+            {...o}
+          />
+          <path
+            d="M-26 -19 C-27 -39 -13 -48 3 -48 C-8 -43 -14 -32 -13 -16.6 Q-20 -17 -26 -19 Z"
+            fill={shade(c, 0.28)}
+          />
+          <path d="M-26.4 -21 Q3 -14 31.4 -21 L31 -27.5 Q3 -21 -26.4 -27.5 Z" fill={a} {...i} />
+          <path
+            d="M9 -45 Q23 -42 27.5 -31"
+            fill="none"
+            stroke={tint(c, 0.55)}
+            strokeWidth={lw * 1.5}
+            strokeLinecap="round"
+          />
         </g>
       );
     case 'miner':
       return (
         <g className="gear-hat">
           {/* The lamp's beam: a flat see-through wedge (no filter). */}
-          <path d="M78 8 L104 -2 L104 26 L78 15 Z" fill={a} opacity={0.35} />
-          <path d="M36 22 Q35 2 56 1 Q77 2 76.5 19 Z" fill={c} {...ink(LW)} />
-          <path d="M39 20 Q39 6 51 3 Q44 10 45 20 Z" fill={shade(c, 0.25)} />
-          <path d="M55 2 Q57 10 56 19" fill="none" stroke={shade(c, 0.35)} strokeWidth={2.2} />
-          <path d="M32 23 Q56 15 81 19 L81 23 Q56 20 32 27 Z" fill={shade(c, 0.1)} {...ink(LW)} />
-          <rect x={69} y={5} width={9} height={11} rx={3} fill="#4a4a52" {...ink(1.6)} />
-          <circle cx={77} cy={10.5} r={3.6} fill={a} {...ink(1.4)} />
+          <path d="M28 -37 L76 -54 L76 -12 L28 -28 Z" fill={a} opacity={0.35} />
+          <ellipse cx={3} cy={-18} rx={34} ry={5.5} fill={shade(c, 0.12)} {...o} />
+          <path
+            d="M-27 -18 C-28 -40 -12 -49 3 -49 C21 -49 32 -40 31 -18 Q3 -12 -27 -18 Z"
+            fill={c}
+            {...o}
+          />
+          <path
+            d="M-27 -18 C-28 -40 -12 -49 3 -49 C-8 -44 -14 -33 -13 -15.6 Q-21 -16 -27 -18 Z"
+            fill={shade(c, 0.25)}
+          />
+          <path
+            d="M-1 -48.6 Q8 -34 6 -14"
+            fill="none"
+            stroke={shade(c, 0.35)}
+            strokeWidth={lw * 1.6}
+          />
+          <path
+            d="M13 -47 Q24 -45 27 -36"
+            fill="none"
+            stroke={tint(c, 0.55)}
+            strokeWidth={lw * 1.5}
+            strokeLinecap="round"
+          />
+          <path d="M16 -18.5 Q32 -21.5 42 -14.5 Q31 -10 16 -13.5 Z" fill={shade(c, 0.12)} {...o} />
+          <rect x={16} y={-41} width={11} height={13} rx={3.5} fill="#4a4a52" {...i} />
+          <circle cx={27} cy={-34.5} r={5.2} fill={a} {...i} />
+          <circle cx={28.5} cy={-36} r={1.7} fill="#fff" />
         </g>
       );
     case 'wizard':
       return (
         <g className="gear-hat">
+          <ellipse cx={2} cy={-18} rx={44} ry={9.5} fill={tint(c, 0.1)} {...o} />
           <path
-            d="M38 20 Q46 11 50 -4 Q52 -18 40 -26 Q60 -24 63 -6 Q66 7 74 19 Q56 15 38 20 Z"
+            d="M-23 -19 Q-17 -42 -16 -62 Q-17 -80 -38 -91 Q-6 -90 5 -66 Q13 -42 27 -19 Q2 -12 -23 -19 Z"
             fill={c}
-            {...ink(LW)}
+            {...o}
           />
           <path
-            d="M42 18 Q48 8 51 -6 Q53 -16 46 -22 Q56 -14 54 -2 Q52 10 48 17 Z"
+            d="M-23 -19 Q-17 -42 -16 -62 Q-17 -80 -38 -91 Q-14 -84 -9 -64 Q-6 -40 -8 -15.6 Q-16 -16 -23 -19 Z"
             fill={shade(c, 0.3)}
           />
-          <path
-            d="M27 23 Q55 12 86 18 Q88 23 81 24 Q56 19 31 28 Q24 28 27 23 Z"
-            fill={tint(c, 0.1)}
-            {...ink(LW)}
-          />
+          <path d="M-23.6 -21 Q2 -14 27.6 -21 L26 -27.5 Q2 -21 -22 -27.5 Z" fill={shade(c, 0.45)} />
           <g fill={a}>
-            <path d={STAR} transform="translate(59 4) scale(0.9)" />
-            <path d={STAR} transform="translate(52 -10) scale(0.6)" />
-            <path d={STAR} transform="translate(66 13) scale(0.55)" />
+            <path d={STAR} transform="translate(5 -39) scale(1.15)" />
+            <path d={STAR} transform="translate(-6 -58) scale(0.8)" />
+            <path d={STAR} transform="translate(15 -30) scale(0.7)" />
           </g>
-          <circle cx={40} cy={-26} r={3} fill={a} {...ink(1.4)} />
+          <circle cx={-38} cy={-91} r={4.4} fill={a} {...i} />
         </g>
       );
     case 'viking':
       return (
         <g className="gear-hat">
-          {/* Horns (drawn first so the helmet covers their roots). */}
-          <path d="M42 14 Q30 12 27 -6 Q34 2 44 5 Z" fill={a} {...ink(LW)} />
-          <path d="M69 13 Q82 10 85 -8 Q77 1 67 4 Z" fill={a} {...ink(LW)} />
-          <path d="M29 -2 Q33 3 37 5" fill="none" stroke={shade(a, 0.3)} strokeWidth={1.6} />
-          <path d="M83 -4 Q79 2 75 4" fill="none" stroke={shade(a, 0.3)} strokeWidth={1.6} />
-          <path d="M36 23 Q35 2 56 1 Q77 2 76.5 21 Z" fill={c} {...ink(LW)} />
-          <path d="M39 21 Q39 6 51 3 Q44 10 45 21 Z" fill={shade(c, 0.25)} />
-          <path d="M60 4 Q68 7 71 14" fill="none" stroke={tint(c, 0.5)} strokeWidth={2} />
-          <rect x={34} y={18} width={44} height={6} rx={2.5} fill={shade(c, 0.2)} {...ink(1.6)} />
-          <g fill={tint(c, 0.5)}>
-            <circle cx={41} cy={21} r={1.2} />
-            <circle cx={50} cy={21} r={1.2} />
-            <circle cx={59} cy={21} r={1.2} />
-            <circle cx={68} cy={21} r={1.2} />
+          {/* The far horn, behind the helmet. */}
+          <path d="M22 -33 Q37 -36 41 -58 Q31 -46 19 -42 Z" fill={shade(a, 0.18)} {...o} />
+          <path
+            d="M-28 -18 C-29 -40 -13 -49 2 -49 C20 -49 31 -40 31 -18 Q2 -12 -28 -18 Z"
+            fill={c}
+            {...o}
+          />
+          <path
+            d="M-28 -18 C-29 -40 -13 -49 2 -49 C-9 -44 -15 -33 -14 -15.6 Q-21 -16 -28 -18 Z"
+            fill={shade(c, 0.25)}
+          />
+          <path d="M2 -49 Q7 -34 5 -15" fill="none" stroke={shade(c, 0.3)} strokeWidth={lw * 1.6} />
+          <path
+            d="M11 -46 Q24 -42 28 -31"
+            fill="none"
+            stroke={tint(c, 0.6)}
+            strokeWidth={lw * 1.5}
+            strokeLinecap="round"
+          />
+          <path d="M-29 -16 Q2 -10 32 -16 L32 -23 Q2 -16.5 -29 -23 Z" fill={shade(c, 0.2)} {...i} />
+          <g fill={tint(c, 0.55)}>
+            {[-22, -10, 2, 14, 26].map((x) => (
+              <circle key={x} cx={x} cy={-19.6 + 3.4 * (1 - ((x - 2) / 30) ** 2)} r={1.6} />
+            ))}
           </g>
+          {/* The near horn, out in front. */}
+          <path d="M-24 -26 Q-41 -27 -48 -52 Q-36 -40 -22 -36 Z" fill={a} {...o} />
+          <path
+            d="M-44 -45 Q-40 -37 -34 -33 M-38 -48 Q-34 -40 -30 -37"
+            fill="none"
+            stroke={shade(a, 0.3)}
+            strokeWidth={lw}
+          />
         </g>
       );
     case 'crown':
       return (
         <g className="gear-hat">
           <path
-            d="M40 17 L38 1 L46 8 L51 -4 L57 6 L63 -4 L67 8 L75 1 L73 17 Q56 14 40 17 Z"
+            d="M-20 -30 L-23 -50 L-13 -41 L-5 -55 L3 -42 L12 -56 L18 -42 L27 -52 L25 -31 Q3 -25.5 -20 -30 Z"
             fill={c}
-            {...ink(LW)}
+            {...o}
           />
-          <path d="M41 16 L40 5 L45 10 L46 16 Z" fill={shade(c, 0.25)} />
-          <path d="M40 17 Q56 14 73 17 L73 21 Q56 18 40 21 Z" fill={shade(c, 0.15)} {...ink(1.6)} />
-          <circle cx={56.5} cy={11} r={2.6} fill={a} {...ink(1.3)} />
-          <circle cx={47} cy={13} r={1.8} fill="#3a86ff" {...ink(1.1)} />
-          <circle cx={66} cy={13} r={1.8} fill="#2a9d5c" {...ink(1.1)} />
-          <circle cx={51} cy={-4} r={1.6} fill={tint(c, 0.6)} />
-          <circle cx={63} cy={-4} r={1.6} fill={tint(c, 0.6)} />
+          <path d="M-20 -30 L-23 -50 L-13 -41 L-12 -28.6 Z" fill={shade(c, 0.25)} />
+          <path
+            d="M-20.4 -30 Q3 -25.5 25 -31 L25.6 -37 Q3 -31.5 -21.2 -36 Z"
+            fill={shade(c, 0.15)}
+            {...i}
+          />
+          <circle cx={3} cy={-32.5} r={3.4} fill={a} {...i} />
+          <circle cx={-11} cy={-32.5} r={2.3} fill="#3a86ff" {...i} />
+          <circle cx={16} cy={-33.5} r={2.3} fill="#2a9d5c" {...i} />
+          <circle cx={-5} cy={-55} r={2} fill={tint(c, 0.6)} />
+          <circle cx={12} cy={-56} r={2} fill={tint(c, 0.6)} />
+          <path
+            d="M20 -44 L24 -48"
+            stroke={tint(c, 0.6)}
+            strokeWidth={lw * 1.4}
+            strokeLinecap="round"
+          />
         </g>
       );
   }

@@ -1,13 +1,16 @@
 import { Dust, SparkBurst, SparkTrail, SpeedLines } from '../../fx';
-import { ink, shade } from '../../style';
+import { ink, shade, tint } from '../../style';
+import { PAINTED_MINE } from '../../worlds/minePalette';
 import { eventTime, type ObstacleProps } from '../types';
-import { BOULDER_R, cartRide, clamp, RAIL_TOP, ROCK, STEEL, WOOD, SPEED_YS } from './kit';
+import { BOULDER_R, cartRide, clamp, IN, IRON, OUT, RAIL_TOP, WOOD, SPEED_YS } from './kit';
 import { CART_RACE } from './layout';
-import { Boulder, CartRim, MineCart, Pit, PitLip, Rails } from './parts';
+import { Boulder, CartRim, MineCart, Pit, PitLip, Rails, Rock, Timber } from './parts';
 
 // ---------- Level 1: cart race ----------
 // rumble (a boulder crashes down) → chase (he rides, it rolls after him)
 // → drop (it smashes the trestle and falls into the pit) → crash (the buffer stops the cart).
+
+const P = PAINTED_MINE;
 
 const R = BOULDER_R;
 const PIT_MID = (CART_RACE.pit[0] + CART_RACE.pit[1]) / 2;
@@ -53,27 +56,28 @@ const PEBBLES = Array.from({ length: 10 }, (_, i) => ({
 
 function Pebbles({ t, from }: { t: number; from: number }) {
   return (
-    <g fill={shade(ROCK, 0.15)} {...ink(2)}>
+    <g>
       {PEBBLES.map((pb, i) => {
         const dt = t - from - pb.delay;
         if (!(dt >= 0)) return null;
         const y = -760 + 0.004 * dt * dt;
         if (y > -pb.r) return null;
-        return <circle key={i} cx={pb.x} cy={y} r={pb.r} />;
+        return <Rock key={i} x={pb.x} y={y + pb.r} s={pb.r * 1.6} spin={dt * 0.3} />;
       })}
     </g>
   );
 }
 
+/** The wooden trestle carrying the track over the pit, until the boulder smashes through it. */
 function Trestle({ t, dropAt }: { t: number; dropAt: number }) {
   const [a, b] = CART_RACE.pit;
   if (t < dropAt) {
     return (
       <g>
-        <g stroke={shade(WOOD, 0.2)} strokeWidth={9} strokeLinecap="round">
-          <path d={`M${a + 10} -2 L${a + 100} 150 M${b - 10} -2 L${a + 100} 150`} />
-          <path d={`M${a + 100} -2 V180`} />
-        </g>
+        <Timber x1={a + 10} y1={-2} x2={a + 100} y2={150} w={11} />
+        <Timber x1={b - 10} y1={-2} x2={a + 100} y2={150} w={11} />
+        <Timber x1={a + 100} y1={-2} x2={a + 100} y2={190} w={12} />
+        <Timber x1={a + 40} y1={60} x2={b - 40} y2={60} w={8} />
         <Rails a={a - 12} b={b + 12} />
       </g>
     );
@@ -87,8 +91,10 @@ function Trestle({ t, dropAt }: { t: number; dropAt: number }) {
         const x = a + 35 + i * 65 + (i - 1) * dt * 0.05;
         return (
           <g key={i} transform={`translate(${x} ${y}) rotate(${(i - 1) * 0.35 * dt + 8})`}>
-            <rect x={-36} y={-5} width={72} height={10} fill={STEEL} {...ink(2)} />
-            <rect x={-14} y={3} width={26} height={11} fill={WOOD} {...ink(2)} />
+            <rect x={-14} y={3} width={26} height={11} fill={P.sleeper} />
+            <rect x={-36} y={-5} width={72} height={8} fill={P.rail} />
+            <rect x={-36} y={-5} width={72} height={1.8} fill={P.railLight} />
+            <rect x={-36} y={0} width={72} height={3} fill={P.railDark} />
           </g>
         );
       })}
@@ -96,17 +102,36 @@ function Trestle({ t, dropAt }: { t: number; dropAt: number }) {
   );
 }
 
+/** The buffer stop at the end of the line: a red-and-white beam on a braced timber post. */
 function Bumper({ x }: { x: number }) {
   return (
     <g>
-      <rect x={x + 10} y={-120} width={22} height={124} fill={shade(WOOD, 0.15)} {...ink(3)} />
-      <rect x={x} y={-92} width={46} height={60} rx={4} fill={WOOD} {...ink(3)} />
       <path
-        d={`M${x} -80 H${x + 46} M${x} -48 H${x + 46}`}
-        stroke={shade(WOOD, 0.4)}
-        strokeWidth={3}
+        d={`M${x + 24} -112 L${x + 84} 2 L${x + 70} 2 L${x + 16} -100 Z`}
+        fill={shade(WOOD, 0.2)}
+        {...ink(OUT)}
       />
-      <rect x={x - 6} y={-86} width={10} height={48} rx={3} fill="#c0392b" {...ink(2.5)} />
+      <rect x={x + 10} y={-124} width={24} height={128} rx={3} fill={WOOD} {...ink(OUT)} />
+      <rect x={x + 10} y={-124} width={8} height={128} fill={shade(WOOD, 0.3)} />
+      <path
+        d={`M${x + 30} -118 V-6`}
+        stroke={tint(WOOD, 0.5)}
+        strokeWidth={2.2}
+        strokeLinecap="round"
+      />
+      <rect x={x} y={-94} width={48} height={62} rx={5} fill="#e04b3a" {...ink(OUT)} />
+      {/* White stripes, then its shadow side and a rim light. */}
+      <path
+        d={`M${x + 4} -66 L${x + 30} -92 L${x + 44} -92 L${x + 4} -52 Z M${x + 4} -36 L${x + 46} -78 L${x + 46} -62 L${x + 20} -36 Z`}
+        fill="#fff4e6"
+      />
+      <path
+        d={`M${x} -40 V-89 Q${x} -94 ${x + 5} -94 L${x + 12} -94 L${x + 12} -32 L${x + 5} -32 Q${x} -32 ${x} -40 Z`}
+        fill={shade('#e04b3a', 0.35)}
+        opacity={0.75}
+      />
+      <path d={`M${x + 44} -88 V-40`} stroke="#ffb0a0" strokeWidth={2.2} strokeLinecap="round" />
+      <rect x={x - 6} y={-84} width={10} height={40} rx={3} fill={IRON} {...ink(IN + 0.6)} />
     </g>
   );
 }

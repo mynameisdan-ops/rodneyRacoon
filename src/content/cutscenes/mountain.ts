@@ -5,8 +5,13 @@ import type { CutScene } from './types';
  * `art/obstacles/mountain/layout.ts`; each level's comment says which numbers it relies on.
  */
 export const MOUNTAIN_SCENES: Record<number, CutScene> = {
-  // Level 25: the rock slide (ROCK_SLIDE, anchor 300). The overhang covers 750–1060 with
-  // 150px clear under it. He dives under and waits while the rocks bounce over.
+  // Level 25: the rock slide (ROCK_SLIDE, anchor 300). The shelf covers 750–1060 with 198px
+  // clear under it. After 'slide' the rocks roll down the cliff's top, fly off the shelf's lip
+  // (730) over his head and land on the path behind him: the first at 465 2420ms after 'slide',
+  // the third at 457 (2840ms), the fifth at 442 (3180ms). Beats: pebbles trickling (a worried
+  // look up), the slide bursting over the crest (impact, hit-stop), a determined cut-in, the
+  // dive under the shelf in slow motion, hunkering there as the rocks crash behind him (impacts
+  // and shakes timed to the landings), and a sparkle once it's clear.
   25: {
     obstacle: 'rock-slide',
     anchor: 300,
@@ -15,23 +20,55 @@ export const MOUNTAIN_SCENES: Record<number, CutScene> = {
       startX: 150,
       steps: [
         { do: 'walk', x: 420, ms: 900 },
+        { do: 'hold', pose: 'idle', ms: 250 },
         { do: 'prop', state: 'rumble' },
-        { do: 'shake', ms: 900, amp: 8 },
-        { do: 'hold', pose: 'brace', ms: 600 },
+        { do: 'shake', ms: 900, amp: 5 },
+        { do: 'emote', emote: 'alert' },
+        { do: 'camera', zoom: 1.6, ms: 220 },
+        { do: 'hold', pose: 'brace', ms: 650, expr: 'surprised' },
+        { do: 'camera', zoom: 1.05, ms: 200 },
         { do: 'prop', state: 'slide' },
         { do: 'caption' },
-        { do: 'run', x: 620, ms: 300 },
-        { do: 'move', x: 880, lift: 0, ms: 550, pose: 'slide', ease: 'out' },
-        { do: 'hold', pose: 'brace', ms: 1550 },
+        { do: 'impact', x: 1250, lift: 620, size: 0.9 },
+        { do: 'hold', pose: 'brace', ms: 60, expr: 'surprised' },
+        { do: 'freeze', ms: 100 },
+        { do: 'shake', ms: 700, amp: 9 },
+        { do: 'cutin', ms: 550, expr: 'determined' },
+        { do: 'hold', pose: 'brace', ms: 550, expr: 'determined' },
+        { do: 'camera', zoom: 1.15, tilt: -4, ms: 300 },
+        { do: 'action', ms: 1100 },
+        { do: 'run', x: 620, ms: 300, expr: 'shout' },
+        { do: 'slow', ms: 450, rate: 0.4 },
+        { do: 'move', x: 880, lift: 0, ms: 550, pose: 'slide', ease: 'out', expr: 'shout' },
+        { do: 'camera', zoom: 1.08, ms: 300 },
+        { do: 'hold', pose: 'crouch', ms: 900, expr: 'worried' },
+        { do: 'hold', pose: 'crouch', ms: 60, expr: 'worried' },
+        { do: 'impact', x: 465, lift: 0, size: 0.8 },
+        { do: 'freeze', ms: 90 },
+        { do: 'shake', ms: 500, amp: 8 },
+        { do: 'emote', emote: 'sweat' },
+        { do: 'hold', pose: 'crouch', ms: 420, expr: 'worried' },
+        { do: 'impact', x: 457, lift: 0, size: 0.55 },
+        { do: 'shake', ms: 400, amp: 6 },
+        { do: 'hold', pose: 'crouch', ms: 340, expr: 'worried' },
+        { do: 'impact', x: 442, lift: 0, size: 0.55 },
+        { do: 'shake', ms: 400, amp: 6 },
+        { do: 'hold', pose: 'crouch', ms: 420, expr: 'worried' },
         { do: 'prop', state: 'clear' },
-        { do: 'walk', x: 1260, ms: 700 },
-        { do: 'hold', pose: 'cheer', ms: 1500 },
+        { do: 'camera', zoom: 1, ms: 400 },
+        { do: 'walk', x: 1260, ms: 700, expr: 'happy' },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'cheer', ms: 1400 },
       ],
     },
   },
 
-  // Level 26: the crumbling ledge (LEDGE, anchor 300). The gaps open at 700–780,
-  // 1000–1100 and 1300–1480; each leap is a little longer than the last.
+  // Level 26: the crumbling ledge (LEDGE, anchor 300). A narrow ledge along a cliff over a misty
+  // drop. The first gap (700–780) breaks open at 'crumble'; the others (1000–1100, 1300–1480)
+  // as he comes within 200px of them, so each opens just before he leaps it. Beats: the gust
+  // (a sweat drop as he braces), the ledge breaking away ahead (impact, hit-stop, a surprised
+  // close-up), a determined cut-in, three leaps under focus lines and a tilted camera, the
+  // longest in slow motion, and a sparkling landing.
   26: {
     obstacle: 'crumbling-ledge',
     anchor: 300,
@@ -41,25 +78,50 @@ export const MOUNTAIN_SCENES: Record<number, CutScene> = {
       steps: [
         { do: 'walk', x: 380, ms: 900 },
         { do: 'prop', state: 'gust' },
-        { do: 'shake', ms: 400, amp: 5 },
-        { do: 'hold', pose: 'brace', ms: 700 },
+        { do: 'shake', ms: 400, amp: 4 },
+        { do: 'emote', emote: 'sweat' },
+        { do: 'hold', pose: 'brace', ms: 800, expr: 'worried' },
         { do: 'prop', state: 'crumble' },
+        { do: 'impact', x: 740, lift: 0, size: 0.9 },
+        { do: 'hold', pose: 'brace', ms: 60, expr: 'surprised' },
+        { do: 'freeze', ms: 100 },
+        { do: 'shake', ms: 500, amp: 7 },
+        { do: 'emote', emote: 'alert' },
+        { do: 'camera', zoom: 1.6, ms: 220 },
+        { do: 'hold', pose: 'brace', ms: 450, expr: 'surprised' },
+        { do: 'camera', zoom: 1.05, ms: 200 },
         { do: 'caption' },
-        { do: 'shake', ms: 400, amp: 6 },
-        { do: 'run', x: 640, ms: 350 },
-        { do: 'jump', x: 820, height: 90, ms: 420, pose: 'leap' },
-        { do: 'run', x: 960, ms: 180 },
-        { do: 'jump', x: 1150, height: 100, ms: 420, pose: 'leap' },
-        { do: 'run', x: 1240, ms: 130 },
-        { do: 'jump', x: 1560, height: 150, ms: 620, pose: 'leap' },
-        { do: 'hold', pose: 'cheer', ms: 1500 },
+        { do: 'cutin', ms: 550, expr: 'determined' },
+        { do: 'hold', pose: 'brace', ms: 550, expr: 'determined' },
+        { do: 'camera', zoom: 1.15, tilt: -3, ms: 300 },
+        { do: 'action', ms: 1700 },
+        { do: 'run', x: 640, ms: 350, expr: 'shout' },
+        { do: 'jump', x: 820, height: 90, ms: 420, pose: 'leap', expr: 'shout' },
+        { do: 'impact', x: 820, lift: 0, size: 0.3 },
+        { do: 'run', x: 960, ms: 180, expr: 'shout' },
+        { do: 'jump', x: 1150, height: 100, ms: 420, pose: 'leap', expr: 'shout' },
+        { do: 'impact', x: 1150, lift: 0, size: 0.3 },
+        { do: 'run', x: 1240, ms: 130, expr: 'shout' },
+        { do: 'camera', zoom: 1.22, tilt: 4, ms: 250 },
+        { do: 'slow', ms: 620, rate: 0.4 },
+        { do: 'jump', x: 1560, height: 150, ms: 620, pose: 'leap', expr: 'shout' },
+        { do: 'impact', x: 1560, lift: 0, size: 0.6 },
+        { do: 'hold', pose: 'cheer', ms: 50, expr: 'happy' },
+        { do: 'freeze', ms: 80 },
+        { do: 'camera', zoom: 1, ms: 400 },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'cheer', ms: 1400 },
       ],
     },
   },
 
-  // Level 27: the avalanche (AVALANCHE, anchor 300). He hangs from the branch 360px up (feet
-  // 185–195px up) at 800 while the snow wave (150px tall) rushes under him, then drops onto
-  // the 30px of new snow it leaves.
+  // Level 27: the avalanche (AVALANCHE, anchor 300). The slope rises to the upper left behind
+  // the path; the crack opens on it at 'crack' (around 100–350, 230–300px up). The avalanche
+  // rolls along the path and reaches the pine (860) 300ms after 'grab'; its crest (150px) passes
+  // under his feet as he hangs from the branch 360px up (feet 185–195px up) at 800, and it
+  // leaves 30px of new snow. Beats: the crack (impact, hit-stop, a surprised look back up the
+  // slope), a determined cut-in, the dash and leap to the branch, the avalanche roaring under
+  // him in slow motion under a tilted camera, and a sparkling drop onto the new snow.
   27: {
     obstacle: 'avalanche',
     anchor: 300,
@@ -67,26 +129,58 @@ export const MOUNTAIN_SCENES: Record<number, CutScene> = {
     script: {
       startX: 150,
       steps: [
-        { do: 'walk', x: 700, ms: 1200 },
+        { do: 'walk', x: 520, ms: 1000 },
+        { do: 'hold', pose: 'idle', ms: 200 },
         { do: 'prop', state: 'crack' },
+        { do: 'impact', x: 200, lift: 290, size: 0.85 },
+        { do: 'hold', pose: 'brace', ms: 60, expr: 'surprised' },
+        { do: 'freeze', ms: 100 },
         { do: 'shake', ms: 700, amp: 10 },
         { do: 'face', facing: 'left' },
-        { do: 'hold', pose: 'brace', ms: 700 },
+        { do: 'emote', emote: 'alert' },
+        { do: 'camera', zoom: 1.6, ms: 220 },
+        { do: 'hold', pose: 'brace', ms: 500, expr: 'surprised' },
+        { do: 'camera', zoom: 1.05, ms: 200 },
         { do: 'face', facing: 'right' },
         { do: 'caption' },
-        { do: 'jump', x: 800, lift: 185, height: 60, ms: 450, pose: 'leap' },
+        { do: 'cutin', ms: 500, expr: 'determined' },
+        { do: 'hold', pose: 'brace', ms: 500, expr: 'determined' },
+        { do: 'camera', zoom: 1.15, tilt: -4, ms: 300 },
+        { do: 'action', ms: 900 },
+        { do: 'run', x: 720, ms: 450, expr: 'shout' },
+        { do: 'jump', x: 800, lift: 185, height: 60, ms: 400, pose: 'leap', expr: 'shout' },
         { do: 'prop', state: 'grab' },
-        { do: 'move', x: 800, lift: 195, ms: 1300, pose: 'swing', ease: 'linear' },
+        { do: 'impact', x: 800, lift: 360, size: 0.4 },
+        { do: 'camera', zoom: 1.12, tilt: 3, ms: 300 },
+        { do: 'slow', ms: 700, rate: 0.45 },
+        { do: 'move', x: 800, lift: 195, ms: 700, pose: 'swing', ease: 'linear', expr: 'worried' },
+        {
+          do: 'move',
+          x: 800,
+          lift: 195,
+          ms: 600,
+          pose: 'swing',
+          ease: 'linear',
+          expr: 'determined',
+        },
         { do: 'prop', state: 'settle' },
-        { do: 'jump', x: 1000, lift: 30, height: 40, ms: 500, pose: 'leap' },
-        { do: 'walk', x: 1120, ms: 300 },
-        { do: 'hold', pose: 'cheer', ms: 1500 },
+        { do: 'camera', zoom: 1, ms: 400 },
+        { do: 'jump', x: 1000, lift: 30, height: 40, ms: 500, pose: 'leap', expr: 'happy' },
+        { do: 'impact', x: 1000, lift: 30, size: 0.4 },
+        { do: 'walk', x: 1120, ms: 300, expr: 'happy' },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'cheer', ms: 1400 },
       ],
     },
   },
 
-  // Level 28: the goat ride (GOAT, anchor 300). The goat stops at 620; he rides 90px above its
-  // feet up the ledges at 900, 1100 and 1300 (100, 200 and 300px up), then hops off.
+  // Level 28: the goat ride (GOAT, anchor 300). Ledges step up the cliff at 830, 1030 and 1230
+  // (90, 170 and 250px up). At 'goat' a mountain goat bounds down them to 620 (840ms); he rides
+  // 90px above its feet, landing on each ledge at 900, 1100 and 1300; the lower ledges' lips break
+  // away once he's 100px past their edges. Beats: the cliff too high to climb (a sweat drop), the
+  // goat bounding down (alert, then happy), a determined cut-in, the hop on, three bounds under
+  // focus lines and a tilted camera (the last in slow motion with a hit-stop), the hop off and a
+  // sparkle as the goat bounds away.
   28: {
     obstacle: 'goat-ride',
     anchor: 300,
@@ -95,25 +189,53 @@ export const MOUNTAIN_SCENES: Record<number, CutScene> = {
       startX: 150,
       steps: [
         { do: 'walk', x: 500, ms: 1000 },
+        { do: 'hold', pose: 'idle', ms: 200 },
+        { do: 'emote', emote: 'sweat' },
+        { do: 'camera', zoom: 1.4, ms: 260 },
+        { do: 'hold', pose: 'idle', ms: 650, expr: 'worried' },
+        { do: 'camera', zoom: 1.05, ms: 200 },
         { do: 'prop', state: 'goat' },
-        { do: 'hold', pose: 'brace', ms: 900 },
+        { do: 'hold', pose: 'idle', ms: 300, expr: 'worried' },
+        { do: 'emote', emote: 'alert' },
+        { do: 'hold', pose: 'brace', ms: 540, expr: 'surprised' },
+        { do: 'impact', x: 620, lift: 10, size: 0.35 },
+        { do: 'hold', pose: 'cheer', ms: 500, expr: 'happy' },
         { do: 'caption' },
-        { do: 'jump', x: 620, lift: 90, height: 60, ms: 400, pose: 'leap' },
+        { do: 'cutin', ms: 500, expr: 'determined' },
+        { do: 'hold', pose: 'idle', ms: 500, expr: 'determined' },
+        { do: 'jump', x: 620, lift: 90, height: 60, ms: 400, pose: 'leap', expr: 'happy' },
         { do: 'prop', state: 'ride' },
-        { do: 'hold', pose: 'ride', ms: 250 },
-        { do: 'jump', x: 900, lift: 190, height: 80, ms: 450, pose: 'ride' },
-        { do: 'jump', x: 1100, lift: 290, height: 80, ms: 450, pose: 'ride' },
-        { do: 'jump', x: 1300, lift: 390, height: 80, ms: 450, pose: 'ride' },
+        { do: 'impact', x: 620, lift: 90, size: 0.3 },
+        { do: 'hold', pose: 'ride', ms: 250, expr: 'happy' },
+        { do: 'camera', zoom: 1.15, tilt: -3, ms: 300 },
+        { do: 'action', ms: 1400 },
+        { do: 'jump', x: 900, lift: 180, height: 70, ms: 450, pose: 'ride', expr: 'shout' },
+        { do: 'impact', x: 900, lift: 90, size: 0.4 },
+        { do: 'jump', x: 1100, lift: 260, height: 70, ms: 450, pose: 'ride', expr: 'shout' },
+        { do: 'impact', x: 1100, lift: 170, size: 0.4 },
+        { do: 'camera', zoom: 1.15, tilt: 4, ms: 250 },
+        { do: 'slow', ms: 450, rate: 0.4 },
+        { do: 'jump', x: 1300, lift: 340, height: 50, ms: 450, pose: 'ride', expr: 'shout' },
+        { do: 'impact', x: 1300, lift: 250, size: 0.6 },
+        { do: 'hold', pose: 'ride', ms: 50, expr: 'happy' },
+        { do: 'freeze', ms: 90 },
+        { do: 'camera', zoom: 1, ms: 400 },
         { do: 'prop', state: 'off' },
-        { do: 'jump', x: 1450, lift: 300, height: 60, ms: 450, pose: 'leap' },
-        { do: 'walk', x: 1600, ms: 350 },
-        { do: 'hold', pose: 'cheer', ms: 1500 },
+        { do: 'jump', x: 1450, lift: 250, height: 50, ms: 450, pose: 'leap', expr: 'happy' },
+        { do: 'walk', x: 1600, ms: 350, expr: 'happy' },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'cheer', ms: 1400 },
       ],
     },
   },
 
-  // Level 29: the ice bridge (ICE_BRIDGE, anchor 300). The crevasse is 550–1300; after
-  // 'shatter' the ice breaks up behind him as he slides across at 0.81px/ms.
+  // Level 29: the ice bridge (ICE_BRIDGE, anchor 300). The crevasse is 550–1300, bridged by ice.
+  // After 'shatter' the bridge behind him collapses at once, then piece by piece as he gets
+  // 100px past each, so it follows him however long he waits. He slides at 0.81px/ms. Beats:
+  // careful steps onto the bridge, cracks spreading under him (impact, hit-stop, a close-up of
+  // his worried face), the bridge shattering behind him (a bigger impact), a determined cut-in,
+  // the slide across under focus lines and a tilted camera, the last stretch in slow motion,
+  // and a sparkling stop on the far side.
   29: {
     obstacle: 'ice-bridge',
     anchor: 300,
@@ -121,22 +243,49 @@ export const MOUNTAIN_SCENES: Record<number, CutScene> = {
     script: {
       startX: 150,
       steps: [
-        { do: 'walk', x: 480, ms: 1000 },
-        { do: 'walk', x: 600, ms: 400 },
+        { do: 'walk', x: 480, ms: 900 },
+        { do: 'walk', x: 600, ms: 600, expr: 'worried' },
+        { do: 'hold', pose: 'idle', ms: 200, expr: 'worried' },
         { do: 'prop', state: 'crack' },
+        { do: 'impact', x: 620, lift: 0, size: 0.4 },
+        { do: 'hold', pose: 'brace', ms: 60, expr: 'surprised' },
+        { do: 'freeze', ms: 90 },
         { do: 'shake', ms: 500, amp: 5 },
-        { do: 'hold', pose: 'brace', ms: 500 },
+        { do: 'emote', emote: 'sweat' },
+        { do: 'camera', zoom: 1.6, ms: 220 },
+        { do: 'hold', pose: 'brace', ms: 500, expr: 'worried' },
+        { do: 'camera', zoom: 1.05, ms: 200 },
         { do: 'prop', state: 'shatter' },
+        { do: 'impact', x: 520, lift: 0, size: 1 },
+        { do: 'hold', pose: 'brace', ms: 60, expr: 'surprised' },
+        { do: 'freeze', ms: 110 },
+        { do: 'shake', ms: 600, amp: 9 },
+        { do: 'emote', emote: 'alert' },
         { do: 'caption' },
-        { do: 'run', x: 700, ms: 150 },
-        { do: 'move', x: 1350, lift: 0, ms: 800, pose: 'slide', ease: 'linear' },
-        { do: 'hold', pose: 'cheer', ms: 1500 },
+        { do: 'cutin', ms: 500, expr: 'determined' },
+        { do: 'hold', pose: 'brace', ms: 500, expr: 'determined' },
+        { do: 'camera', zoom: 1.15, tilt: -4, ms: 300 },
+        { do: 'action', ms: 1100 },
+        { do: 'run', x: 700, ms: 150, expr: 'shout' },
+        { do: 'move', x: 1180, lift: 0, ms: 590, pose: 'slide', ease: 'linear', expr: 'shout' },
+        { do: 'slow', ms: 210, rate: 0.35 },
+        { do: 'move', x: 1350, lift: 0, ms: 210, pose: 'slide', ease: 'linear', expr: 'shout' },
+        { do: 'impact', x: 1350, lift: 0, size: 0.5 },
+        { do: 'hold', pose: 'cheer', ms: 50, expr: 'happy' },
+        { do: 'freeze', ms: 80 },
+        { do: 'camera', zoom: 1, ms: 400 },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'cheer', ms: 1400 },
       ],
     },
   },
 
-  // Level 30: the icicle cave (ICICLES, anchor 300). The cave runs 500–1600; each icicle
-  // drops once he is 70px past it.
+  // Level 30: the icicle cave (ICICLES, anchor 300). The cave runs 500–1600; an icicle hangs every
+  // 110px from 560, and each drops once he is 70px past it, smashing ~300ms later. Beats: walking
+  // in wide-eyed (a sparkle), the rumble (impact on the roof, hit-stop, a surprised close-up), the
+  // first icicle smashing right behind him (impact, hit-stop), a determined cut-in, the dash under
+  // focus lines and a tilted camera with icicles smashing in a wave behind him, the dive out of
+  // the cave in slow motion, and a sparkling landing.
   30: {
     obstacle: 'icicle-cave',
     anchor: 300,
@@ -144,20 +293,53 @@ export const MOUNTAIN_SCENES: Record<number, CutScene> = {
     script: {
       startX: 150,
       steps: [
-        { do: 'walk', x: 400, ms: 900 },
+        { do: 'walk', x: 640, ms: 1300, expr: 'happy' },
+        { do: 'hold', pose: 'idle', ms: 300, expr: 'happy' },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'idle', ms: 400, expr: 'happy' },
         { do: 'prop', state: 'rumble' },
-        { do: 'shake', ms: 700, amp: 7 },
-        { do: 'hold', pose: 'brace', ms: 500 },
+        { do: 'impact', x: 900, lift: 420, size: 0.6 },
+        { do: 'shake', ms: 700, amp: 6 },
+        { do: 'hold', pose: 'brace', ms: 60, expr: 'surprised' },
+        { do: 'freeze', ms: 90 },
+        { do: 'emote', emote: 'alert' },
+        { do: 'camera', zoom: 1.6, ms: 220 },
+        { do: 'hold', pose: 'brace', ms: 450, expr: 'surprised' },
+        { do: 'camera', zoom: 1.05, ms: 200 },
         { do: 'prop', state: 'fall' },
+        { do: 'hold', pose: 'brace', ms: 290, expr: 'worried' },
+        { do: 'impact', x: 560, lift: 0, size: 0.8 },
+        { do: 'hold', pose: 'brace', ms: 40, expr: 'surprised' },
+        { do: 'freeze', ms: 100 },
+        { do: 'shake', ms: 500, amp: 8 },
         { do: 'caption' },
-        { do: 'run', x: 1780, ms: 1380 },
-        { do: 'hold', pose: 'cheer', ms: 1500 },
+        { do: 'cutin', ms: 500, expr: 'determined' },
+        { do: 'hold', pose: 'brace', ms: 500, expr: 'determined' },
+        { do: 'camera', zoom: 1.15, tilt: -4, ms: 300 },
+        { do: 'action', ms: 1500 },
+        { do: 'run', x: 1206, ms: 658, expr: 'shout' },
+        { do: 'impact', x: 890, lift: 0, size: 0.55 },
+        { do: 'shake', ms: 300, amp: 5 },
+        { do: 'run', x: 1500, ms: 342, expr: 'shout' },
+        { do: 'camera', zoom: 1.2, tilt: 3, ms: 250 },
+        { do: 'slow', ms: 420, rate: 0.4 },
+        { do: 'jump', x: 1760, height: 110, ms: 420, pose: 'leap', expr: 'shout' },
+        { do: 'impact', x: 1760, lift: 0, size: 0.5 },
+        { do: 'hold', pose: 'cheer', ms: 50, expr: 'happy' },
+        { do: 'freeze', ms: 80 },
+        { do: 'camera', zoom: 1, ms: 400 },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'cheer', ms: 1400 },
       ],
     },
   },
 
-  // Level 31: the ice wall (ICE_WALL, anchor 300). The frozen waterfall stands at 600, 330px
-  // tall. A foothold breaks halfway up and he drops 40px before climbing on.
+  // Level 31: the ice wall (ICE_WALL, anchor 300). The frozen waterfall stands at 600, 330px tall,
+  // with a plateau running on from its top. He climbs at 580; a foothold 158px up breaks at
+  // 'slip' and he drops 40px before his hands catch. Beats: looking up at the huge wall (a
+  // worried close-up), a determined cut-in, the climb under focus lines with chips of ice raining
+  // past, the slip (impact, hit-stop, a sweat drop), the climb on, pulling himself over the top
+  // in slow motion, and a sparkle on the plateau.
   31: {
     obstacle: 'ice-wall',
     anchor: 300,
@@ -165,25 +347,52 @@ export const MOUNTAIN_SCENES: Record<number, CutScene> = {
     script: {
       startX: 150,
       steps: [
-        { do: 'walk', x: 560, ms: 1100 },
-        { do: 'prop', state: 'climb' },
+        { do: 'walk', x: 520, ms: 1000 },
+        { do: 'hold', pose: 'idle', ms: 200 },
+        { do: 'camera', zoom: 1.45, ms: 300 },
+        { do: 'hold', pose: 'idle', ms: 600, expr: 'worried' },
+        { do: 'camera', zoom: 1.05, ms: 200 },
         { do: 'caption' },
+        { do: 'cutin', ms: 500, expr: 'determined' },
+        { do: 'hold', pose: 'brace', ms: 500, expr: 'determined' },
+        { do: 'walk', x: 580, ms: 250, expr: 'determined' },
+        { do: 'prop', state: 'climb' },
+        { do: 'camera', zoom: 1.12, tilt: -2, ms: 300 },
+        { do: 'action', ms: 1100 },
         { do: 'move', x: 580, lift: 160, ms: 1100, pose: 'climb', ease: 'linear' },
         { do: 'prop', state: 'slip' },
+        { do: 'impact', x: 590, lift: 140, size: 0.55 },
+        { do: 'hold', pose: 'fall', ms: 40, expr: 'surprised' },
+        { do: 'freeze', ms: 100 },
         { do: 'shake', ms: 300, amp: 6 },
-        { do: 'move', x: 580, lift: 120, ms: 250, pose: 'fall', ease: 'in' },
-        { do: 'hold', pose: 'climb', ms: 300 },
-        { do: 'move', x: 580, lift: 320, ms: 1100, pose: 'climb', ease: 'linear' },
-        { do: 'jump', x: 700, lift: 330, height: 40, ms: 400, pose: 'leap' },
-        { do: 'walk', x: 900, ms: 600 },
-        { do: 'hold', pose: 'cheer', ms: 1500 },
+        { do: 'move', x: 580, lift: 120, ms: 250, pose: 'fall', ease: 'in', expr: 'surprised' },
+        { do: 'impact', x: 600, lift: 290, size: 0.35 },
+        { do: 'emote', emote: 'sweat' },
+        { do: 'hold', pose: 'climb', ms: 350, expr: 'worried' },
+        { do: 'camera', zoom: 1.15, tilt: 3, ms: 300 },
+        { do: 'action', ms: 1000 },
+        { do: 'move', x: 580, lift: 300, ms: 900, pose: 'climb', ease: 'linear', expr: 'shout' },
+        { do: 'slow', ms: 420, rate: 0.4 },
+        { do: 'jump', x: 700, lift: 330, height: 60, ms: 420, pose: 'leap', expr: 'shout' },
+        { do: 'impact', x: 700, lift: 330, size: 0.5 },
+        { do: 'hold', pose: 'cheer', ms: 50, expr: 'happy' },
+        { do: 'freeze', ms: 80 },
+        { do: 'camera', zoom: 1, ms: 400 },
+        { do: 'walk', x: 900, ms: 600, expr: 'happy' },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'cheer', ms: 1400 },
       ],
     },
   },
 
-  // Level 32 (boss): over the peak (PEAK, anchor 300). Up the slope to the peak at 700–780
-  // (220px up) in a storm, onto the sled, down to 1800 at 1.27px/ms, over the crevasse
-  // (1900–2100) and to a stop at 2300. The storm clears as he lands.
+  // Level 32 (boss): over the peak (PEAK, anchor 300). Up the slope to the summit at 700–780
+  // (220px up) in a storm; lightning strikes a rock behind him (480) at 'strike'; onto the sled at
+  // 780 and down to 1800 (an ease-in then a steady 1.25px/ms), over the crevasse (1900–2100) and to
+  // a stop at 2300. The storm clears after 'land'. Beats: the climb into the blizzard (worried),
+  // the lightning strike (impact, hit-stop, a surprised close-up), spotting the sled (a sparkle),
+  // a determined cut-in, the ride down under focus lines and a tilted camera, the alert as the
+  // crevasse comes, the leap over it in slow motion, the landing (a big impact and hit-stop), the
+  // sun breaking through, and a cheer by the sign to the last world.
   32: {
     obstacle: 'peak',
     anchor: 300,
@@ -194,20 +403,48 @@ export const MOUNTAIN_SCENES: Record<number, CutScene> = {
       steps: [
         { do: 'walk', x: 300, ms: 700 },
         { do: 'prop', state: 'storm' },
-        { do: 'move', x: 700, lift: 220, ms: 1100, pose: 'run', ease: 'linear' },
-        { do: 'hold', pose: 'brace', ms: 700 },
+        { do: 'shake', ms: 400, amp: 3 },
+        { do: 'move', x: 700, lift: 220, ms: 1100, pose: 'run', ease: 'linear', expr: 'worried' },
+        { do: 'hold', pose: 'brace', ms: 300, expr: 'worried' },
+        { do: 'prop', state: 'strike' },
+        { do: 'impact', x: 480, lift: 110, size: 1 },
+        { do: 'hold', pose: 'brace', ms: 60, expr: 'surprised' },
+        { do: 'freeze', ms: 120 },
+        { do: 'shake', ms: 600, amp: 10 },
+        { do: 'face', facing: 'left' },
+        { do: 'emote', emote: 'alert' },
+        { do: 'camera', zoom: 1.6, ms: 220 },
+        { do: 'hold', pose: 'brace', ms: 450, expr: 'surprised' },
+        { do: 'camera', zoom: 1.05, ms: 200 },
+        { do: 'face', facing: 'right' },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'idle', ms: 450, expr: 'happy' },
         { do: 'prop', state: 'sled' },
         { do: 'caption' },
-        { do: 'jump', x: 780, lift: 240, height: 40, ms: 350, pose: 'leap' },
-        { do: 'move', x: 1800, lift: 20, ms: 1600, pose: 'ride', ease: 'in' },
+        { do: 'cutin', ms: 500, expr: 'determined' },
+        { do: 'hold', pose: 'brace', ms: 500, expr: 'determined' },
+        { do: 'jump', x: 780, lift: 240, height: 40, ms: 350, pose: 'leap', expr: 'happy' },
+        { do: 'impact', x: 780, lift: 230, size: 0.3 },
+        { do: 'camera', zoom: 1.15, tilt: -5, ms: 300 },
+        { do: 'action', ms: 1600 },
+        { do: 'move', x: 1500, lift: 85, ms: 1150, pose: 'ride', ease: 'in', expr: 'shout' },
+        { do: 'emote', emote: 'alert' },
+        { do: 'camera', zoom: 1.2, tilt: 4, ms: 250 },
+        { do: 'move', x: 1800, lift: 20, ms: 240, pose: 'ride', ease: 'linear', expr: 'surprised' },
         { do: 'prop', state: 'jump' },
-        { do: 'jump', x: 2150, lift: 20, height: 120, ms: 280, pose: 'ride' },
+        { do: 'slow', ms: 280, rate: 0.35 },
+        { do: 'jump', x: 2150, lift: 20, height: 120, ms: 280, pose: 'ride', expr: 'shout' },
         { do: 'prop', state: 'land' },
-        { do: 'shake', ms: 500, amp: 10 },
-        { do: 'move', x: 2300, lift: 20, ms: 240, pose: 'ride', ease: 'out' },
+        { do: 'impact', x: 2150, lift: 20, size: 1 },
+        { do: 'move', x: 2200, lift: 20, ms: 40, pose: 'ride', ease: 'linear', expr: 'shout' },
+        { do: 'freeze', ms: 110 },
+        { do: 'shake', ms: 600, amp: 10 },
+        { do: 'camera', zoom: 1, ms: 500 },
+        { do: 'move', x: 2300, lift: 20, ms: 160, pose: 'ride', ease: 'out', expr: 'happy' },
         { do: 'prop', state: 'off' },
-        { do: 'jump', x: 2420, height: 80, ms: 500, pose: 'leap' },
-        { do: 'hold', pose: 'cheer', ms: 1800 },
+        { do: 'jump', x: 2420, height: 80, ms: 500, pose: 'leap', expr: 'happy' },
+        { do: 'emote', emote: 'sparkle' },
+        { do: 'hold', pose: 'cheer', ms: 1700 },
       ],
     },
   },

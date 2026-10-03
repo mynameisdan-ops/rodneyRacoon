@@ -1,51 +1,69 @@
 import { useId } from 'react';
 import { ink, shade, tint } from '../../style';
-import { type Item, STAR } from './kit';
+import { type Item, OUT, IN, STAR } from './kit';
 
-/** The default cape: short, hanging from the shoulders behind everything. */
-const CAPE_PATH = 'M52 56 Q40 58 35 78 Q31 96 25 116 Q34 112 38 116 Q42 110 47 112 Q46 84 56 60 Z';
-/** Shop capes are longer and fuller, so they show from the side. */
+/** His default cape: hanging from the shoulders behind everything. */
+const CAPE_PATH = 'M42.5 52 Q54 47 58 53 Q52 95 50 125 Q38 129 24.5 122 Q30.5 82 42.5 52 Z';
+/** Shop capes are longer and fuller, with a scalloped hem, so they show from the side. */
 const GRAND_CAPE_PATH =
-  'M52 55 Q37 57 30 80 Q24 104 14 132 Q25 127 30 133 Q37 126 43 131 Q48 124 50 126 Q45 92 57 60 Z';
+  'M42.5 51 Q54 46 58.5 53 Q53 96 52 135 Q46.5 131 41 137 Q35 132 29 137 Q23 131.5 17 134 Q13 133 9 128 Q24 84 42.5 51 Z';
 
 export function Cape({ color, item }: { color: string; item?: Item<'cape'> }) {
   const clip = useId();
   if (!item) {
     return (
       <>
-        <path d={CAPE_PATH} fill={color} {...ink(2.1)} />
-        <path d="M44 62 Q38 80 33 106 L38 108 Q40 84 48 62 Z" fill={shade(color, 0.3)} />
+        <path d={CAPE_PATH} fill={color} {...ink(OUT)} />
+        <path
+          d="M34.5 78 Q32.5 107 24.5 122 Q34.5 123 40.5 126 Q38.5 92 34.5 78 Z"
+          fill={shade(color, 0.35)}
+        />
+        <path
+          d="M48 60 Q46 95 45 121"
+          fill="none"
+          stroke={tint(color, 0.3)}
+          strokeWidth={1.6}
+          strokeLinecap="round"
+        />
       </>
     );
   }
   const { color: c, accent: a } = item;
   return (
     <>
-      <path d={GRAND_CAPE_PATH} fill={c} {...ink(2.1)} />
-      <path d="M43 62 Q34 84 27 120 L32 124 Q37 88 47 62 Z" fill={shade(c, 0.3)} />
-      <path d="M50 66 Q45 94 47 124" fill="none" stroke={tint(c, 0.25)} strokeWidth={2} />
-      {item.art !== 'plain' && (
-        <g clipPath={`url(#${clip})`}>
-          <defs>
-            <clipPath id={clip}>
-              <path d={GRAND_CAPE_PATH} />
-            </clipPath>
-          </defs>
+      <path d={GRAND_CAPE_PATH} fill={c} />
+      <g clipPath={`url(#${clip})`}>
+        <defs>
+          <clipPath id={clip}>
+            <path d={GRAND_CAPE_PATH} />
+          </clipPath>
+        </defs>
+        <path d="M33 72 Q25 104 9 128 Q14 134 18 134 Q30 104 37 74 Z" fill={shade(c, 0.35)} />
+        <path
+          d="M48 60 Q46 98 46.5 131"
+          fill="none"
+          stroke={tint(c, 0.3)}
+          strokeWidth={1.8}
+          strokeLinecap="round"
+        />
+        {item.art === 'plain' ? (
+          // A royal cape: a gold hem with white spots (ermine).
+          <>
+            <path
+              d="M6 126 Q13 133 17 134 Q23 131.5 29 137 Q35 132 41 137 Q46.5 131 52 135 L52 127 Q46 124 41 129 Q35 124 29 129 Q23 124 16 126 Q11 125 8 120 Z"
+              fill={a}
+            />
+            <g fill="#fff8e8">
+              <circle cx={18} cy={129} r={1.5} />
+              <circle cx={30} cy={132} r={1.5} />
+              <circle cx={42} cy={132} r={1.5} />
+            </g>
+          </>
+        ) : (
           <CapePattern art={item.art} accent={a} />
-        </g>
-      )}
-      {item.art === 'plain' && (
-        // A royal cape: a gold hem with white spots (ermine), and a clasp.
-        <>
-          <path
-            d="M14 132 Q25 127 30 133 Q37 126 43 131 Q48 124 50 126 L49 119 Q44 117 42 123 Q36 119 30 126 Q24 121 17 124 Z"
-            fill={a}
-            {...ink(1.4)}
-          />
-          <circle cx={53} cy={58} r={3.2} fill={a} {...ink(1.3)} />
-        </>
-      )}
-      <path d={GRAND_CAPE_PATH} fill="none" {...ink(2.1)} />
+        )}
+      </g>
+      <path d={GRAND_CAPE_PATH} fill="none" {...ink(OUT)} />
     </>
   );
 }
@@ -60,35 +78,37 @@ function CapePattern({
   switch (art) {
     case 'leaves':
       return (
-        <g fill={accent} {...ink(1.1)}>
-          <path d="M16 134 Q15 122 23 118 Q25 128 16 134 Z" />
-          <path d="M27 134 Q26 122 34 118 Q36 128 27 134 Z" />
-          <path d="M38 132 Q37 120 45 116 Q47 126 38 132 Z" />
-          <path d="M30 106 Q29 96 36 92 Q38 101 30 106 Z" />
-          <path d="M39 84 Q39 75 45 71 Q47 79 39 84 Z" />
+        <g fill={accent} {...ink(IN)}>
+          <path d="M14 134 Q13 122 21 118 Q23 128 14 134 Z" />
+          <path d="M27 136 Q26 124 34 120 Q36 130 27 136 Z" />
+          <path d="M40 134 Q39 122 47 118 Q49 128 40 134 Z" />
+          <path d="M29 106 Q28 96 35 92 Q37 101 29 106 Z" />
+          <path d="M42 98 Q41 89 47 85 Q49 93 42 98 Z" />
+          <path d="M40 76 Q40 67 46 63 Q48 71 40 76 Z" />
         </g>
       );
     case 'stars':
       return (
         <g fill={accent}>
-          <path d={STAR} transform="translate(44 72) scale(0.9)" />
-          <path d={STAR} transform="translate(36 94) scale(1.2)" />
-          <path d={STAR} transform="translate(25 118) scale(1)" />
-          <path d={STAR} transform="translate(41 114) scale(0.7)" />
-          <circle cx={36} cy={80} r={1} />
-          <circle cx={45} cy={96} r={1} />
-          <circle cx={31} cy={106} r={1} />
+          <path d={STAR} transform="translate(45 70) scale(0.9)" />
+          <path d={STAR} transform="translate(37 95) scale(1.2)" />
+          <path d={STAR} transform="translate(24 120) scale(1)" />
+          <path d={STAR} transform="translate(44 118) scale(0.75)" />
+          <circle cx={37} cy={80} r={1} />
+          <circle cx={47} cy={98} r={1} />
+          <circle cx={30} cy={108} r={1} />
+          <circle cx={36} cy={128} r={1} />
         </g>
       );
     case 'flames':
       return (
         <>
           <path
-            d="M10 136 Q16 118 21 110 Q22 120 27 114 Q29 100 34 92 Q36 104 40 102 Q43 110 42 116 Q47 110 49 102 L52 138 Z"
+            d="M6 140 Q14 120 19 112 Q21 122 26 116 Q28 102 33 94 Q36 106 40 104 Q43 112 42 118 Q47 112 50 104 L56 140 Z"
             fill={accent}
           />
           <path
-            d="M16 136 Q21 126 23 120 Q25 128 29 122 Q32 112 35 106 Q37 116 40 118 L46 138 Z"
+            d="M14 140 Q20 128 22 122 Q24 130 28 124 Q31 114 34 108 Q36 118 40 120 L48 140 Z"
             fill="#ffe36b"
           />
         </>
@@ -96,9 +116,10 @@ function CapePattern({
     case 'waves':
       return (
         <g fill="none" stroke={accent} strokeWidth={2.8} strokeLinecap="round">
-          <path d="M14 122 Q19 117 24 122 T34 122 T44 122 T54 122" />
-          <path d="M22 102 Q27 97 32 102 T42 102 T52 102" />
-          <path d="M30 82 Q35 77 40 82 T50 82" />
+          <path d="M8 124 Q13 119 18 124 T28 124 T38 124 T48 124 T58 124" />
+          <path d="M18 104 Q23 99 28 104 T38 104 T48 104 T58 104" />
+          <path d="M28 84 Q33 79 38 84 T48 84 T58 84" />
+          <path d="M36 66 Q41 61 46 66 T56 66" />
         </g>
       );
   }

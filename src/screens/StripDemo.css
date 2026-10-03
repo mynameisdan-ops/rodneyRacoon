@@ -1,0 +1,11 @@
+/* The page-strip demo (dev only, #strip). */
+.strip-demo {
+  height: 100%;
+  background: #eaf7ff;
+}
+
+.strip-demo__label {
+  padding: 14px 40px 24px;
+  font-size: 30px;
+  font-weight: 800;
+}

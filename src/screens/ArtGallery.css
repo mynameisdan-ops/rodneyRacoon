@@ -30,6 +30,23 @@
   font-weight: 800;
 }
 
+/* One section on its own (#gallery-gear ...): packed tight to fit a screenshot. */
+.gallery--sheet {
+  padding: 12px 16px;
+}
+
+.gallery--sheet .gallery__row {
+  gap: 10px;
+}
+
+.gallery--sheet figure {
+  padding: 4px 8px;
+}
+
+.gallery--sheet figcaption {
+  font-size: 16px;
+}
+
 /* Dev-only sticker contact sheet (#moments). */
 .moments {
   height: 100%;

@@ -12,5 +12,7 @@ export const HERO_POSES = [
   'slide',
   'swing',
   'fall',
+  /** The wind-up before a jump: knees bent, arms swung back. */
+  'crouch',
 ] as const;
 export type HeroPose = (typeof HERO_POSES)[number];

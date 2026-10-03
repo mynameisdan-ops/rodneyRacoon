@@ -1,3 +1,6 @@
+import { clamp01 } from '../sceneKit';
+import { eventTime, type ObstacleProps } from '../types';
+
 /**
  * Positions shared by the World 2 (forest) obstacle art and the cut-scene scripts, in
  * local px from each scene's anchor (x right, y down, the ground line at 0). The
@@ -91,3 +94,18 @@ export const FIREFLIES = {
   gap: [1300, 1500] as const,
   width: 1950,
 };
+
+/** Where the vine's free end is: in his hands while he swings, then swinging back and settling. */
+export function vineEnd(p: ObstacleProps) {
+  const { pivot, vine, reach } = VINE_SWING;
+  const grabAt = eventTime(p.events, 'grab');
+  const letgoAt = eventTime(p.events, 'letgo');
+  if (p.t >= grabAt && p.t < letgoAt) return { x: p.heroX, y: -(p.heroLift + reach) };
+  let angle = 0.05 * Math.sin(p.t / 600);
+  if (p.t >= letgoAt) {
+    const dt = p.t - letgoAt;
+    const a0 = Math.asin(clamp01((p.heroAt(letgoAt).x - pivot.x) / vine));
+    angle = a0 * Math.cos(dt / 330) * Math.exp(-dt / 1400);
+  }
+  return { x: pivot.x + vine * Math.sin(angle), y: pivot.y + vine * Math.cos(angle) };
+}

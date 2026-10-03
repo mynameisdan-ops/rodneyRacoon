@@ -23,5 +23,6 @@ So far each version only added fields, so sanitizing is the whole migration.
 
 ## Privacy
 
-Avatar photos (M8) are stored only in local IndexedDB, downscaled to 256px, and are never
-uploaded or logged. No network calls, ever.
+The app has no photo feature: M8's avatars are drawn from photos the parent shares, as unnamed
+presets (save v6 adds `avatar`). Never commit, store or log those photos, and keep the children's
+names out of the repo. No network calls, ever.

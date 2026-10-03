@@ -1,10 +1,15 @@
 import { createElement, type FC, type ReactNode } from 'react';
 import { Bees, Boulder, DustDevil, Snowball, Wave } from '../chasers';
-import { CanyonFar, CanyonMid, CanyonNear, CanyonSky } from './canyon';
-import { ForestCanopy, ForestFar, ForestMid, ForestNear } from './forest';
-import { MineCeiling, MineFar, MineMid, MineNear } from './mine';
-import { MountainClouds, MountainFar, MountainMid, MountainNear } from './mountain';
-import { RiverClouds, RiverFar, RiverMid, RiverNear } from './river';
+import { CanyonFar, CanyonFront, CanyonMid, CanyonNear, CanyonSky } from './canyon';
+import { PAINTED_CANYON } from './canyonPalette';
+import { ForestCanopy, ForestFar, ForestFront, ForestMid, ForestNear } from './forest';
+import { PAINTED_FOREST } from './forestPalette';
+import { MineCeiling, MineFar, MineFront, MineMid, MineNear } from './mine';
+import { PAINTED_MINE } from './minePalette';
+import { MountainClouds, MountainFar, MountainFront, MountainMid, MountainNear } from './mountain';
+import { PAINTED_MOUNTAIN } from './mountainPalette';
+import { RiverClouds, RiverFar, RiverFront, RiverMid, RiverNear } from './river';
+import { PAINTED_RIVER } from './riverPalette';
 import type { LayerProps } from './sceneryKit';
 import { CANYON, FOREST, MINE, MOUNTAIN, RIVER, type WorldTheme } from './themes';
 
@@ -13,11 +18,16 @@ export type LayerName = 'clouds' | 'far' | 'mid' | 'near';
 /** What every layer gets besides its theme. */
 export type LayerBase = Omit<LayerProps<unknown>, 'theme'>;
 
+/** The layer drawings for one kind of theme; `front` is drawn in front of the hero in scenes. */
+type Layers<T> = Record<LayerName, FC<LayerProps<T>>> & { front?: FC<LayerProps<T>> };
+
 /** How a world looks: its colors, backdrop, the danger that chases the hero, and the timer. */
 export interface WorldArt {
   theme: WorldTheme;
-  /** Draws the four backdrop layers (each a 1280px tile; see WorldBackdrop). */
-  layers: (base: LayerBase) => Record<LayerName, ReactNode>;
+  /** A painted world's sky (M7b): three stops, the middle one partway down to the horizon. */
+  sky?: { top: string; mid: string; bottom: string };
+  /** Draws the backdrop layers (each a 1280px tile; see WorldBackdrop), and any foreground. */
+  layers: (base: LayerBase) => Record<LayerName, ReactNode> & { front?: ReactNode };
   /** The top layer drifts on its own (clouds), unlike a cave ceiling, canopy or low sun. */
   drift: boolean;
   /** The danger behind the hero on the page strip, drawn in `CHASER_BOX` (art/chasers.tsx). */
@@ -29,7 +39,7 @@ export interface WorldArt {
 /** A world's art from a theme and the layer drawings made for that kind of theme. */
 function world<T extends WorldTheme>(
   theme: T,
-  layers: Record<LayerName, FC<LayerProps<T>>>,
+  layers: Layers<T>,
   rest: Omit<WorldArt, 'theme' | 'layers'>,
 ): WorldArt {
   return {
@@ -39,37 +49,51 @@ function world<T extends WorldTheme>(
       far: createElement(layers.far, { ...base, theme }),
       mid: createElement(layers.mid, { ...base, theme }),
       near: createElement(layers.near, { ...base, theme }),
+      ...(layers.front && { front: createElement(layers.front, { ...base, theme }) }),
     }),
     ...rest,
   };
 }
 
+/** A painted world's three-stop sky, from its palette. */
+const skyOf = (p: { skyTop: string; skyMid: string; skyBottom: string }) => ({
+  top: p.skyTop,
+  mid: p.skyMid,
+  bottom: p.skyBottom,
+});
+
 /** Each world's art, by world id (`content/levels.ts` lists the worlds). */
 export const WORLD_ART: Record<number, WorldArt> = {
   1: world(
     MINE,
-    { clouds: MineCeiling, far: MineFar, mid: MineMid, near: MineNear },
-    { drift: false, chaser: Boulder, timer: 'lantern' },
+    { clouds: MineCeiling, far: MineFar, mid: MineMid, near: MineNear, front: MineFront },
+    { drift: false, chaser: Boulder, timer: 'lantern', sky: skyOf(PAINTED_MINE) },
   ),
   2: world(
     FOREST,
-    { clouds: ForestCanopy, far: ForestFar, mid: ForestMid, near: ForestNear },
-    { drift: false, chaser: Bees, timer: 'sun' },
+    { clouds: ForestCanopy, far: ForestFar, mid: ForestMid, near: ForestNear, front: ForestFront },
+    { drift: false, chaser: Bees, timer: 'sun', sky: skyOf(PAINTED_FOREST) },
   ),
   3: world(
     RIVER,
-    { clouds: RiverClouds, far: RiverFar, mid: RiverMid, near: RiverNear },
-    { drift: true, chaser: Wave, timer: 'sun' },
+    { clouds: RiverClouds, far: RiverFar, mid: RiverMid, near: RiverNear, front: RiverFront },
+    { drift: true, chaser: Wave, timer: 'sun', sky: skyOf(PAINTED_RIVER) },
   ),
   4: world(
     MOUNTAIN,
-    { clouds: MountainClouds, far: MountainFar, mid: MountainMid, near: MountainNear },
-    { drift: true, chaser: Snowball, timer: 'sun' },
+    {
+      clouds: MountainClouds,
+      far: MountainFar,
+      mid: MountainMid,
+      near: MountainNear,
+      front: MountainFront,
+    },
+    { drift: true, chaser: Snowball, timer: 'sun', sky: skyOf(PAINTED_MOUNTAIN) },
   ),
   5: world(
     CANYON,
-    { clouds: CanyonSky, far: CanyonFar, mid: CanyonMid, near: CanyonNear },
-    { drift: false, chaser: DustDevil, timer: 'sun' },
+    { clouds: CanyonSky, far: CanyonFar, mid: CanyonMid, near: CanyonNear, front: CanyonFront },
+    { drift: false, chaser: DustDevil, timer: 'sun', sky: skyOf(PAINTED_CANYON) },
   ),
 };
 

@@ -25,6 +25,11 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    // The art makes the main chunk about 722 kB, 201 kB gzipped (a precached PWA, so harmless;
+    // splitting the art per world is an M10 idea). Warn only if it grows well past that.
+    chunkSizeWarningLimit: 800,
+  },
   test: {
     environment: 'node',
     include: ['src/**/*.test.ts'],

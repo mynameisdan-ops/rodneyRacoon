@@ -2,6 +2,7 @@
  * Colors for each world's backdrop. Each kind of theme has its own layer drawings
  * (mine.tsx, forest.tsx, river.tsx, mountain.tsx, canyon.tsx); `registry.ts` pairs a
  * world with its theme and layers, so a new world can reuse a kind with new colors.
+ * The painted worlds (M7b) take most colors from their palettes (`*Palette.ts`).
  */
 interface BaseTheme {
   /** Top and bottom of the background gradient (sky, or the cave's back wall). */
@@ -14,16 +15,9 @@ interface BaseTheme {
   pathEdge: string;
 }
 
+/** The mine is painted (M7b): its layers take their colors from `PAINTED_MINE` (minePalette.ts). */
 export interface MineTheme extends BaseTheme {
   kind: 'mine';
-  /** Rock from farthest (hazy) to nearest. */
-  rockFar: string;
-  rockMid: string;
-  rockNear: string;
-  timber: string;
-  rail: string;
-  lantern: string;
-  crystals: string[];
 }
 
 export interface ForestTheme extends BaseTheme {
@@ -40,40 +34,19 @@ export interface ForestTheme extends BaseTheme {
   light: string;
 }
 
+/** The river is painted (M7b): its layers take their colors from `PAINTED_RIVER` (riverPalette.ts). */
 export interface RiverTheme extends BaseTheme {
   kind: 'river';
-  cloud: string;
-  hills: string;
-  hillsNear: string;
-  water: string;
-  waterDeep: string;
-  foam: string;
-  rock: string;
-  reed: string;
-  leaves: string[];
-  flowers: string[];
 }
 
+/** The mountains are painted (M7b): their layers take their colors from `PAINTED_MOUNTAIN`. */
 export interface MountainTheme extends BaseTheme {
   kind: 'mountain';
-  cloud: string;
-  peakFar: string;
-  peakMid: string;
-  snow: string;
-  rock: string;
-  pine: string;
 }
 
+/** The canyon is painted (M7b): its layers take their colors from `PAINTED_CANYON`. */
 export interface CanyonTheme extends BaseTheme {
   kind: 'canyon';
-  sun: string;
-  mesaFar: string;
-  mesaMid: string;
-  cliff: string;
-  strata: string;
-  cactus: string;
-  scrub: string;
-  rock: string;
 }
 
 export type WorldTheme = MineTheme | ForestTheme | RiverTheme | MountainTheme | CanyonTheme;
@@ -86,13 +59,6 @@ export const MINE: MineTheme = {
   groundLight: '#7a5538',
   path: '#c9a26b',
   pathEdge: '#6b4524',
-  rockFar: '#3b2735',
-  rockMid: '#2e1f2a',
-  rockNear: '#5a3d30',
-  timber: '#8a5a30',
-  rail: '#a9b4c0',
-  lantern: '#ffc64d',
-  crystals: ['#43e0cf', '#a07bff', '#ff6fb5'],
 };
 
 export const FOREST: ForestTheme = {
@@ -122,48 +88,24 @@ export const RIVER: RiverTheme = {
   groundLight: '#8fd06e',
   path: '#e6cf98',
   pathEdge: '#b8995e',
-  cloud: '#ffffff',
-  hills: '#8cc9a0',
-  hillsNear: '#6fb585',
-  water: '#3aa0d8',
-  waterDeep: '#2376b0',
-  foam: '#e8f8ff',
-  rock: '#8a8d96',
-  reed: '#5f9a3a',
-  leaves: ['#3f9d4c', '#4fae55'],
-  flowers: ['#ffffff', '#ffd23f', '#ff70a6'],
 };
 
 export const MOUNTAIN: MountainTheme = {
   kind: 'mountain',
-  skyTop: '#7fa8d8',
-  skyBottom: '#e8f0fa',
-  ground: '#e4edf7',
-  groundLight: '#ffffff',
-  path: '#9a8f86',
-  pathEdge: '#6b625c',
-  cloud: '#f7fbff',
-  peakFar: '#a9bcd8',
-  peakMid: '#7d8ea8',
-  snow: '#ffffff',
-  rock: '#7e7a82',
-  pine: '#2f5e4a',
+  skyTop: '#2f6fc4',
+  skyBottom: '#eef7ff',
+  ground: '#e7f0fb',
+  groundLight: '#f8fbff',
+  path: '#aa9a8b',
+  pathEdge: '#7a6b61',
 };
 
 export const CANYON: CanyonTheme = {
   kind: 'canyon',
-  skyTop: '#f08a4b',
-  skyBottom: '#ffe0a8',
-  ground: '#e0a765',
-  groundLight: '#f0c585',
-  path: '#f3d9a6',
-  pathEdge: '#c29056',
-  sun: '#fff1b8',
-  mesaFar: '#d88a7a',
-  mesaMid: '#b8553a',
-  cliff: '#c8663f',
-  strata: '#a24a33',
-  cactus: '#4f9a52',
-  scrub: '#8a9a4a',
-  rock: '#a86a48',
+  skyTop: '#4e6cc4',
+  skyBottom: '#ffe8b8',
+  ground: '#eab878',
+  groundLight: '#f6d29a',
+  path: '#d8a46c',
+  pathEdge: '#a8724a',
 };

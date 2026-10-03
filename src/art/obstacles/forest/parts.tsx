@@ -1,6 +1,6 @@
-import { ink, shade, tint } from '../../style';
+import { ink, shade } from '../../style';
 import { noise } from '../sceneKit';
-import { LEAF, EARTH } from './kit';
+import { LEAF, LEAF_LIGHT } from './kit';
 
 /**
  * Pieces shared by the World 2 (Whispering Forest) obstacles.
@@ -28,32 +28,12 @@ export function LeafBurst({
         const px = x + Math.cos(a) * d + 12 * Math.sin(dt / 120 + i);
         const py = y + Math.sin(a) * d + 0.0004 * dt * dt;
         return (
-          <path
-            key={i}
-            transform={`translate(${px} ${py}) rotate(${dt * 0.3 + i * 40})`}
-            d="M-8 0 Q0 -7 8 0 Q0 7 -8 0 Z"
-            fill={i % 2 ? LEAF : tint(LEAF, 0.3)}
-            {...ink(1.5)}
-          />
+          <g key={i} transform={`translate(${px} ${py}) rotate(${dt * 0.3 + i * 40})`}>
+            <path d="M-8 0 Q0 -7 8 0 Q0 7 -8 0 Z" fill={i % 2 ? LEAF : LEAF_LIGHT} {...ink(1.3)} />
+            <path d="M-5 0 H5" stroke={shade(LEAF, 0.35)} strokeWidth={0.9} />
+          </g>
         );
       })}
-    </g>
-  );
-}
-
-/** A dark cutaway hole in the ground from a to b, `depth` px deep. */
-export function Hollow({ a, b, depth }: { a: number; b: number; depth: number }) {
-  return (
-    <g>
-      <path
-        d={`M${a - 10} -2 L${a + 10} ${depth + 50} Q${(a + b) / 2} ${depth + 90} ${b - 10} ${depth + 50} L${b + 10} -2 Z`}
-        fill={EARTH}
-        {...ink(3)}
-      />
-      <path
-        d={`M${a + 10} 10 L${a + 24} ${depth + 50} L${a + 50} ${depth + 60} Z`}
-        fill={shade(EARTH, 0.4)}
-      />
     </g>
   );
 }

@@ -31,6 +31,9 @@ describe('cut scenes', () => {
     // Short enough to keep a kid's attention, long enough to read as a story.
     expect(tl.duration).toBeGreaterThanOrEqual(4000);
     expect(tl.duration).toBeLessThanOrEqual(14000);
+    // Slow motion and freeze frames stretch it as it plays, but only by a beat or two.
+    expect(tl.realDuration).toBeGreaterThanOrEqual(tl.duration);
+    expect(tl.realDuration - tl.duration).toBeLessThanOrEqual(1500);
     expect(tl.captionAt).not.toBeNull();
 
     const end = sampleTimeline(tl, tl.duration);

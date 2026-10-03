@@ -1,4 +1,4 @@
-import { ink, shade, tint } from '../../style';
+import { INK, ink, shade, tint } from '../../style';
 import { type Item, LW } from './kit';
 
 /** A pet trots (or flies) just ahead of the hero's front boot. */
@@ -18,11 +18,13 @@ export function Pet({ item }: { item: Item<'pet'> }) {
   );
 }
 
-function Eye({ x, y, r = 1.8 }: { x: number; y: number; r?: number }) {
+/** A shiny cartoon eye: dark, with a big highlight and a small one. */
+function Eye({ x, y, r = 2.4 }: { x: number; y: number; r?: number }) {
   return (
     <>
-      <circle cx={x} cy={y} r={r} fill="#1d2433" />
-      <circle cx={x + r * 0.35} cy={y - r * 0.4} r={r * 0.35} fill="#fff" />
+      <circle cx={x} cy={y} r={r} fill={INK} />
+      <circle cx={x + r * 0.3} cy={y - r * 0.35} r={r * 0.42} fill="#fff" />
+      <circle cx={x - r * 0.38} cy={y + r * 0.4} r={r * 0.18} fill="#fff" />
     </>
   );
 }
@@ -183,8 +185,8 @@ function PetBody({ art, c, a }: { art: Item<'pet'>['art']; c: string; a: string 
           />
           <circle cx={94} cy={109} r={4.2} fill="#fff8e8" {...ink(1.3)} />
           <circle cx={103} cy={109} r={4.2} fill="#fff8e8" {...ink(1.3)} />
-          <Eye x={95} y={109} r={2.1} />
-          <Eye x={104} y={109} r={2.1} />
+          <Eye x={95} y={109} r={2.6} />
+          <Eye x={104} y={109} r={2.6} />
           <path d="M98.5 112 L101 115 L98.5 116 Z" fill="#f2a93b" {...ink(1)} />
           <path
             className="pet-wing"

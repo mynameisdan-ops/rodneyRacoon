@@ -38,8 +38,10 @@ npm run format     # prettier --write
 ```
 
 Dev-only pages: `#demo/<screen>` opens any screen with made-up players in memory (list in
-`src/screens/CLAUDE.md`), `#gallery` shows all the art and scenes, `#moments-1-4` is the sticker
-contact sheet. (Keep this section in sync with `package.json`.)
+`src/screens/CLAUDE.md`); `#gallery` (or one section, e.g. `#gallery-gear`) shows all the art;
+`#scene-12` scrubs a level's scene and `#scene-12-2600` shows one frame; `#strip` plays the page
+strip by itself; `#moments-1-4` is the sticker contact sheet (details in `src/art/CLAUDE.md`).
+(Keep this section in sync with `package.json`.)
 
 ## Code map
 
@@ -49,7 +51,7 @@ contact sheet. (Keep this section in sync with `package.json`.)
 | `src/game/` | Pure logic: problems, adaptive difficulty, scoring, coins, shop, progress, `config.ts` |
 | `src/content/` | Data: levels, skills, stickers, shop items; `cutscenes/` has a script file per world |
 | `src/cutscenes/` | The pure timeline, `CutSceneView` and the scene clock |
-| `src/art/` | Style kit, `<Hero>` and gear, world backdrops and their registry, chasers, fx |
+| `src/art/` | Style kit, `<Hero>` (body, faces, cut-in) and gear, painted backdrops and their registry, chasers, fx |
 | `src/art/obstacles/` | Obstacle art: a folder per world, one file per obstacle |
 | `src/screens/`, `src/ui/` | Screens and shared UI, each with its own CSS file (order: `src/styles.css`) |
 | `src/state/` | zustand store, save schema and migrations, IndexedDB |
@@ -60,8 +62,9 @@ contact sheet. (Keep this section in sync with `package.json`.)
 - `src/game/` is pure TypeScript (no React or DOM) with unit tests and a seeded RNG.
   `src/content/` is data only: writing or tuning content never needs a logic change.
 - Every tunable gameplay number lives in `src/game/config.ts`.
-- Art uses the `INK` outline and flat `shade()`/`tint()` overlays (`src/art/style.ts`). **No CSS
-  or SVG `filter`** (slow on tablets). One `<Hero>` renders the avatar everywhere.
+- The look is a **Saturday-morning cartoon** (M7b): the hero and what he touches are lined and
+  cel-shaded, backgrounds are painted (rules in `src/art/CLAUDE.md`). **No CSS or SVG `filter`**
+  (slow on tablets). One `<Hero>` renders the avatar everywhere.
 - The design canvas is 1280×800 (16:10), scaled to fit: lay out in design units.
 - Audio is synthesized with Web Audio (no audio files unless we decide otherwise).
 
@@ -76,8 +79,9 @@ contact sheet. (Keep this section in sync with `package.json`.)
 
 **Privacy (hard requirements)**
 - No runtime network calls, analytics or trackers. The app works fully offline once installed.
-- Avatar photos stay **only** in local IndexedDB, downscaled to 256px. Never upload or log them.
-- Never commit real photos of the children.
+- The app has no photo feature: avatars are drawn from photos the parent shares (M8). Never
+  commit, store or log those photos, and keep the children's names out of the repo (presets are
+  unnamed). Never commit real photos of the children.
 
 ## Working conventions
 
@@ -87,10 +91,11 @@ contact sheet. (Keep this section in sync with `package.json`.)
 - One session at a time: check `git status` first and ask before building on uncommitted work.
   Also check `git branch -r --no-merged main`: work that touches the same files belongs on an
   unmerged milestone branch, or must wait for it.
-- Gotchas: a hidden browser pane stops `requestAnimationFrame` (pages auto-pause, scenes stand
-  still; scrub them in `#gallery`). The dev server sometimes misses edits made by tools: `touch`
-  the file. On Windows, long Bash heredocs fail (run a script file instead), and Python must open
-  files with `encoding='utf-8'` and `newline=''` (the files contain −, × and ÷; CRLF otherwise).
+- Gotchas: a hidden browser pane barely runs `requestAnimationFrame` (pages auto-pause, scenes
+  crawl): screenshot `#scene-N-ms` or `#gallery-<section>` frames with headless Chrome instead.
+  The dev server sometimes misses edits made by tools: `touch` the file. On Windows, long Bash
+  heredocs fail (run a script file instead), and Python must open files with `encoding='utf-8'`
+  and `newline=''` (the files contain −, × and ÷; CRLF otherwise).
 
 ## Before ending a session
 

@@ -1,12 +1,15 @@
 import { Dust, SparkBurst, SparkTrail, SpeedLines } from '../../fx';
-import { INK, ink, shade } from '../../style';
+import { mix } from '../../style';
+import { PAINTED_MINE } from '../../worlds/minePalette';
 import { eventTime, type ObstacleProps } from '../types';
-import { cartRide, clamp, flightTilt, RAIL_TOP, STEEL, WOOD, SPEED_YS } from './kit';
+import { cartRide, clamp, flightTilt, RAIL_TOP, SPEED_YS } from './kit';
 import { CART_JUMP } from './layout';
-import { CartRim, MineCart, Pit } from './parts';
+import { CartRim, MineCart, Pit, Timber } from './parts';
 
 // ---------- Level 2: cart jump ----------
 // board → launch (up the broken ramp) → fly (off the end) → land (far rails) → off.
+
+const P = PAINTED_MINE;
 
 const jumpCart = (p: ObstacleProps) =>
   cartRide(p, CART_JUMP.cartRest, CART_JUMP.stop, 'board', 'off');
@@ -23,6 +26,17 @@ function jumpTilt(p: ObstacleProps) {
   return flightTilt(p.t, landAt - 1, landAt);
 }
 
+/** A painted steel rail along a path (it can bend): dark underside, steel, a bright top edge. */
+function BentRail({ d }: { d: string }) {
+  return (
+    <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <path d={d} stroke={P.railDark} strokeWidth={9} />
+      <path d={d} stroke={P.rail} strokeWidth={5} transform="translate(0 -1.5)" />
+      <path d={d} stroke={P.railLight} strokeWidth={1.8} transform="translate(0 -3.2)" />
+    </g>
+  );
+}
+
 export function CartJumpBack(p: ObstacleProps) {
   const { rampStart: r0, rampEnd: r1, rampHeight: h } = CART_JUMP;
   const [a, b] = CART_JUMP.gap;
@@ -30,44 +44,18 @@ export function CartJumpBack(p: ObstacleProps) {
   return (
     <g>
       <Pit a={a} b={b} />
-      {/* The broken ramp: a timber trestle with the rail bent up at the end. */}
-      <path d={`M${r0 + 20} 0 L${r1} ${-h + 4} L${r1} 0 Z`} fill={shade(WOOD, 0.25)} {...ink(3)} />
+      {/* The broken ramp: a timber trestle under the rail, bent up where the track ends. */}
+      <path d={`M${r0 + 20} 0 L${r1} ${-h + 4} L${r1 + 4} 2 Z`} fill={P.timberDark} />
       <path
-        d={`M${r0 + 60} 0 L${r1 - 30} ${-h + 14} M${r1 - 30} 0 L${r1 - 30} ${-h + 16}`}
-        stroke={WOOD}
-        strokeWidth={7}
+        d={`M${r0 + 40} -2 L${r1 - 6} ${-h + 10} L${r1 - 6} -2 Z`}
+        fill={mix(P.timberDark, P.timber, 0.45)}
       />
-      <path
-        d={`M${r0} ${RAIL_TOP + 4} L${r1} ${RAIL_TOP - h + 4} l14 -14`}
-        fill="none"
-        stroke={INK}
-        strokeWidth={12}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d={`M${r0} ${RAIL_TOP + 4} L${r1} ${RAIL_TOP - h + 4} l14 -14`}
-        fill="none"
-        stroke={STEEL}
-        strokeWidth={7}
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <Timber x1={r0 + 62} y1={0} x2={r1 - 30} y2={-h + 18} w={9} />
+      <Timber x1={r1 - 30} y1={0} x2={r1 - 30} y2={-h + 18} w={9} />
+      <Timber x1={r1} y1={2} x2={r1} y2={-h + 6} w={10} />
+      <BentRail d={`M${r0} ${RAIL_TOP + 4} L${r1} ${RAIL_TOP - h + 4} l14 -14`} />
       {/* The far rail's broken end curls down into the gap. */}
-      <path
-        d={`M${b + 30} ${RAIL_TOP + 4} Q${b + 6} ${RAIL_TOP + 2} ${b} 20`}
-        fill="none"
-        stroke={INK}
-        strokeWidth={12}
-        strokeLinecap="round"
-      />
-      <path
-        d={`M${b + 30} ${RAIL_TOP + 4} Q${b + 6} ${RAIL_TOP + 2} ${b} 20`}
-        fill="none"
-        stroke={STEEL}
-        strokeWidth={7}
-        strokeLinecap="round"
-      />
+      <BentRail d={`M${b + 30} ${RAIL_TOP + 4} Q${b + 6} ${RAIL_TOP + 2} ${b} 20`} />
       <CartRim x={cart.x} lift={cart.lift} tilt={jumpTilt(p)} />
     </g>
   );

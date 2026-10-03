@@ -183,6 +183,7 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
       running={!done && !paused}
       progress={correct / problems.length}
       feedback={state.feedback}
+      combo={state.combo}
       endPose={endPose}
       counter={`${Math.min(state.index + 1, problems.length)} / ${problems.length}`}
       pad={<NumberPad onKey={handleKey} disabled={paused || state.phase !== 'playing'} />}
@@ -272,6 +273,7 @@ interface LayoutProps {
   running: boolean;
   progress?: number;
   feedback?: SessionState['feedback'];
+  combo?: number;
   endPose?: HeroPose;
   counter?: string;
   pad?: ReactNode;
@@ -287,24 +289,27 @@ function PageLayout({
   running,
   progress = 0,
   feedback,
+  combo,
   endPose,
   counter,
   pad,
   children,
 }: LayoutProps) {
   const shown = Math.ceil(secondsLeft);
+  const strip = {
+    worldId: level.world,
+    obstacle: getCutScene(level.id)?.obstacle,
+    avatar,
+    progress,
+    elapsed: 1 - secondsLeft / CONFIG.pageSeconds,
+    feedback,
+    running,
+    endPose,
+    combo,
+  };
   return (
     <div className="page">
-      <TrailStrip
-        worldId={level.world}
-        obstacle={getCutScene(level.id)?.obstacle}
-        avatar={avatar}
-        progress={progress}
-        elapsed={1 - secondsLeft / CONFIG.pageSeconds}
-        feedback={feedback}
-        running={running}
-        endPose={endPose}
-      />
+      <TrailStrip {...strip} />
       <div className="page__hud">
         <button type="button" className="icon-button" aria-label="Back to levels" onClick={onQuit}>
           ✕

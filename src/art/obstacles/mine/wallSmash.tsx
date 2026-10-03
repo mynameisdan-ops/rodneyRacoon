@@ -1,6 +1,7 @@
+import { memo, useId } from 'react';
 import { Debris, Dust, SparkBurst, SparkTrail } from '../../fx';
 import { debrisPieces } from '../../fxData';
-import { INK, ink, shade } from '../../style';
+import { INK, shade, tint } from '../../style';
 import { eventTime, type ObstacleProps } from '../types';
 import { RAIL_TOP, ROCK, WOOD } from './kit';
 import { WALL_SMASH } from './layout';
@@ -38,6 +39,66 @@ function smashCartX(p: ObstacleProps) {
   return p.t < smashAt ? x : x + 0.35 * (p.t - smashAt);
 }
 
+/** The cave-in: a mass of fallen rock from floor to roof (painted), loose boulders on its face. */
+const CaveIn = memo(function CaveIn() {
+  const id = useId();
+  const [w0, w1] = WALL_SMASH.wall;
+  return (
+    <g>
+      <defs>
+        <linearGradient id={id} x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stopColor="#4a3036" />
+          <stop offset="0.5" stopColor="#6a4a44" />
+          <stop offset="1" stopColor="#3a2430" />
+        </linearGradient>
+      </defs>
+      <path
+        d={`M${w0 - 20} 4 L${w0} -120 L${w0 - 14} -260 L${w0 + 6} -400 L${w0 - 10} -620 L${w1 + 30} -620 L${w1 + 10} -420 L${w1 + 26} -250 L${w1 + 8} -110 L${w1 + 30} 4 Z`}
+        fill={`url(#${id})`}
+      />
+      {/* Broken props sticking out of the cave-in. */}
+      <path
+        d={`M${w0 - 30} -470 L${w1 + 40} -330`}
+        stroke={INK}
+        strokeWidth={22}
+        strokeLinecap="round"
+      />
+      <path
+        d={`M${w0 - 30} -470 L${w1 + 40} -330`}
+        stroke={WOOD}
+        strokeWidth={15}
+        strokeLinecap="round"
+      />
+      <path
+        d={`M${w0 - 26} -476 L${w1 + 42} -337`}
+        stroke={tint(WOOD, 0.5)}
+        strokeWidth={2.4}
+        strokeLinecap="round"
+      />
+      {WALL_ROCKS.map(([x, y, s], i) => (
+        <Rock key={i} x={x} y={y} s={s} spin={((i * 23) % 30) - 15} />
+      ))}
+      {/* Cracks glow where the wall is weakest. */}
+      <path
+        d={`M${w0 + 10} -60 L${w0 + 40} -90 L${w0 + 30} -130 L${w0 + 55} -170`}
+        fill="none"
+        stroke="#ffd27a"
+        strokeWidth={5}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d={`M${w0 + 10} -60 L${w0 + 40} -90 L${w0 + 30} -130 L${w0 + 55} -170`}
+        fill="none"
+        stroke="#fff6d0"
+        strokeWidth={1.8}
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </g>
+  );
+});
+
 export function WallSmashBack(p: ObstacleProps) {
   const smashAt = eventTime(p.events, 'smash');
   const [w0, w1] = WALL_SMASH.wall;
@@ -54,42 +115,12 @@ export function WallSmashBack(p: ObstacleProps) {
       </g>
     );
   }
+  // The cracks pulse while he pushes toward them.
+  const pulse = 0.55 + 0.45 * Math.sin(p.t / 120);
   return (
     <g>
-      {/* The cave-in: a solid mass of rock from floor to roof, with loose boulders on its face. */}
-      <path
-        d={`M${w0 - 20} 4 L${w0} -120 L${w0 - 14} -260 L${w0 + 6} -400 L${w0 - 10} -620 L${w1 + 30} -620 L${w1 + 10} -420 L${w1 + 26} -250 L${w1 + 8} -110 L${w1 + 30} 4 Z`}
-        fill="#4e3c34"
-        {...ink(4)}
-      />
-      <path
-        d={`M${w0} -120 L${w0 - 14} -260 L${w0 + 6} -400 L${w0 - 10} -620 L${w0 + 30} -620 L${w0 + 24} -380 L${w0 + 10} -250 L${w0 + 24} -110 Z`}
-        fill="#6a5448"
-      />
-      {/* Broken props sticking out of the cave-in. */}
-      <path
-        d={`M${w0 - 30} -470 L${w1 + 40} -330`}
-        stroke={INK}
-        strokeWidth={22}
-        strokeLinecap="round"
-      />
-      <path
-        d={`M${w0 - 30} -470 L${w1 + 40} -330`}
-        stroke={WOOD}
-        strokeWidth={16}
-        strokeLinecap="round"
-      />
-      {WALL_ROCKS.map(([x, y, s], i) => (
-        <Rock key={i} x={x} y={y} s={s} spin={((i * 23) % 30) - 15} />
-      ))}
-      {/* Cracks glow where the wall is weakest. */}
-      <path
-        d={`M${w0 + 10} -60 L${w0 + 40} -90 L${w0 + 30} -130 L${w0 + 55} -170`}
-        fill="none"
-        stroke="#ffb347"
-        strokeWidth={4}
-        strokeLinecap="round"
-      />
+      <CaveIn />
+      <circle cx={w0 + 34} cy={-115} r={60} fill="#ffb347" opacity={0.12 * pulse} />
     </g>
   );
 }

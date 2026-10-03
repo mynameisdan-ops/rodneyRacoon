@@ -7,6 +7,13 @@
 /** Outline color for every object. */
 export const INK = '#1a1220';
 
+/**
+ * Line weights for the props he touches in cut scenes, in scene px (M7b): a bold line around the
+ * silhouette and thin ones inside it, like the hero's (2.5 and 1.3 view units at his scene size).
+ */
+export const PROP_OUT = 3.2;
+export const PROP_IN = 1.5;
+
 /** The color shadows fall toward (a deep violet, not black, keeps colors rich). */
 const SHADOW_TONE = '#1e1030';
 /** The color highlights move toward (warm lantern light). */

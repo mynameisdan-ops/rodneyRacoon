@@ -1,7 +1,7 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Oct 3, 2026 (code and docs restructured for cheaper sessions and easier expansion;
-M0–M7 on `main`). History: `docs/decisions.md`.
+Last updated: Oct 3, 2026 (M7b finished and merged to `main`: all five worlds painted and
+directed, the UI restyled). History: `docs/decisions.md`.
 
 ## Goals
 
@@ -13,40 +13,42 @@ four operations); each level is a 60-second page of problems and then an obstacl
   on GitHub Pages. No network calls, analytics or trackers.
 - Adaptive difficulty with weak-fact practice, gentle retries and no "game over".
 - Rewards: coins, stars, combos, an avatar shop and a sticker book.
-- An avatar builder with an optional photo face that never leaves the device.
+- Each child's own avatar, drawn by Claude from photos the parent shares (no photo feature in
+  the app).
 
 **Done means:** M10 is finished: the game is installed on the PC and the tablet, and all 40 levels
 are playable with rewards, audio and parent settings.
 
 ## Current state
 
-- **On `main`:** M0–M7. All 40 levels with cut scenes; adaptive difficulty with an age setting
-  (older players reach a little further); a danger chasing the hero on each page; the world
-  overview map; a per-player "levels: one by one / all open" switch; coins, the avatar shop
-  (21 items) and the sticker book (save format v5). The World 1 tablet play-through went fine.
-- **Oct 3 restructure** (nothing a player sees changed): area guides (`src/**/CLAUDE.md`) with
-  recipes, one file per obstacle and a script file per world, a world art registry, a CSS file
-  per screen, dev `#demo/<screen>` links, `npm run check`, and a content test that names
-  anything a new world is missing.
-- **In progress on its own branch:** M7b, a Saturday-morning cartoon look (`m7b-cartoon-look`,
-  not merged; Worlds 1–3 repainted and directed). Its `STATUS.md` has the details, and it already
-  has this restructure merged in. Art, scene and doc work belongs there until it merges.
-- **Checks:** 370 unit tests, lint and build pass; CI runs them on every push.
-- **Known gaps:** parent controls for adaptive difficulty, and the unlock switch's final home,
-  wait for Settings (M10); PNG icons and the Pages `base` path (M10).
+- **On `main`:** M0–M7b. All 40 levels with cut scenes; adaptive difficulty with an age setting;
+  a danger chasing the hero on each page; the world overview; the "all open" switch; coins, the
+  21-item shop and the 40-sticker book (save format v5).
+- **M7b, the Saturday-morning cartoon look, is done:** the three-quarter-view hero with anime
+  eyes and expressions; all five worlds painted (mine, forest, river, mountains, canyon), their
+  40 obstacles and five chasers repainted and every scene directed (impacts, hit-stops,
+  close-ups, cut-ins, slow motion); the lively page strip; and the UI restyled to match
+  (`styles/cartoon.css`). The tablet check (Phase E) moved to M10 at the user's request.
+- **M8 changed (Oct 2):** avatars drawn from photos the user provides (no builder, no photo
+  feature in the app).
+- **Checks:** 421 unit tests, lint and build pass; CI runs them on every push.
+- **Known gaps:** parent controls for adaptive difficulty and the unlock switch's final home wait
+  for Settings (M10), as do PNG icons and the Pages `base` path. The repainted scenes haven't run
+  on the tablet: in the dev build at 5× CPU throttle they cost 15–20 ms a frame and the first
+  frame hitches 0.5–0.8 s while the backdrop is drawn into images (check in M10). The main JS
+  chunk is 722 kB (201 kB gzipped): fine for a precached PWA; splitting the art per world is an
+  M10 idea.
 - **Still open:** the final title and story opening; what comes after level 40.
 
 ## Next steps
 
-1. The user plays the rewards and Worlds 2–5: PC with `npm run dev`, tablet with the LAN preview
-   (`npm run build`, then `npm run preview -- --host`). Worth a look: coin pace against prices,
-   whether gear and pets read well at tablet size, and the sticker book on the tablet (each page
-   draws 8 scene stills). Notes go in `docs/feedback.md`.
-2. Finish M7b on `m7b-cartoon-look` (Mountains, Canyon, the UI, the tablet check) and merge it;
-   then M8 (avatars drawn from the parent's photos, as decided on that branch), M9 (audio) and
-   M10 (settings, PWA polish, deploy).
+1. The user plays the new look (all 40 scenes; `#demo/scene/<level>` plays any one) and the
+   rewards (coin pace against prices, gear at tablet size). Notes go in `docs/feedback.md`.
+2. M8 (avatars drawn from the user's photos, a Look picker, save v6) on a new branch.
+3. M9 (audio), then M10 (settings, PWA polish, deploy, tablet testing).
 
 ## Handoff
 
-- **Branch:** `main`, pushed. On the user's PC, `handover.md` is the user's own untracked file.
-- **Waiting on the user:** a play-through of the rewards and of Worlds 2–5.
+- **Branch:** `main`, pushed, with `m7b-cartoon-look` merged. On the user's PC, `handover.md` is
+  the user's own old file (out of date; leave it).
+- **Waiting on the user:** a play of the new look; photos for M8 whenever they're ready.

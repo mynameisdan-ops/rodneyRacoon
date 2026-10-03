@@ -1,14 +1,18 @@
-import { useId } from 'react';
-import { Dust, Glow, SparkBurst, SparkTrail, SpeedLines } from '../../fx';
-import { ink, shade } from '../../style';
+import { memo, useId } from 'react';
+import { Dust, SparkBurst, SparkTrail, SpeedLines } from '../../fx';
+import { ink, shade, tint } from '../../style';
+import { PAINTED_MINE } from '../../worlds/minePalette';
+import { Glint } from '../../worlds/paintKit';
 import { eventTime, type ObstacleProps } from '../types';
-import { cartRide, flightTilt, RAIL_TOP, WOOD, SPEED_YS } from './kit';
+import { cartRide, flightTilt, IN, IRON, OUT, RAIL_TOP, SPEED_YS } from './kit';
 import { MINE_TRAIN } from './layout';
 import { CartRim, MineCart, Rails, Rock } from './parts';
 
 // ---------- Level 8 (boss): the mine train ----------
 // rumble → board (the rockfall chases the train out of the mine) → fly (off the canyon
 // edge) → land (far side) → off.
+
+const P = PAINTED_MINE;
 
 const trainCart = (p: ObstacleProps) =>
   cartRide(p, MINE_TRAIN.cartRest, MINE_TRAIN.stop, 'board', 'off');
@@ -23,9 +27,9 @@ function Rockfall(p: ObstacleProps) {
   const boardAt = eventTime(p.events, 'board');
   if (!(p.t >= rumbleAt)) return null;
   const rocks = [];
-  // A first few around him as the rumble starts.
+  // A first few behind him as the rumble starts (never on him: he stands at about 30).
   for (let i = 0; i < 4; i++) {
-    rocks.push({ s: rumbleAt + i * 160, x: -160 + i * 70, size: 18 + (i % 2) * 8, k: i });
+    rocks.push({ s: rumbleAt + i * 160, x: -230 + i * 55, size: 18 + (i % 2) * 8, k: i });
   }
   for (let k = 0; ; k++) {
     const s = boardAt + 200 + k * 110;
@@ -53,37 +57,67 @@ function Rockfall(p: ObstacleProps) {
   );
 }
 
-/** Daylight past the tunnel mouth: sky, mesas, sunlit ground and the canyon. */
-function Outside() {
-  const sky = useId();
+/** Daylight past the tunnel mouth (painted): sky, sun, mesas, the canyon and the far river. */
+const Outside = memo(function Outside() {
+  const id = useId();
   const { mouth } = MINE_TRAIN;
   const [c0, c1] = MINE_TRAIN.canyon;
   const end = 2400;
   return (
     <g>
       <defs>
-        <linearGradient id={sky} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#f08a5d" />
-          <stop offset="1" stopColor="#ffe0a3" />
+        <linearGradient id={`${id}sky`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#f5845a" />
+          <stop offset="0.6" stopColor="#ffc27a" />
+          <stop offset="1" stopColor="#ffe6b0" />
+        </linearGradient>
+        <radialGradient id={`${id}sun`}>
+          <stop offset="0" stopColor="#fffbe6" stopOpacity={1} />
+          <stop offset="0.25" stopColor="#fff1c0" stopOpacity={0.8} />
+          <stop offset="1" stopColor="#ffe0a0" stopOpacity={0} />
+        </radialGradient>
+        <linearGradient id={`${id}deep`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#8a4030" />
+          <stop offset="1" stopColor="#4a1e1c" />
         </linearGradient>
       </defs>
-      <rect x={mouth} y={-700} width={end - mouth} height={704} fill={`url(#${sky})`} />
-      <Glow x={1900} y={-430} r={260} color="#fff3c4" />
-      <circle cx={1900} cy={-430} r={46} fill="#fff6d8" />
+      <rect x={mouth} y={-700} width={end - mouth} height={704} fill={`url(#${id}sky)`} />
+      <circle cx={1900} cy={-430} r={260} fill={`url(#${id}sun)`} />
+      <circle cx={1900} cy={-430} r={44} fill="#fffaf0" />
+      {/* Mesas far away, then nearer, each lit along its top. */}
       <path
         d={`M${mouth} -120 L1150 -120 L1170 -210 L1320 -210 L1340 -130 L1560 -130 L1580 -260 L1760 -260 L1790 -150 L2000 -150 L2020 -230 L2200 -230 L2230 -110 L${end} -110 V0 H${mouth} Z`}
-        fill="#c77a6e"
+        fill="#e09a84"
+        opacity={0.85}
+      />
+      <path
+        d="M1170 -210 L1320 -210 M1580 -260 L1760 -260 M2020 -230 L2200 -230"
+        stroke="#ffd8b8"
+        strokeWidth={4}
         opacity={0.8}
       />
       <path
         d={`M${mouth} -40 L1240 -40 L1260 -90 L1400 -90 L1420 -50 L1700 -50 L1730 -120 L1880 -120 L1900 -60 L${end} -60 V0 H${mouth} Z`}
-        fill="#a85a45"
+        fill="#c26a50"
       />
-      {/* The canyon: far wall, river far below, and the two cliff faces. */}
-      <rect x={c0} y={-4} width={c1 - c0} height={210} fill="#7a3b24" />
+      <path d="M1260 -90 L1400 -90 M1730 -120 L1880 -120" stroke="#f0a880" strokeWidth={4} />
+      {/* The canyon: the far wall, the river far below, and the two cliff faces. */}
+      <rect x={c0} y={-4} width={c1 - c0} height={210} fill={`url(#${id}deep)`} />
       <path d={`M${c0} 150 Q${(c0 + c1) / 2} 135 ${c1} 150 V210 H${c0} Z`} fill="#4fb3d9" />
-      <path d={`M${c0} -4 L${c0 + 40} 210 H${c0 - 4} Z`} fill="#b86a3e" {...ink(3)} />
-      <path d={`M${c1} -4 L${c1 - 30} 210 H${c1 + 4} Z`} fill="#8f4a2c" {...ink(3)} />
+      <path
+        d={`M${c0 + 30} 146 Q${(c0 + c1) / 2} 134 ${c1 - 40} 146`}
+        stroke="#c8f0ff"
+        strokeWidth={3}
+        fill="none"
+      />
+      <path d={`M${c0} -4 L${c0 + 40} 210 H${c0 - 4} Z`} fill="#b86a4a" />
+      <path d={`M${c1} -4 L${c1 - 30} 210 H${c1 + 4} Z`} fill="#6e3424" />
+      <path
+        d={`M${c0 + 8} 30 l14 4 M${c0 + 16} 80 l14 4`}
+        stroke="#d88a60"
+        strokeWidth={3}
+        strokeLinecap="round"
+      />
       {/* Sunlit ground on both sides, with its own track. */}
       {(
         [
@@ -92,71 +126,118 @@ function Outside() {
         ] as const
       ).map(([a, b]) => (
         <g key={a}>
-          <rect x={a} y={-4} width={b - a} height={210} fill="#c47a45" {...ink(3)} />
-          <rect x={a} y={-4} width={b - a} height={8} fill="#e0a068" />
+          <rect x={a} y={-4} width={b - a} height={210} fill="#c47a45" />
+          <rect x={a} y={-4} width={b - a} height={8} fill="#f0b47a" />
+          <rect x={a} y={30} width={b - a} height={180} fill="#a85e38" opacity={0.6} />
           <Rails a={a} b={b} />
         </g>
       ))}
     </g>
   );
-}
+});
 
-/** The tunnel mouth: the rock face and a timber portal. */
-function Mouth() {
+/** The tunnel mouth (painted): the rock face and a timber portal, daylight on its far edge. */
+const Mouth = memo(function Mouth() {
   const m = MINE_TRAIN.mouth;
   return (
     <g>
       <path
         d={`M${m - 40} -700 L${m + 50} -700 L${m + 30} -560 L${m + 60} -420 L${m + 36} -300 L${m + 58} -170 L${m + 40} 4 L${m - 40} 4 Z`}
         fill="#3a2830"
-        {...ink(3)}
       />
-      <rect x={m - 20} y={-250} width={20} height={254} fill={WOOD} {...ink(3)} />
-      <rect x={m - 60} y={-270} width={110} height={24} fill={WOOD} {...ink(3)} />
+      <path
+        d={`M${m + 50} -700 L${m + 30} -560 L${m + 60} -420 L${m + 36} -300 L${m + 58} -170 L${m + 40} 4`}
+        stroke="#f0a070"
+        strokeWidth={5}
+        fill="none"
+        opacity={0.7}
+      />
+      <rect x={m - 20} y={-250} width={20} height={254} fill={P.timber} />
+      <rect x={m - 20} y={-250} width={7} height={254} fill={P.timberDark} />
+      <rect x={m - 60} y={-270} width={110} height={24} fill={P.timber} />
+      <rect x={m - 60} y={-254} width={110} height={8} fill={P.timberDark} />
+      <rect x={m - 60} y={-270} width={110} height={3} fill={P.timberLight} />
     </g>
   );
-}
+});
+
+const ENGINE = '#2f7d64';
+const CAB = '#d2453a';
+const BRASS = '#f0c050';
 
 /** The little engine pushing the cart, its front facing right. */
 function Engine({ x, lift, tilt, t }: { x: number; lift: number; tilt: number; t: number }) {
   const spin = (x / 16) * (180 / Math.PI);
   return (
     <g>
+      {/* Puffs of smoke streaming back from the stack (painted, soft). */}
       {Array.from({ length: 4 }, (_, i) => {
         const ph = ((t + i * 180) % 720) / 720;
+        const cx = x + 40 - ph * 90;
+        const cy = -lift - 150 - ph * 120;
+        const r = 12 + ph * 26;
         return (
-          <circle
-            key={i}
-            cx={x + 40 - ph * 90}
-            cy={-lift - 150 - ph * 120}
-            r={12 + ph * 26}
-            fill="#e8e1d8"
-            opacity={0.7 * (1 - ph)}
-          />
+          <g key={i} opacity={0.8 * (1 - ph)}>
+            <circle cx={cx} cy={cy} r={r} fill="#d8d0cc" />
+            <circle cx={cx - r * 0.2} cy={cy - r * 0.25} r={r * 0.62} fill="#f4f0ee" />
+          </g>
         );
       })}
       <g transform={`translate(${x} ${-lift}) rotate(${tilt} 0 -24)`}>
+        <EngineBody />
         {[-40, 0, 40].map((wx) => (
-          <g key={wx} transform={`translate(${wx} ${RAIL_TOP - 16}) rotate(${spin})`}>
-            <circle r={16} fill="#8a2a24" {...ink(3)} />
-            <path d="M-12 0 H12 M0 -12 V12" stroke="#e0b458" strokeWidth={3} />
+          <g key={wx} transform={`translate(${wx} ${RAIL_TOP - 16})`}>
+            <circle r={16} fill="#a8322d" {...ink(OUT)} />
+            <g transform={`rotate(${spin})`} stroke={BRASS} strokeWidth={3} strokeLinecap="round">
+              <path d="M-11 0 H11 M0 -11 V11" />
+            </g>
+            <circle r={4.5} fill={BRASS} {...ink(IN)} />
           </g>
         ))}
-        <rect x={-66} y={-44} width={136} height={16} rx={3} fill="#2c2f36" {...ink(3)} />
-        <rect x={-8} y={-100} width={72} height={58} rx={26} fill="#2f5d50" {...ink(3.5)} />
-        <rect x={-8} y={-70} width={72} height={10} fill={shade('#2f5d50', 0.35)} />
-        {[10, 40].map((bx) => (
-          <rect key={bx} x={bx} y={-102} width={7} height={62} fill="#e0b458" {...ink(2)} />
-        ))}
-        <path d="M34 -100 L30 -132 H56 L50 -100 Z" fill="#2c2f36" {...ink(3)} />
-        <rect x={-66} y={-138} width={60} height={96} rx={4} fill="#a8322d" {...ink(3.5)} />
-        <rect x={-72} y={-148} width={72} height={14} rx={3} fill="#5a1f24" {...ink(3)} />
-        <rect x={-54} y={-126} width={36} height={30} rx={3} fill="#ffe7a8" {...ink(2.5)} />
-        <rect x={64} y={-60} width={12} height={22} rx={3} fill="#e0b458" {...ink(2.5)} />
+        <path d="M-40 -24 H40" stroke={IRON} strokeWidth={5} strokeLinecap="round" />
       </g>
     </g>
   );
 }
+
+/** The engine's body, cab and boiler: drawn once (memoized), since only its wheels turn. */
+const EngineBody = memo(function EngineBody() {
+  return (
+    <g>
+      <rect x={-68} y={-46} width={142} height={18} rx={4} fill="#2c2f36" {...ink(OUT)} />
+      <rect x={-64} y={-34} width={134} height={5} fill="#16181c" />
+      {/* The boiler, its bands and a rim light along the top. */}
+      <rect x={-10} y={-104} width={78} height={60} rx={28} fill={ENGINE} {...ink(OUT)} />
+      <path
+        d="M-10 -66 Q-10 -46 10 -46 L60 -46 Q66 -46 68 -54 L-6 -54 Z"
+        fill={shade(ENGINE, 0.32)}
+      />
+      <path
+        d="M10 -100 Q40 -104 58 -96"
+        stroke={tint(ENGINE, 0.5)}
+        strokeWidth={3}
+        fill="none"
+        strokeLinecap="round"
+      />
+      {[12, 42].map((bx) => (
+        <rect key={bx} x={bx} y={-106} width={7} height={63} rx={2} fill={BRASS} {...ink(IN)} />
+      ))}
+      <path d="M34 -104 L29 -136 H57 L51 -104 Z" fill="#2c2f36" {...ink(OUT)} />
+      <rect x={25} y={-142} width={36} height={9} rx={3} fill="#2c2f36" {...ink(IN + 0.5)} />
+      {/* The headlamp at the front. */}
+      <rect x={64} y={-92} width={16} height={18} rx={5} fill={BRASS} {...ink(IN + 0.5)} />
+      <circle cx={76} cy={-83} r={5} fill="#fff6c0" />
+      <Glint x={78} y={-86} r={9} color="#ffffff" />
+      {/* The cab: red, with a window and a roof. */}
+      <rect x={-68} y={-140} width={62} height={98} rx={5} fill={CAB} {...ink(OUT)} />
+      <path d="M-68 -136 L-68 -46 L-50 -46 L-50 -136 Z" fill={shade(CAB, 0.3)} />
+      <path d="M-10 -134 V-52" stroke={tint(CAB, 0.5)} strokeWidth={2.4} strokeLinecap="round" />
+      <rect x={-76} y={-152} width={76} height={15} rx={4} fill="#5a1f24" {...ink(OUT)} />
+      <rect x={-55} y={-128} width={38} height={32} rx={4} fill="#ffe7a8" {...ink(IN + 0.5)} />
+      <path d="M-50 -100 L-24 -124" stroke="#fff8e0" strokeWidth={3} strokeLinecap="round" />
+    </g>
+  );
+});
 
 export function MineTrainBack(p: ObstacleProps) {
   const cart = trainCart(p);

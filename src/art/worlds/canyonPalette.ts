@@ -1,0 +1,47 @@
+/** The painted canyon's colors (M7b): golden hour on the last stretch home, warm and glowing. */
+export const PAINTED_CANYON = {
+  skyTop: '#4e6cc4',
+  skyMid: '#f2a066',
+  skyBottom: '#ffe8b8',
+  sun: '#fff1c4',
+  sunCore: '#fffbe8',
+  cloud: '#ffd9b8',
+  cloudLit: '#fff3de',
+  cloudShade: '#e89a8a',
+  /** The farthest buttes, hazy violet-pink. */
+  far: '#d8a0a4',
+  farShade: '#b88294',
+  /** The nearer mesas: lit faces turned to the sun, purple shadow on the others. */
+  mesa: '#e0784a',
+  mesaLit: '#f2a068',
+  mesaShade: '#9a4a54',
+  haze: '#ffe2c0',
+  /** The red canyon walls and their bands of rock. */
+  cliff: '#d4683e',
+  cliffLit: '#f0915a',
+  cliffShade: '#8e3e44',
+  cliffDark: '#5e2a3a',
+  bands: ['#e8a066', '#c85a38', '#f2c08a', '#b04a36'],
+  /** The desert floor. */
+  sandTop: '#f6d29a',
+  sand: '#eab878',
+  sandDark: '#c88a58',
+  sandShade: '#d49a6a',
+  road: '#d8a46c',
+  roadLight: '#f0c890',
+  roadDark: '#a8724a',
+  stone: '#c46a48',
+  stoneDark: '#8a4038',
+  /** Saguaros, prickly pears and desert scrub. */
+  cactus: '#4f9a5a',
+  cactusLit: '#86c46e',
+  cactusShade: '#2f6a48',
+  scrub: '#9aa65a',
+  scrubLight: '#c8cc7a',
+  grass: '#c8a05a',
+  grassLight: '#ecd08a',
+  juniper: '#5a8a5a',
+  flowers: ['#ff8a3c', '#ff5f8f', '#b48aff', '#ffd23f'],
+  wood: '#9a6a44',
+  woodDark: '#6a4430',
+};
