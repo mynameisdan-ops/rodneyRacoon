@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { avatarForProfile } from '../art/hero/avatar';
 import { Hero } from '../art/hero/Hero';
 import { ItemIcon } from '../art/hero/ItemIcon';
+import { useMusic } from '../audio/hooks';
+import { worldSong } from '../content/music';
 import { GEAR_SLOTS, SHOP_ITEMS, type GearSlot, type ShopItem } from '../content/shop';
 import { canBuy } from '../game/shop';
 import type { Profile } from '../state/schema';
@@ -9,6 +11,8 @@ import { Coin } from '../ui/icons';
 
 interface Props {
   profile: Profile;
+  /** The map's world (its theme plays here too). */
+  worldId: number;
   onBuy: (itemId: string) => void;
   onToggle: (itemId: string) => void;
   onBack: () => void;
@@ -25,7 +29,8 @@ const SLOT_NAMES: Record<GearSlot, string> = {
  * The avatar shop. Tapping an item tries it on the big hero; the button under him buys it
  * (or puts it on / takes it off once it's owned).
  */
-export function ShopScreen({ profile, onBuy, onToggle, onBack }: Props) {
+export function ShopScreen({ profile, worldId, onBuy, onToggle, onBack }: Props) {
+  useMusic(worldSong(worldId));
   const [slot, setSlot] = useState<GearSlot>('hat');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const selected = SHOP_ITEMS.find((i) => i.id === selectedId);
@@ -157,7 +162,12 @@ function ShopAction({
   if (state === 'owned') {
     const worn = profile.gear[item.slot] === item.id;
     return (
-      <button type="button" className="big-button shop__action" onClick={onToggle}>
+      <button
+        type="button"
+        className="big-button shop__action"
+        data-sound="wear"
+        onClick={onToggle}
+      >
         {worn ? 'Take off' : 'Wear it'}
       </button>
     );
@@ -170,7 +180,7 @@ function ShopAction({
     );
   }
   return (
-    <button type="button" className="big-button shop__action" onClick={onBuy}>
+    <button type="button" className="big-button shop__action" data-sound="buy" onClick={onBuy}>
       Buy <Coin size={40} /> {item.price}
     </button>
   );

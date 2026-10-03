@@ -315,6 +315,20 @@ export function scriptTime(tl: Timeline, real: number): number {
   return Math.max(0, Math.min(tl.duration, real - shift));
 }
 
+/**
+ * Real time (ms) when the scene reaches scene time `t`: the inverse of `scriptTime`. A moment
+ * where a freeze starts comes before the freeze (an impact is heard as the hit-stop begins).
+ */
+export function realTime(tl: Timeline, t: number): number {
+  let shift = 0;
+  for (const w of tl.warps) {
+    if (t <= w.at) break;
+    if (t < w.at + w.scriptMs) return w.at + shift + ((t - w.at) * w.realMs) / w.scriptMs;
+    shift += w.realMs - w.scriptMs;
+  }
+  return t + shift;
+}
+
 /** A snappy ease that overshoots a touch and settles (for camera moves). */
 const backOut = (p: number) => 1 + 2.2 * (p - 1) ** 3 + 1.2 * (p - 1) ** 2;
 

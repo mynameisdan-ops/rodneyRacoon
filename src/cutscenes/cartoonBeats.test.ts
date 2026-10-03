@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { EMOTE_MS, IMPACT_MS, buildTimeline, sampleTimeline, scriptTime } from './timeline';
+import { EMOTE_MS, IMPACT_MS, buildTimeline, realTime, sampleTimeline, scriptTime } from './timeline';
 
 /** The M7b cartoon beats: faces, squash and stretch, impacts, focus lines and emotes. */
 
@@ -137,6 +137,18 @@ describe('direction: time, camera and cut-ins', () => {
     expect(scriptTime(tl, 1900)).toBe(1400); // slow motion over
     expect(scriptTime(tl, 2000)).toBe(1500);
     expect(scriptTime(tl, 99999)).toBe(2600);
+  });
+
+  it('maps scene time back to real time (a freeze starts after the moment it holds)', () => {
+    expect(realTime(tl, 500)).toBe(500);
+    expect(realTime(tl, 1000)).toBe(1000);
+    expect(realTime(tl, 1001)).toBe(1102); // after the freeze, at half speed
+    expect(realTime(tl, 1100)).toBe(1300); // half speed
+    expect(realTime(tl, 1400)).toBe(1900);
+    expect(realTime(tl, 2600)).toBe(tl.realDuration);
+    for (const t of [0, 300, 999, 1050, 1250, 1399, 1700, 2600]) {
+      expect(scriptTime(tl, realTime(tl, t))).toBeCloseTo(t);
+    }
   });
 
   it('eases the camera in with a little overshoot, holds, and eases back', () => {

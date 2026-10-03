@@ -24,5 +24,5 @@ So far each version only added fields, so sanitizing is the whole migration.
 ## Privacy
 
 The app has no photo feature: M8's avatars are drawn from photos the parent shares, as unnamed
-presets (save v6 adds `avatar`). Never commit, store or log those photos, and keep the children's
+presets (save v7 adds `avatar`; v6 added the device's `audio` settings). Never commit, store or log those photos, and keep the children's
 names out of the repo. No network calls, ever.

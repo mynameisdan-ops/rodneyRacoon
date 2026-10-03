@@ -7,7 +7,14 @@ import { pageCoins, type CoinReward } from '../game/rewards';
 import type { PageEvaluation } from '../game/scoring';
 import { buy, toggleWear } from '../game/shop';
 import { loadSave, requestPersistentStorage, writeSave } from './persistence';
-import { emptySave, MAX_NAME_LENGTH, NewerSaveError, type Profile, type SaveData } from './schema';
+import {
+  emptySave,
+  MAX_NAME_LENGTH,
+  NewerSaveError,
+  type AudioSettings,
+  type Profile,
+  type SaveData,
+} from './schema';
 
 /** The per-player settings a parent picks in the player editor. */
 export type ProfileSettings = Pick<Profile, 'autoSubmit' | 'age' | 'unlockAll'>;
@@ -39,6 +46,8 @@ interface GameStore {
   buyItem(itemId: string): void;
   /** Puts an owned item on, or takes it off. */
   toggleItem(itemId: string): void;
+  /** Changes this device's sound settings. */
+  setAudio(patch: Partial<AudioSettings>): void;
 }
 
 function newId(): string {
@@ -172,6 +181,10 @@ export const useGame = create<GameStore>()((set, get) => {
       const id = get().activeProfileId;
       const item = getItem(itemId);
       if (id && item) updateProfiles((p) => toggleWear(p, item), id);
+    },
+
+    setAudio(patch) {
+      commit((d) => ({ ...d, audio: { ...d.audio, ...patch } }));
     },
   };
 });

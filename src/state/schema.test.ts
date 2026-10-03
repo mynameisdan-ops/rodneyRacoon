@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { emptySave, migrate, NewerSaveError, SAVE_VERSION } from './schema';
+import { DEFAULT_AUDIO, emptySave, migrate, NewerSaveError, SAVE_VERSION } from './schema';
 
 describe('migrate', () => {
   it('returns an empty save for nothing or junk', () => {
@@ -15,8 +15,9 @@ describe('migrate', () => {
 
   it('keeps valid data unchanged', () => {
     const save = {
-      version: 5,
+      version: 6,
       lastProfileId: 'a',
+      audio: { sound: 3, music: 0, muted: true },
       profiles: [
         {
           id: 'a',
@@ -97,6 +98,17 @@ describe('migrate', () => {
       profiles: [{ id: 'a', name: 'Sam', unlockAll: true, progress: {} }],
     });
     expect(out.profiles[0]).toMatchObject({ unlockAll: true, coins: 0, owned: [], gear: {} });
+  });
+
+  it('migrates a v5 save: the sound starts at the default volumes', () => {
+    const out = migrate({ version: 5, lastProfileId: null, profiles: [] });
+    expect(out.audio).toEqual(DEFAULT_AUDIO);
+  });
+
+  it('cleans up damaged sound settings', () => {
+    expect(migrate({ version: 6, profiles: [], audio: 'loud' }).audio).toEqual(DEFAULT_AUDIO);
+    const out = migrate({ version: 6, profiles: [], audio: { sound: 7, music: 1, muted: 'yes' } });
+    expect(out.audio).toEqual({ sound: DEFAULT_AUDIO.sound, music: 1, muted: false });
   });
 
   it('drops bad coins, unknown items, and gear that is not owned or in the wrong slot', () => {

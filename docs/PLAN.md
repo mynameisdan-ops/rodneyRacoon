@@ -1,7 +1,6 @@
 # Project Plan: "The Long Way Home" (working title)
 
-Last updated Oct 3, 2026 (M7b finished and merged: all five worlds painted and directed, the
-UI restyled; M8 is next). The forward plan: design, milestones with their status, and open
+Last updated Oct 3, 2026 (M9, audio, merged; M10 under way; M8 waits for the photos). The forward plan: design, milestones with their status, and open
 questions. Update it when a design decision changes or a milestone moves. Current state:
 `STATUS.md`. History: `docs/decisions.md` (older entries in `docs/archive/`). Where code lives
 and how to extend it: `CLAUDE.md` and the area guides it lists.
@@ -27,7 +26,7 @@ each finished page ends in a cut scene where he gets past a big obstacle on his 
 | Unlocking | Levels unlock strictly in order. A per-player "levels: one by one / all open" switch opens them all (in the player editor until Settings in M10) |
 | Submitting | Enter / ✓ checks the answer; auto-submit is a per-profile switch |
 | Rewards | Coins spent in an avatar shop, 1–3 stars per level, combo streaks, and a sticker per level |
-| Audio | Sound effects and music only (no voice); scenes tell the story through visuals and very short captions |
+| Audio | Sound effects and music only (no voice), all synthesized with Web Audio (M9): a theme per world plus the title, played without its tune on a timed page; stings for results and bosses; scene sounds worked out from each scene's beats. Volumes are per device. Scenes tell the story through visuals and very short captions |
 | Parent tools | Stats and difficulty settings live in the normal **Settings** screen (not locked) |
 | Hero look before M8 | The player's chosen shirt color on the default avatar, plus shop gear |
 
@@ -114,7 +113,8 @@ Numbers in `CONFIG.adaptive`.
   eye shapes, glasses, freckles) and unnamed presets in `content/avatar.ts`, so no names or photos
   are in the repo. The app has no camera or photo feature.
 - **Look picker** in the player editor: pick a preset, then the shirt, pants and shoe colors.
-  Shop items (hats, capes, packs, pets) are extra layers on top. Save v6 adds `avatar`.
+  Shop items (hats, capes, packs, pets) are extra layers on top. A new save version adds
+  `avatar` (v6 went to M9's sound settings).
 - The same `<Hero>` is used everywhere (map, page strip, cut scenes, shop), posed by a prop and
   (from M7b) given an expression.
 
@@ -166,8 +166,8 @@ branch, ⬜ not started.
 | M6 | Adaptive difficulty, weak facts, the age setting | Difficulty adjusts for each kid | ✅ (parent controls in M10) |
 | M7 | Rewards: coins, stars, combos, shop, sticker book | Full reward loop | ✅ |
 | M7b | Saturday-morning cartoon look: style test (approved) → the new hero and animation beats (Phase B) → each world's backdrop, obstacles, chaser and scenes repainted (Phase C) → the UI to match (D) → the tablet check (E) | The game looks and moves like a cartoon | ✅ (Phase E, the tablet check, moved to M10's tablet testing at the user's request) |
-| M8 | Avatars drawn from the parent's photos, a Look picker, save v6 | Kids play as themselves | ⬜ |
-| M9 | Audio: synthesized SFX and music loops | Sound on | ⬜ |
+| M8 | Avatars drawn from the parent's photos, a Look picker, a new save version | Kids play as themselves | ⬜ (waits for the photos; M9 and M10 went first, Oct 3) |
+| M9 | Audio: synthesized SFX and music loops, the map's speaker button, save v6 | Sound on | ✅ |
 | M10 | Settings and stats (with the unlock switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing (including M7b's: scene frame rate and the first-frame hitch) | Installed on PC and tablet | ⬜ |
 
 **Open gaps:** PNG icons (192/512) for the best Android install and the GitHub Pages `base` path

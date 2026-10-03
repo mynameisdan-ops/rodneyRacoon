@@ -1,8 +1,11 @@
 import { useCallback, useEffect, useReducer, useRef, useState, type ReactNode } from 'react';
+import { playSfx } from '../audio/engine';
+import { useMusic } from '../audio/hooks';
 import type { AvatarConfig } from '../art/hero/avatar';
 import type { HeroPose } from '../art/hero/Hero';
 import { getCutScene } from '../content/cutscenes';
 import type { LevelDef } from '../content/levels';
+import { worldSong } from '../content/music';
 import { CONFIG } from '../game/config';
 import type { Answer, PagePlan } from '../game/adaptive';
 import { generatePage, type Problem } from '../game/problems';
@@ -27,6 +30,8 @@ interface Props {
 
 /** Pause on the finished page before moving to results, in ms. */
 const FINISH_PAUSE_MS = 1300;
+/** The clock ticks softly over the last few seconds. */
+const LAST_TICKS = 5;
 
 const PORTRAIT = '(orientation: portrait)';
 const shouldAutoPause = () => document.hidden || window.matchMedia(PORTRAIT).matches;
@@ -34,8 +39,11 @@ const shouldAutoPause = () => document.hidden || window.matchMedia(PORTRAIT).mat
 export function PageScreen(props: Props) {
   const { level, avatar, onQuit } = props;
   const [countdown, setCountdown] = useState<number>(CONFIG.countdownSeconds);
+  // The world's theme without its tune, so it doesn't pull attention from the math.
+  useMusic(worldSong(level.world), 'groove');
 
   useEffect(() => {
+    playSfx(countdown > 0 ? 'count' : 'go');
     if (countdown <= 0) return;
     const id = setTimeout(() => setCountdown((c) => c - 1), 1000);
     return () => clearTimeout(id);
@@ -140,16 +148,36 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
     return () => clearTimeout(id);
   }, [done, state.results, problems, remaining, onFinish]);
 
+  const playing = state.phase === 'playing';
   const handleKey = useCallback(
     (key: PadKey) => {
       if (paused) return;
       const now = performance.now();
-      if (key === 'back') dispatch({ type: 'backspace' });
-      else if (key === 'enter') dispatch({ type: 'submit', now });
-      else dispatch({ type: 'digit', digit: key, now });
+      if (key === 'back') {
+        if (playing) playSfx('erase');
+        dispatch({ type: 'backspace' });
+      } else if (key === 'enter') dispatch({ type: 'submit', now });
+      else {
+        // Each digit has its own note (the answer is checked with its own sound).
+        if (playing) playSfx('key', { n: key });
+        dispatch({ type: 'digit', digit: key, now });
+      }
     },
-    [paused],
+    [paused, playing],
   );
+
+  // An answer's sound: a chime that climbs with the streak, a soft "bwom", or the answer shown.
+  const { feedback, combo } = state;
+  useEffect(() => {
+    if (!feedback) return;
+    if (feedback.kind === 'correct') {
+      playSfx('correct', { n: combo });
+      if (comboBonus(combo) > 0) {
+        playSfx('combo', { n: combo });
+        playSfx('coin');
+      }
+    } else playSfx(feedback.kind === 'wrong' ? 'wrong' : 'reveal');
+  }, [feedback, combo]);
 
   // Physical keyboard support.
   useEffect(() => {
@@ -172,6 +200,19 @@ function TimedPage({ level, avatar, autoSubmit, plan, onFinish, onQuit }: Props)
       ? 'cheer'
       : 'idle'
     : undefined;
+  useEffect(() => {
+    if (endPose) playSfx(endPose === 'cheer' ? 'done' : 'timeUp');
+  }, [endPose]);
+
+  // A soft tick each second at the very end.
+  const shownSeconds = Math.ceil(secondsLeft);
+  const lastTick = useRef(0);
+  useEffect(() => {
+    if (done || paused || shownSeconds > LAST_TICKS || shownSeconds <= 0) return;
+    if (lastTick.current === shownSeconds) return;
+    lastTick.current = shownSeconds;
+    playSfx('tick');
+  }, [shownSeconds, done, paused]);
 
   return (
     <PageLayout

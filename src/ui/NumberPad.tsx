@@ -7,7 +7,10 @@ const ROWS: PadKey[][] = [
   ['back', 0, 'enter'],
 ];
 
-/** Big on-screen number pad. Fires on pointer-down so taps feel instant on a tablet. */
+/**
+ * Big on-screen number pad. Fires on pointer-down so taps feel instant on a tablet. Its keys
+ * don't click like other buttons: the page plays each key's own note.
+ */
 export function NumberPad({
   onKey,
   disabled,
@@ -23,6 +26,7 @@ export function NumberPad({
           type="button"
           className={`pad__key pad__key--${typeof key === 'number' ? 'digit' : key}`}
           disabled={disabled}
+          data-sound="off"
           aria-label={key === 'back' ? 'Delete' : key === 'enter' ? 'Enter' : String(key)}
           onPointerDown={(e) => {
             e.preventDefault();

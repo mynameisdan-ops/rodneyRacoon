@@ -22,6 +22,8 @@ CSS (`hero.css`, `chasers.css`, `backdrop.css`, `cutscene.css`).
 2. A variant in the `Screen` union in `App.tsx` and a `case` in the switch. Screens that work
    before a player is picked go in `NO_PLAYER`.
 3. A `#demo/<name>` case in `src/dev/demo.ts`, so it can be opened directly.
+4. Its music: `useMusic(...)` (`src/audio/CLAUDE.md`). Buttons click by themselves; a
+   `data-sound` attribute picks another sound or `off`.
 
 ## Checking UI (dev server)
 

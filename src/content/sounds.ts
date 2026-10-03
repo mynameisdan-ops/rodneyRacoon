@@ -1,0 +1,93 @@
+import type { SceneSounds } from '../audio/cues';
+
+/**
+ * What the cut scenes sound like (data only). The hero's jumps and landings, impacts, shakes,
+ * focus lines and cut-ins sound by themselves (`audio/cues.ts`); this adds the props' states
+ * (from the scripts' `prop` steps) and the emotes. Every prop state a script uses needs a row
+ * (null when it's silent): a test checks.
+ */
+export const SCENE_SOUNDS: SceneSounds = {
+  emotes: { alert: 'alert', sweat: 'sweat', sparkle: 'sparkle' },
+  props: {
+    // Rumbles, crashes and things breaking.
+    rumble: { sound: 'rumble', ms: 1400, size: 0.8 },
+    charge: { sound: 'rumble', ms: 900, size: 0.6 },
+    crash: { sound: 'crash' },
+    smash: { sound: 'crash' },
+    crack: { sound: 'crack' },
+    snap: { sound: 'crack' },
+    crumble: { sound: 'crumble' },
+    collapse: { sound: 'crumble', size: 1.2 },
+    slide: { sound: 'crumble', size: 1.1 },
+    shatter: { sound: 'shatter' },
+    creak: { sound: 'creak' },
+    launch: { sound: 'boom' },
+    blast: { sound: 'boom' },
+    // Water.
+    flood: { sound: 'water' },
+    surge: { sound: 'water' },
+    wave: { sound: 'water', size: 0.8 },
+    burst: { sound: 'water', size: 1.1 },
+    splash: { sound: 'splash' },
+    sink1: { sound: 'bloop', n: 0 },
+    sink2: { sound: 'bloop', n: 1 },
+    sink3: { sound: 'bloop', n: 2 },
+    s1: { sound: 'bloop', n: 0, size: 0.6 },
+    s2: { sound: 'bloop', n: 1, size: 0.6 },
+    s3: { sound: 'bloop', n: 2, size: 0.6 },
+    s4: { sound: 'bloop', n: 3, size: 0.6 },
+    bubble: { sound: 'bloop' },
+    // Weather and the wind.
+    wind: { sound: 'wind' },
+    gust: { sound: 'wind', size: 0.8 },
+    storm: { sound: 'wind', ms: 2200 },
+    strike: { sound: 'thunder' },
+    // Creatures.
+    swarm: { sound: 'flutter' },
+    bats: { sound: 'flutter' },
+    snort: { sound: 'snort' },
+    // Moving things.
+    fly: { sound: 'whoosh' },
+    sail: { sound: 'whoosh', size: 0.7 },
+    sled: { sound: 'whoosh' },
+    slip: { sound: 'whoosh', size: 0.7 },
+    letgo: { sound: 'whoosh', size: 0.6 },
+    drop: { sound: 'fall' },
+    fall: { sound: 'fall' },
+    zip: { sound: 'zip' },
+    whistle: { sound: 'whistle' },
+    land: { sound: 'land' },
+    grab: { sound: 'grab' },
+    b1: { sound: 'boing', n: 0 },
+    b2: { sound: 'boing', n: 1 },
+    b3: { sound: 'boing', n: 2 },
+    grow: { sound: 'grow' },
+    // Magic moments.
+    fireflies: { sound: 'sparkle' },
+    dawn: { sound: 'sparkle' },
+    calm: { sound: 'sparkle' },
+    home: { sound: 'sparkle', size: 1.2 },
+    // Silent: the hero's own moves and the impacts already sound these.
+    idle: null,
+    chase: null,
+    board: null,
+    off: null,
+    push: null,
+    hit: null,
+    plant: null,
+    out: null,
+    dusk: null,
+    safe: null,
+    build: null,
+    beach: null,
+    clear: null,
+    settle: null,
+    goat: null,
+    ride: null,
+    climb: null,
+    jump: null,
+    j1: null,
+    j2: null,
+    j3: null,
+  },
+};

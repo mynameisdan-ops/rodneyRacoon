@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react';
+import { playSfx } from '../audio/engine';
+import { useMusic } from '../audio/hooks';
 import { LEVELS, WORLDS, getLevel } from '../content/levels';
 import { currentLevel, isPassed, isUnlocked, totalStars } from '../game/progress';
 import type { Profile } from '../state/schema';
@@ -48,13 +50,17 @@ export function WorldsMap({ profile, from, onOpenWorld, onSwitchPlayer }: Props)
   const here = home ? WORLDS.length + 1 : (getLevel(currentLevel(progress, ALL_IDS))?.world ?? 1);
   const [stop, setStop] = useState(from ?? here);
   const walking = stop !== here;
+  useMusic('title');
 
   useEffect(() => {
     // Let the first frame draw him where he was, then walk to where he is now.
     // (A timer, not requestAnimationFrame, which stops while the window is hidden.)
-    const id = window.setTimeout(() => setStop(here), 400);
+    const id = window.setTimeout(() => {
+      setStop(here);
+      if (from !== undefined && from !== here) playSfx('steps');
+    }, 400);
     return () => window.clearTimeout(id);
-  }, [here]);
+  }, [here, from]);
 
   const [hx, hy] = heroSpot(stop);
   const trail = [...CARDS, HOME];
