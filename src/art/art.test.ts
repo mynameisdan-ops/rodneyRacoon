@@ -12,7 +12,7 @@ import { HERO_POSES } from './hero/poses';
 import { mix, shade, tint } from './style';
 import { PAINTED_MINE } from './worlds/minePalette';
 import { PAINTED_RIVER } from './worlds/riverPalette';
-import { getTheme, MEADOW } from './worlds/themes';
+import { getWorldArt, WORLD_ART } from './worlds/registry';
 import { WorldBackdrop } from './worlds/WorldBackdrop';
 
 describe('avatar', () => {
@@ -66,14 +66,14 @@ describe('world backdrops', () => {
   });
 
   it('draws World 1 as the painted mine, with rails on the path', () => {
-    expect(getTheme(1).kind).toBe('mine');
+    expect(getWorldArt(1).theme.kind).toBe('mine');
     expect(render(1)).toContain(PAINTED_MINE.rail);
     expect(render(1)).not.toContain('NaN');
     expect(render(1)).not.toContain('filter');
   });
 
   it('draws World 3 as the painted river, with reeds in front in scenes only', () => {
-    expect(getTheme(3).kind).toBe('river');
+    expect(getWorldArt(3).theme.kind).toBe('river');
     expect(render(3)).toContain(PAINTED_RIVER.waterLight);
     const front = (foreground: boolean) =>
       renderToStaticMarkup(
@@ -93,7 +93,7 @@ describe('world backdrops', () => {
 
   it.each([1, 2, 3, 4, 5])('draws World %s in its own style, cleanly', (worldId) => {
     const kinds = { 1: 'mine', 2: 'forest', 3: 'river', 4: 'mountain', 5: 'canyon' } as const;
-    expect(getTheme(worldId).kind).toBe(kinds[worldId as keyof typeof kinds]);
+    expect(getWorldArt(worldId).theme.kind).toBe(kinds[worldId as keyof typeof kinds]);
     for (const [height, horizon, groundTop, pathY] of [
       [240, 120, 168, 206],
       [800, 330, 470, 640],
@@ -117,8 +117,8 @@ describe('world backdrops', () => {
     }
   });
 
-  it('falls back to the meadow for unknown worlds', () => {
-    expect(getTheme(99)).toBe(MEADOW);
+  it('falls back to the first world for unknown worlds', () => {
+    expect(getWorldArt(99)).toBe(WORLD_ART[1]);
     expect(render(99)).not.toContain('NaN');
   });
 });

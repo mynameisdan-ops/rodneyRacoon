@@ -6,7 +6,7 @@ import type { AvatarConfig } from './avatar';
 import { BODY, capeColor, CX, type BodyDef } from './body';
 import { POSE_EXPRESSION, type Expression } from './expressions';
 import { Cape, Hat, Pack, Pet } from './gear';
-import { HAT_LINE } from './gearLayout';
+import { HAT_LINE } from './gear/layout';
 import type { HeroPose } from './poses';
 import './hero.css';
 

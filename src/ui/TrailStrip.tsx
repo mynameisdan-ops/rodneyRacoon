@@ -8,8 +8,8 @@ import { CutIn } from '../art/hero/CutIn';
 import type { Expression } from '../art/hero/expressions';
 import { Hero, type HeroPose } from '../art/hero/Hero';
 import { OBSTACLES } from '../art/obstacles/registry';
-import type { ObstacleId } from '../art/obstacles/types';
-import { getTheme } from '../art/worlds/themes';
+import type { ObstacleId } from '../art/obstacles/registry';
+import { getWorldArt } from '../art/worlds/registry';
 import { WorldBackdrop } from '../art/worlds/WorldBackdrop';
 import { wornItem } from '../content/shop';
 import { CONFIG } from '../game/config';
@@ -187,7 +187,7 @@ export function TrailStrip({
         </WorldBackdrop>
         <div
           className={
-            getTheme(worldId).kind === 'mine' ? 'trail__sun trail__sun--mine' : 'trail__sun'
+            getWorldArt(worldId).timer === 'lantern' ? 'trail__sun trail__sun--mine' : 'trail__sun'
           }
           style={{
             animationDuration: `${CONFIG.pageSeconds}s`,
@@ -205,7 +205,7 @@ export function TrailStrip({
             top: PATH_Y + 6 - CHASER_BOX.ground * CHASER_SCALE,
           }}
         >
-          <Chaser worldId={worldId} scale={CHASER_SCALE} />
+          <Chaser art={getWorldArt(worldId).chaser} scale={CHASER_SCALE} />
         </div>
       </div>
       {cutin && <CutIn dt={dt} ms={STRIP_MS.cutin} expr="shout" avatar={avatar} layout="strip" />}

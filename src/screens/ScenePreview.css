@@ -1,0 +1,29 @@
+.scene-preview {
+  position: relative;
+  height: 100%;
+}
+
+.scene-preview__bar {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 8px 12px;
+  border-radius: 20px;
+  background: var(--chip);
+}
+
+.scene-preview__bar input {
+  flex: 1;
+  height: 40px;
+}
+
+.scene-preview__time {
+  min-width: 160px;
+  font-size: 24px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}

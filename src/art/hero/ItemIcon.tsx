@@ -1,7 +1,7 @@
 import type { ShopItem } from '../../content/shop';
 import { BODY } from './body';
 import { Cape, Hat, Pack, Pet } from './gear';
-import { iconView } from './gearLayout';
+import { iconView } from './gear/layout';
 
 /** A shop item on its own (no hero), for shop cards and tabs. */
 export function ItemIcon({ item, size }: { item: ShopItem; size: number }) {

@@ -1,8 +1,8 @@
 import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { describe, expect, it } from 'vitest';
-import { CHASER_WORLDS } from '../art/chaserData';
 import { Chaser } from '../art/chasers';
+import { WORLD_ART } from '../art/worlds/registry';
 import { CHASER, chaserFront, heroX } from './trailLayout';
 
 describe('the danger behind the hero', () => {
@@ -20,8 +20,8 @@ describe('the danger behind the hero', () => {
     expect(heroX(1) - chaserFront(1, 1)).toBeGreaterThan(100);
   });
 
-  it.each(CHASER_WORLDS)('world %s has a chaser that draws cleanly', (worldId) => {
-    const svg = renderToStaticMarkup(createElement(Chaser, { worldId }));
+  it.each(Object.entries(WORLD_ART))('world %s has a chaser that draws cleanly', (_, art) => {
+    const svg = renderToStaticMarkup(createElement(Chaser, { art: art.chaser }));
     expect(svg).not.toContain('NaN');
     expect(svg).not.toContain('filter');
   });

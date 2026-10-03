@@ -1,6 +1,6 @@
 import type { FC } from 'react';
-import { CHASER_BOX, CHASER_WORLDS } from './chaserData';
-import { ROCK } from './obstacles/mineKit';
+import { CHASER_BOX } from './chaserData';
+import { ROCK } from './obstacles/mine/kit';
 import { noise, roundPath } from './obstacles/sceneKit';
 import { ink, INK, shade, tint } from './style';
 import './chasers.css';
@@ -34,7 +34,7 @@ function Pebble({ x, delay }: { x: number; delay: number }) {
 }
 
 /** World 1: a boulder rolling down the tunnel, kicking up dust and pebbles. */
-function Boulder() {
+export function Boulder() {
   return (
     <g>
       <DustPuffs color="#c8a88c" />
@@ -130,7 +130,7 @@ function Bee() {
 }
 
 /** World 2: a buzzing swarm of round forest bees, with a dotted flight trail. */
-function Bees() {
+export function Bees() {
   return (
     <g>
       <path
@@ -159,7 +159,7 @@ function Bees() {
 }
 
 /** World 3: a flood wave curling after him, claws of foam on its lip, a happy fish leaping out. */
-function Wave() {
+export function Wave() {
   const water = '#2ea6da';
   const deep = '#15669f';
   return (
@@ -201,7 +201,7 @@ function Wave() {
 }
 
 /** World 4: an avalanche snowball, spraying snow. */
-function Snowball() {
+export function Snowball() {
   const snow = '#eef6ff';
   return (
     <g>
@@ -226,7 +226,7 @@ function Snowball() {
 }
 
 /** World 5: a twisting dust devil. */
-function DustDevil() {
+export function DustDevil() {
   const sand = '#e2b36e';
   return (
     <g className="chaser__sway" style={{ transformOrigin: '70px 124px' }}>
@@ -281,17 +281,8 @@ function DustPuffs({ color }: { color: string }) {
   );
 }
 
-const CHASERS: Record<(typeof CHASER_WORLDS)[number], FC> = {
-  1: Boulder,
-  2: Bees,
-  3: Wave,
-  4: Snowball,
-  5: DustDevil,
-};
-
-/** The chaser for a world (the boulder if the world has none of its own). */
-export function Chaser({ worldId, scale = 1 }: { worldId: number; scale?: number }) {
-  const Art = CHASERS[worldId as (typeof CHASER_WORLDS)[number]] ?? Boulder;
+/** A chaser drawing in its box (each world picks its own in `worlds/registry.ts`). */
+export function Chaser({ art: Art, scale = 1 }: { art: FC; scale?: number }) {
   const { w, h } = CHASER_BOX;
   return (
     <svg

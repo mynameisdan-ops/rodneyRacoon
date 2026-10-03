@@ -1,0 +1,150 @@
+.editor {
+  height: 100%;
+  padding: 36px 72px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(#fff6d6, #ffe7a8);
+}
+
+.editor__top {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.editor__title {
+  margin: 0;
+  font-size: 52px;
+}
+
+.editor__name {
+  width: 520px;
+  height: 96px;
+  padding: 0 28px;
+  border: 5px solid var(--ink-soft);
+  border-radius: 24px;
+  font: inherit;
+  font-size: 52px;
+  font-weight: 800;
+  color: var(--ink);
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.editor__name:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.editor__middle {
+  display: flex;
+  align-items: center;
+  gap: 80px;
+}
+
+.editor__preview {
+  width: 260px;
+  display: flex;
+  justify-content: center;
+}
+
+.editor__label {
+  margin-bottom: 10px;
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--ink-soft);
+}
+
+.editor__colors {
+  display: grid;
+  grid-template-columns: repeat(8, 80px);
+  gap: 16px;
+}
+
+.swatch {
+  width: 80px;
+  height: 80px;
+  border: 6px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+  transition: transform 100ms;
+}
+
+.swatch--on {
+  outline: 6px solid var(--ink);
+  transform: scale(1.1);
+}
+
+.editor__label--gap {
+  margin-top: 20px;
+}
+
+.editor__submit {
+  display: flex;
+  gap: 20px;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 72px;
+  padding: 0 24px;
+  border: 6px solid #fff;
+  border-radius: 20px;
+  background: #fff;
+  color: var(--ink-soft);
+  font: inherit;
+  font-size: 28px;
+  font-weight: 800;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+}
+
+.choice--on {
+  outline: 6px solid var(--ink);
+  color: var(--ink);
+}
+
+.editor__ages {
+  display: flex;
+  gap: 12px;
+}
+
+.choice--age {
+  justify-content: center;
+  min-width: 80px;
+  padding: 0 12px;
+}
+
+.choice__icon {
+  font-size: 36px;
+}
+
+.editor__actions {
+  display: flex;
+  gap: 28px;
+}
+
+.editor__delete {
+  color: var(--oops);
+}
+
+.editor--confirm {
+  justify-content: center;
+  gap: 36px;
+  text-align: center;
+}
+
+.editor--confirm h1 {
+  margin: 0;
+  font-size: 64px;
+}
+
+.editor__warning {
+  margin: 0;
+  font-size: 34px;
+  font-weight: 700;
+  color: var(--ink-soft);
+}

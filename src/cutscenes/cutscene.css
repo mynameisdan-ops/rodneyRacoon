@@ -10,6 +10,11 @@
   inset: 0;
 }
 
+/* Keep the scene on its own compositor layer so shakes and push-ins don't repaint it. */
+.scene__world--layer {
+  will-change: transform;
+}
+
 .scene__caption {
   position: absolute;
   left: 50%;

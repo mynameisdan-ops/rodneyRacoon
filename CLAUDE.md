@@ -1,148 +1,108 @@
 # CLAUDE.md
 
-Guidance for Claude Code when working in this repository.
+A timed mental-math adventure for two kids (ages 6 and 9), inspired by *Rodney the Raccoon*. The
+child's own avatar journeys home across 40 levels (5 worlds × 8). The child **only does math**:
+each right answer moves the hero along the trail, and each passed page ends in an obstacle cut scene.
 
-## What this is
+## Read only what the task needs
 
-A timed mental-math adventure game for kids (ages 6 and 9), inspired by the classic
-*Rodney the Raccoon* math game. A little boy (the child's own avatar) journeys home
-across 40 levels (5 worlds × 8). The child **only does math**. The game shows the hero
-moving along the trail as answers come in, and plays an obstacle cut scene after each page.
-
-The full design and milestones are in [docs/PLAN.md](docs/PLAN.md). Read it before starting a milestone,
-and update it when a design decision changes. The tracking files:
-
-| File | Holds |
-| --- | --- |
-| `docs/PLAN.md` | Design, milestones with status, scheduled gaps, open questions |
-| `STATUS.md` | A short snapshot: current state, next steps, what's open |
-| `docs/decisions.md` | A dated entry per session or milestone: what was built, decided and why |
+- `STATUS.md`: current state and next steps. Read it first.
+- `docs/PLAN.md`: design and milestones. Read the section for the task, not the whole file.
+- `docs/decisions.md`: the dated log. Append only; read its last entry, not the whole file.
+  Older entries are in `docs/archive/` (grep it for the history of a decision).
+- `docs/feedback.md`: play-test notes waiting to be handled.
+- Area guides: `src/game/`, `src/content/`, `src/content/cutscenes/`, `src/art/`,
+  `src/art/obstacles/`, `src/screens/` and `src/state/` each have a `CLAUDE.md` with that area's
+  rules and step-by-step recipes (add a skill, level, world, obstacle, shop item, screen, save
+  field). They load when you read files there; read one directly when planning work in an area.
+- Skip `package-lock.json` (use `npm ls <pkg>`), `dist/` and `node_modules/`.
 
 ## Stack
 
-- Vite + TypeScript (strict) + React
-- SVG art as React components; animation with CSS keyframes and transitions; cut scenes run on a
-  `requestAnimationFrame` clock sampling a pure timeline (no animation library)
-- zustand for state; IndexedDB via `idb-keyval` for saves (versioned schema with migrations)
-- `vite-plugin-pwa` for offline/installable; hosted on GitHub Pages
-- Vitest for unit tests
-- Targets: Windows (Edge/Chrome, installed PWA) and Android tablet (Chrome, installed PWA). Landscape only.
+Vite, TypeScript (strict), React 19, zustand, `idb-keyval` (IndexedDB saves with versioned
+migrations), `vite-plugin-pwa`, Vitest. Art is SVG in React components; animation is CSS, and cut
+scenes sample a pure timeline on a `requestAnimationFrame` clock. Hosted on GitHub Pages; runs as
+an installed PWA on Windows (Edge/Chrome) and an Android tablet (Chrome), landscape only.
 
 ## Commands
 
 ```bash
 npm install
-npm run dev        # dev server
-npm run build      # type-check + production build
-npm run preview    # serve the production build
-npm test           # vitest (once)
-npm run test:watch # vitest in watch mode
+npm run check      # lint + type-check + tests + build, quiet; run once before committing
+npm run dev        # http://localhost:5173
+npm test           # vitest once (npm run test:watch to watch)
 npm run lint
+npm run build      # type-check + production build
+npm run preview    # serve the build (add -- --host for the tablet on the LAN)
 npm run format     # prettier --write
 ```
 
-In a dev build, `http://localhost:5173/#moments-1-4` is a contact sheet of levels 1–4's scenes at
-several moments (for picking sticker moments; screenshot it with headless Chrome at 2480px wide).
-Open `http://localhost:5173/#gallery` for the art gallery (every hero pose, every shop item and icon, every
-sticker, hair style and skin tone, plus every cut scene with a scrub slider to inspect any moment and a
-Play button). `#gallery-gear` (or `poses`, `icons`, `gear-poses`, `hair`, `stickers`, `scenes`, `worlds`) shows
-one section, small enough for a 1280×800 screenshot; `#gallery-worlds-1` shows World 1's backdrop as the scene,
-the map and the page strip draw it. `#scene-12` opens level 12's scene in the scrubber, and
-`#scene-12-2600` shows its frame at 2.6 s of real time without the controls. `#strip` plays a page of answers
-on the page strip by itself (`#strip-combo-300` holds one moment: `correct`, `combo`, `wrong` or `danger`;
-add `-L1` for level 1's world and obstacle, e.g. `#strip-L1` or `#strip-danger-0-L1`).
-Use these to check art changes; they are left out of production builds.
+Dev-only pages: `#demo/<screen>` opens any screen with made-up players in memory (list in
+`src/screens/CLAUDE.md`); `#gallery` (or one section, e.g. `#gallery-gear`) shows all the art;
+`#scene-12` scrubs a level's scene and `#scene-12-2600` shows one frame; `#strip` plays the page
+strip by itself; `#moments-1-4` is the sticker contact sheet (details in `src/art/CLAUDE.md`).
+(Keep this section in sync with `package.json`.)
 
-(Keep this list in sync with `package.json`.)
+## Code map
 
-## Architecture rules
+| Path | What |
+| --- | --- |
+| `src/App.tsx`, `src/main.tsx` | Screen router (a `Screen` union, no URL routing); entry and dev pages |
+| `src/game/` | Pure logic: problems, adaptive difficulty, scoring, coins, shop, progress, `config.ts` |
+| `src/content/` | Data: levels, skills, stickers, shop items; `cutscenes/` has a script file per world |
+| `src/cutscenes/` | The pure timeline, `CutSceneView` and the scene clock |
+| `src/art/` | Style kit, `<Hero>` (body, faces, cut-in) and gear, painted backdrops and their registry, chasers, fx |
+| `src/art/obstacles/` | Obstacle art: a folder per world, one file per obstacle |
+| `src/screens/`, `src/ui/` | Screens and shared UI, each with its own CSS file (order: `src/styles.css`) |
+| `src/state/` | zustand store, save schema and migrations, IndexedDB |
+| `src/dev/` | Dev-only helpers (`#demo`) |
 
-- `src/game/` is **pure TypeScript with no React or DOM**: problem generation, levels, adaptive
-  difficulty, scoring. Everything here gets unit tests. Use a seeded RNG so tests are deterministic.
-- `src/content/` is **data only** (levels, obstacles, captions, shop items, stickers). Tuning or
-  writing content should never require touching game logic.
-- Adaptive difficulty is pure logic in `src/game/adaptive.ts` (ratings per skill, weak facts, the page plan);
-  the age each skill is typically mastered at is data in `src/content/skills.ts`.
-- `src/game/config.ts` holds every tunable number (timer, pass threshold, star rules, coin
-  amounts, combo steps). Don't hard-code these elsewhere.
-- Cut scenes are **scripts (data)** in `src/content/cutscenes.ts`, compiled by the pure
-  `src/cutscenes/timeline.ts` and drawn by one `CutSceneView`, using reusable obstacle art from
-  `src/art/obstacles/` (registered in `registry.ts`). Don't write one-off animation code for each
-  level; obstacle motion is computed from scene time, not CSS, so any frame can be drawn exactly.
-  Scripts direct the scene with steps too (faces, impacts, emotes, focus lines, camera moves, cut-ins,
-  slow motion and freeze frames); `CutSceneView` adds what follows from his motion (squash and stretch,
-  lean, wind, smears, afterimages, dust). Slow motion and freezes stretch real time: screens run their
-  clock to `realDuration` and draw `scriptTime(timeline, real)`.
-- The look is a **Saturday-morning cartoon** (M7b; Pokémon is the reference). Characters and the props he
-  touches use the style kit in `src/art/style.ts`: bold `INK` outlines on the silhouette (2.5 view units on the
-  hero, `PROP_OUT` 3.2px on scene props) and thin ones inside (1.3, `PROP_IN` 1.5px), one crisp shadow shape per
-  part and a rim light, lit from the upper right, made with `shade()` / `tint()`. Backgrounds, and the ground
-  around his props (pits, ledges, rails, beams overhead), are **painted**: gradients and soft shapes without
-  outlines, detailed with the paint kit (`src/art/worlds/paintKit.tsx`); still water is painted too, while water
-  that acts (waves, splashes, jets) is cel-drawn with lines like an effect. **No CSS or SVG `filter`** (slow on
-  tablets). A theme's `kind` picks the backdrop layers (`mine`, `forest`, `river`, `mountain`, `canyon`, each in
-  its own file in `src/art/worlds/`; shared tiling helpers in `sceneryKit.ts`; so far the forest, the mine and the
-  river are painted, with their colors in `forestPalette.ts`, `minePalette.ts` and `riverPalette.ts`). Backdrop
-  layers are 1280px tiles: ridges must start and end at the same height, and anything at a tile's edge is drawn
-  the same at both ends.
-  Scenes and the page strip draw each layer once as an image (`WorldBackdrop raster`), so detail costs nothing
-  per frame; a `front` layer (big leaves, dark rocks) passes in front of the hero in scenes only (a scene that
-  leaves its world, like the mine train bursting into daylight, sets `foreground: false`). Obstacles are drawn
-  every frame: memoize the static parts of anything drawn many times (a swarm of rats or bats), sway or turn
-  things with a transform rather than rebuilding their shapes each frame, and draw a cloud of small moving pieces
-  (foam, drops, bubbles) as one path (`circles()` / `ellipses()` in `sceneKit.ts`).
-- Obstacle art gets the scene's whole prop schedule (`events`); use `eventTime()` to time a motion to a later
-  event, and `heroPasses()` (cached) for a prop that waits for him (a stone that sinks once he's left it), so a
-  script can hold him for a close-up without the ground vanishing under him. Shared positions go in a layout
-  module per world (`mineLayout.ts` … `canyonLayout.ts`) so art and scripts agree; small motion helpers are in
-  `sceneKit.ts`. An obstacle's `focus` picks what the page-strip preview shows.
-- Only about 160px of a cut scene shows below the ground line, so put the action at or above it.
-- One `<Hero>` component renders the avatar everywhere (map, page strip, cut scenes, shop),
-  driven by the avatar config, a `pose` and (optionally) an `expression`. He stands in a three-quarter view
-  facing right: his near arm and leg (his right) hang on the left of his body, so a raised near arm goes up
-  or back (angles near 180° or positive in `hero.css`), never across his face. His joints are in `body.ts`;
-  scenes size him so his hands reach 175px up in the swing pose (`SCENE_SIZE`), the reach their ropes and
-  vines are laid out for. Hats are drawn in head units and ride inside `Head` (`gear.tsx`).
-- The design canvas is 1280×800 (16:10), scaled to fit the screen. Lay out in design units, not raw viewport pixels.
-- Audio is synthesized with Web Audio (no audio asset files unless we decide otherwise).
+## Rules that always apply
 
-## Kid-UX rules (always apply)
+- `src/game/` is pure TypeScript (no React or DOM) with unit tests and a seeded RNG.
+  `src/content/` is data only: writing or tuning content never needs a logic change.
+- Every tunable gameplay number lives in `src/game/config.ts`.
+- The look is a **Saturday-morning cartoon** (M7b): the hero and what he touches are lined and
+  cel-shaded, backgrounds are painted (rules in `src/art/CLAUDE.md`). **No CSS or SVG `filter`**
+  (slow on tablets). One `<Hero>` renders the avatar everywhere.
+- The design canvas is 1280×800 (16:10), scaled to fit: lay out in design units.
+- Audio is synthesized with Web Audio (no audio files unless we decide otherwise).
 
-- Touch targets are **at least 72px**; the number pad is the main input and physical keyboard input is also supported.
-- Gameplay must never depend on reading ability. Captions are short and visuals carry the story.
-- Always encouraging: no "wrong!" or "game over" language. Failing a page means a gentle knock-back and a retry.
-- Answers are checked on Enter / ✓ by default. A per-profile switch turns on auto-submit (checked as soon as
-  the typed digit count matches the answer length). Never hint at the answer's length (e.g. by lighting up ✓).
-- Respond instantly to input (under 100ms feedback). No layout shift while answering.
-- Keep the problem text very large and high-contrast.
+**Kid UX**
+- Touch targets are **at least 72px**. The number pad is the main input; a keyboard works too.
+- Gameplay never depends on reading: captions are short and the visuals carry the story.
+- Always encouraging: no "wrong!" or "game over". A failed page is a gentle knock-back and a retry.
+- Answers are checked on Enter / ✓; a per-profile switch turns on auto-submit (checked once the
+  digit count matches the answer). Never hint at the answer's length (e.g. by lighting up ✓).
+- Respond to input in under 100ms, with no layout shift while answering. The problem text is very
+  large and high-contrast.
 
-## Privacy rules (hard requirements)
-
-- **No runtime network calls, analytics, or third-party trackers.** The app must work fully offline once installed.
-- The app has no photo feature: avatars are drawn from photos the parent shares (M8). Never commit,
-  store or log those photos, and keep the children's names out of the repo (presets are unnamed).
-- Never commit real photos of the children to the repo.
+**Privacy (hard requirements)**
+- No runtime network calls, analytics or trackers. The app works fully offline once installed.
+- The app has no photo feature: avatars are drawn from photos the parent shares (M8). Never
+  commit, store or log those photos, and keep the children's names out of the repo (presets are
+  unnamed). Never commit real photos of the children.
 
 ## Working conventions
 
-- Work milestone by milestone (see PLAN.md §9). Each milestone ends with something playable.
-- Verify UI changes in the browser preview at 1280×800 and a phone/tablet size before calling them done.
-- New problem generators need tests covering operand ranges, answer correctness, and no negative/non-integer results where they're not allowed.
-- Save-format changes need a version bump and migration in `src/state/`.
-- One branch per milestone (`mN-short-name`), pushed as it goes and merged to `main` after the browser check.
-  CI (`.github/workflows/ci.yml`) runs lint, tests and build on every push.
-- Only one session works in this repo at a time. Before starting, check `git status` for someone else's
-  uncommitted work and ask before building on it.
-- When editing files with Python on Windows, open them with `newline=''`, or Python writes CRLF.
+- Work milestone by milestone (PLAN §9), each ending in something playable, on a branch per
+  milestone (`mN-short-name`) that is pushed as it goes and merged to `main` after a browser check
+  at 1280×800 and a phone or tablet size. CI runs lint, tests and build on every push.
+- One session at a time: check `git status` first and ask before building on uncommitted work.
+- Gotchas: a hidden browser pane barely runs `requestAnimationFrame` (pages auto-pause, scenes
+  crawl): screenshot `#scene-N-ms` or `#gallery-<section>` frames with headless Chrome instead. The dev server sometimes misses edits made by tools: `touch`
+  the file. On Windows, long Bash heredocs fail (run a script file instead), and Python must open
+  files with `encoding='utf-8'` and `newline=''` (the files contain −, × and ÷; CRLF otherwise).
 
 ## Before ending a session
 
-Run `/wrapup` to do all of this (the skill follows this checklist); or work through it by hand:
+Run `/wrapup` (it follows this list), or by hand:
 
-1. Add a dated entry to `docs/decisions.md` (what was built or decided, and why).
-2. Update `STATUS.md` (state, next steps, what's open, date). Keep it short; history goes in decisions.md.
-3. Update `docs/PLAN.md` if a design decision changed or a milestone moved (its status column too).
-4. Update this file if the stack, commands, rules or architecture changed.
-5. Run `npm run lint`, `npm test` and `npm run build`.
+1. `npm run check`.
+2. Append a dated entry to `docs/decisions.md`: what was built or decided, and why, in under 10
+   lines. Past about 150 lines, move older entries to `docs/archive/`.
+3. Update `STATUS.md` (state, next steps, what's open, date), keeping it short.
+4. Update `docs/PLAN.md` if a design decision changed or a milestone moved (status column too).
+5. Update this file or an area guide if the stack, commands, rules or structure changed.
 6. Commit to the milestone branch and push.
 7. If the session was started from the project status page, mark its step as its prompt says.

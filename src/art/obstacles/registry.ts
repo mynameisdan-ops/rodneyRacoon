@@ -1,160 +1,19 @@
-import {
-  CartJumpBack,
-  CartJumpFront,
-  CartRaceBack,
-  CartRaceFront,
-  MineTrainBack,
-  MineTrainFront,
-  WallSmashBack,
-  WallSmashFront,
-} from './mineCarts';
-import {
-  BatStormBack,
-  BatStormFront,
-  CrystalCavernBack,
-  RatSwarmBack,
-  RunawayLiftBack,
-  RunawayLiftFront,
-} from './mineCaverns';
-import {
-  BAT_STORM,
-  CART_JUMP,
-  CART_RACE,
-  CRYSTAL_CAVERN,
-  MINE_TRAIN,
-  RAT_SWARM,
-  RUNAWAY_LIFT,
-  WALL_SMASH,
-} from './mineLayout';
-import {
-  BOAR,
-  BRAMBLE,
-  FALLING_BRIDGE,
-  FIREFLIES,
-  LOG_ROLL,
-  MUSHROOMS,
-  ROOT_SLIDE,
-  VINE_SWING,
-} from './forestLayout';
-import {
-  BoarChargeBack,
-  BoarChargeFront,
-  BrambleBack,
-  BrambleFront,
-  FallingBridgeBack,
-  FirefliesBack,
-  FirefliesFront,
-  LogRollBack,
-  LogRollFront,
-  MushroomBounceBack,
-  RootSlideBack,
-} from './forestScenes';
-import { VineSwingBack } from './vineSwing';
-import { DAM, FALLS, GEYSER, RAFT, RAPIDS, RISING, ROPE_BRIDGE, STONES } from './riverLayout';
-import {
-  BeaverDamBack,
-  FallsBack,
-  GeyserBack,
-  RaftBack,
-  RaftFront,
-  RapidsBack,
-  RapidsFront,
-  RisingBack,
-  RopeBridgeBack,
-  SteppingStonesBack,
-  SteppingStonesFront,
-} from './riverScenes';
-import {
-  AVALANCHE,
-  GOAT,
-  ICE_BRIDGE,
-  ICE_WALL,
-  ICICLES,
-  LEDGE,
-  PEAK,
-  ROCK_SLIDE,
-} from './mountainLayout';
-import {
-  AvalancheBack,
-  AvalancheFront,
-  GoatBack,
-  GoatFront,
-  IceBridgeBack,
-  IceWallBack,
-  IcicleCaveBack,
-  LedgeBack,
-  PeakBack,
-  PeakFront,
-  RockSlideBack,
-  RockSlideFront,
-} from './mountainScenes';
-import { ARCH, DUNE, FLASH_FLOOD, HILL, HOME, TRAIN, TUMBLEWEEDS, ZIP } from './canyonLayout';
-import {
-  ArchBack,
-  DuneBack,
-  DuneFront,
-  FlashFloodBack,
-  HillBack,
-  HomeBack,
-  HomeFront,
-  TrainBack,
-  TrainFront,
-  TumbleweedsBack,
-  TumbleweedsFront,
-  ZipLineBack,
-  ZipLineFront,
-} from './canyonScenes';
-import type { ObstacleArt, ObstacleId } from './types';
+import { CANYON_OBSTACLES } from './canyon';
+import { FOREST_OBSTACLES } from './forest';
+import { MINE_OBSTACLES } from './mine';
+import { MOUNTAIN_OBSTACLES } from './mountain';
+import { RIVER_OBSTACLES } from './river';
+import type { ObstacleArt } from './types';
 
-export const OBSTACLES: Record<ObstacleId, ObstacleArt> = {
-  'cart-race': { back: CartRaceBack, front: CartRaceFront, width: CART_RACE.width },
-  'cart-jump': { back: CartJumpBack, front: CartJumpFront, width: CART_JUMP.width },
-  'wall-smash': { back: WallSmashBack, front: WallSmashFront, width: WALL_SMASH.width },
-  'rat-swarm': { back: RatSwarmBack, width: RAT_SWARM.width },
-  'crystal-cavern': { back: CrystalCavernBack, width: CRYSTAL_CAVERN.width },
-  'bat-storm': { back: BatStormBack, front: BatStormFront, width: BAT_STORM.width },
-  'runaway-lift': { back: RunawayLiftBack, front: RunawayLiftFront, width: RUNAWAY_LIFT.width },
-  'mine-train': { back: MineTrainBack, front: MineTrainFront, width: MINE_TRAIN.width },
-  'log-roll': { back: LogRollBack, front: LogRollFront, width: LOG_ROLL.width, focus: 1250 },
-  'bramble-vault': { back: BrambleBack, front: BrambleFront, width: BRAMBLE.width, focus: 300 },
-  'root-slide': { back: RootSlideBack, width: ROOT_SLIDE.width, focus: 150 },
-  'vine-swing': { back: VineSwingBack, width: VINE_SWING.width, focus: 300 },
-  'boar-charge': { back: BoarChargeBack, front: BoarChargeFront, width: BOAR.width, focus: 180 },
-  'mushroom-bounce': { back: MushroomBounceBack, width: MUSHROOMS.width, focus: 250 },
-  'falling-bridge': { back: FallingBridgeBack, width: FALLING_BRIDGE.width, focus: 150 },
-  fireflies: { back: FirefliesBack, front: FirefliesFront, width: FIREFLIES.width, focus: 1250 },
-  'stepping-stones': {
-    back: SteppingStonesBack,
-    front: SteppingStonesFront,
-    width: STONES.width,
-    focus: 250,
-  },
-  'beaver-dam': { back: BeaverDamBack, width: DAM.width, focus: 160 },
-  rapids: { back: RapidsBack, front: RapidsFront, width: RAPIDS.width, focus: 120 },
-  'rope-bridge': { back: RopeBridgeBack, width: ROPE_BRIDGE.width, focus: 130 },
-  geyser: { back: GeyserBack, width: GEYSER.width, focus: 230 },
-  'waterfall-slide': { back: FallsBack, width: FALLS.width, focus: 120 },
-  'rising-water': { back: RisingBack, width: RISING.width, focus: 240 },
-  raft: { back: RaftBack, front: RaftFront, width: RAFT.width, focus: 180 },
-  'rock-slide': { back: RockSlideBack, front: RockSlideFront, width: ROCK_SLIDE.width, focus: 430 },
-  'crumbling-ledge': { back: LedgeBack, width: LEDGE.width },
-  avalanche: { back: AvalancheBack, front: AvalancheFront, width: AVALANCHE.width, focus: 520 },
-  'goat-ride': { back: GoatBack, front: GoatFront, width: GOAT.width, focus: 520 },
-  'ice-bridge': { back: IceBridgeBack, width: ICE_BRIDGE.width, focus: 230 },
-  'icicle-cave': { back: IcicleCaveBack, width: ICICLES.width, focus: 100 },
-  'ice-wall': { back: IceWallBack, width: ICE_WALL.width, focus: 280 },
-  peak: { back: PeakBack, front: PeakFront, width: PEAK.width },
-  'flash-flood': { back: FlashFloodBack, width: FLASH_FLOOD.width, focus: 230 },
-  'zip-line': { back: ZipLineBack, front: ZipLineFront, width: ZIP.width, focus: 130 },
-  'dune-surf': { back: DuneBack, front: DuneFront, width: DUNE.width },
-  tumbleweeds: {
-    back: TumbleweedsBack,
-    front: TumbleweedsFront,
-    width: TUMBLEWEEDS.width,
-    focus: 1050,
-  },
-  'crumbling-arch': { back: ArchBack, width: ARCH.width, focus: 180 },
-  'canyon-train': { back: TrainBack, front: TrainFront, width: TRAIN.width, focus: 1780 },
-  'last-hill': { back: HillBack, width: HILL.width },
-  home: { back: HomeBack, front: HomeFront, width: HOME.width, focus: 1150 },
+/** Every obstacle, by id: each world's folder lists its own in `index.ts`. */
+const ALL = {
+  ...MINE_OBSTACLES,
+  ...FOREST_OBSTACLES,
+  ...RIVER_OBSTACLES,
+  ...MOUNTAIN_OBSTACLES,
+  ...CANYON_OBSTACLES,
 };
+
+export type ObstacleId = keyof typeof ALL;
+export const OBSTACLES: Readonly<Record<ObstacleId, ObstacleArt>> = ALL;
+export const OBSTACLE_IDS = Object.keys(ALL) as ObstacleId[];

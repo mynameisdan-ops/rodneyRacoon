@@ -6,6 +6,7 @@ import type { AvatarConfig } from './avatar';
 import { BODY } from './body';
 import type { Expression } from './expressions';
 import { Head } from './Hero';
+import './CutIn.css';
 
 /*
  * The anime cut-in (M7b): just before the big move, a slanted panel slams across the screen with
