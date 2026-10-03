@@ -11,6 +11,7 @@ import { ItemIcon } from './hero/ItemIcon';
 import { HERO_POSES } from './hero/poses';
 import { mix, shade, tint } from './style';
 import { PAINTED_MINE } from './worlds/minePalette';
+import { PAINTED_MOUNTAIN } from './worlds/mountainPalette';
 import { PAINTED_RIVER } from './worlds/riverPalette';
 import { getWorldArt, WORLD_ART } from './worlds/registry';
 import { WorldBackdrop } from './worlds/WorldBackdrop';
@@ -89,6 +90,25 @@ describe('world backdrops', () => {
     // The reeds' cattail heads are the front layer's darkest brown.
     expect(front(true)).toContain('#2a170e');
     expect(front(false)).not.toContain('#2a170e');
+  });
+
+  it('draws World 4 as the painted mountains, with pines in front in scenes only', () => {
+    expect(getWorldArt(4).theme.kind).toBe('mountain');
+    expect(render(4)).toContain(PAINTED_MOUNTAIN.snowTop);
+    const front = (foreground: boolean) =>
+      renderToStaticMarkup(
+        createElement(WorldBackdrop, {
+          worldId: 4,
+          height: 800,
+          horizon: 330,
+          groundTop: 470,
+          pathY: 640,
+          foreground,
+        }),
+      );
+    // The young pines in front of the camera are the front layer's darkest green.
+    expect(front(true)).toContain('#0e2a24');
+    expect(front(false)).not.toContain('#0e2a24');
   });
 
   it.each([1, 2, 3, 4, 5])('draws World %s in its own style, cleanly', (worldId) => {

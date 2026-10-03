@@ -200,27 +200,72 @@ export function Wave() {
   );
 }
 
-/** World 4: an avalanche snowball, spraying snow. */
+/** The snowball's lumpy outline around (72, 72). */
+const SNOWBALL_EDGE = roundPath(
+  Array.from({ length: 12 }, (_, i) => {
+    const a = (i / 12) * Math.PI * 2;
+    const m = 50 * (1 + 0.07 * noise(i, 9));
+    return [72 + Math.cos(a) * m, 72 + Math.sin(a) * m] as const;
+  }),
+);
+
+/**
+ * World 4: an avalanche snowball tumbling after him, a pine twig and pebbles rolled up in it,
+ * clumps of snow flying off its front and a little snow bunting riding on top, quite happy.
+ */
 export function Snowball() {
-  const snow = '#eef6ff';
+  const snow = '#f4f8ff';
+  const blue = '#b4c8ec';
   return (
     <g>
       <DustPuffs color="#ffffff" />
+      <g stroke="#ffffff" strokeWidth={4} strokeLinecap="round" opacity={0.75}>
+        <path d="M8 46 h-20 M2 70 h-26 M10 96 h-16" />
+      </g>
       <g className="chaser__spin" style={{ transformOrigin: '72px 72px' }}>
-        <circle cx={72} cy={72} r={52} fill={snow} {...ink(4)} />
-        <g fill={shade(snow, 0.18)}>
-          <circle cx={52} cy={52} r={9} />
-          <circle cx={94} cy={82} r={12} />
-          <circle cx={60} cy={100} r={7} />
+        <path d={SNOWBALL_EDGE} fill={snow} {...ink(4)} />
+        <g fill={blue}>
+          <circle cx={50} cy={48} r={7} />
+          <circle cx={96} cy={84} r={9} />
+          <circle cx={58} cy={102} r={6} />
         </g>
         <path
-          d="M86 38 l10 -6 M40 80 l-8 6"
-          stroke="#6b4a2e"
-          strokeWidth={4}
+          d="M86 36 l14 -12 M93 30 l8 2 M92 31 l-2 -8"
+          stroke="#5a3e2a"
+          strokeWidth={3.5}
           strokeLinecap="round"
         />
+        <path d="M94 28 l8 -4 l-2 6 Z M84 40 l-8 -2 l4 6 Z" fill="#2f735a" {...ink(1.4)} />
+        <path d="M34 82 q-6 -6 -2 -12 q8 2 8 10 Z" fill="#8f8ba3" {...ink(1.6)} />
+        <path d="M78 110 q-2 -8 6 -9 q4 6 -1 10 Z" fill="#8f8ba3" {...ink(1.6)} />
       </g>
-      <path d="M24 84 A52 52 0 0 0 96 118 Q48 112 24 84 Z" fill={shade(snow, 0.22)} />
+      {/* Light and shadow stay put while it rolls: a blue cel shadow, a rim light, a shine. */}
+      <path d="M26 88 A50 50 0 0 0 98 116 Q52 112 26 88 Z" fill={blue} />
+      <path
+        d="M80 30 A42 42 0 0 1 114 64"
+        fill="none"
+        stroke="#ffffff"
+        strokeWidth={6}
+        strokeLinecap="round"
+      />
+      {/* Clumps of snow flung off its front. */}
+      <g fill={snow} {...ink(2)}>
+        <circle cx={132} cy={60} r={7} />
+        <circle cx={142} cy={86} r={5} />
+        <circle cx={136} cy={112} r={6} />
+      </g>
+      {/* A little snow bunting riding on top, cheerful about it. */}
+      <g className="chaser__bob">
+        <g transform="translate(70 16)">
+          <path d="M-14 0 L-22 -4 L-20 4 Z" fill="#3a3448" {...ink(1.4)} />
+          <ellipse cx={0} cy={0} rx={13} ry={10} fill="#ffffff" {...ink(2.2)} />
+          <path d="M-12 -2 Q-4 -12 6 -9 Q-2 -2 -12 2 Z" fill="#3a3448" />
+          <circle cx={8} cy={-3} r={2.2} fill={INK} />
+          <circle cx={8.6} cy={-3.8} r={0.8} fill="#ffffff" />
+          <path d="M12 -1 L18 1 L12 3 Z" fill="#ffb347" {...ink(1.2)} />
+          <path d="M-2 10 v4 M3 10 v4" stroke="#ff9a3c" strokeWidth={1.8} strokeLinecap="round" />
+        </g>
+      </g>
     </g>
   );
 }

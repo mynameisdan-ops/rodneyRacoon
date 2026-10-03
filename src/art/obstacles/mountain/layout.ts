@@ -3,12 +3,27 @@
  * local px from each scene's anchor (x right, y down, the ground line at 0).
  */
 
-/** Level 25: a rock slide; he dives under an overhang as the rocks bounce over. */
+/**
+ * Level 25: a rock slide. Rocks roll down the cliff's snowy top (`slope`, from the lip up to the
+ * upper right), fly off the shelf's lip over his head and crash onto the path behind him.
+ */
 export const ROCK_SLIDE = {
+  /** The shelf of rock jutting out over the path. */
   overhang: [450, 760] as const,
-  /** Underside of the overhang, px above the ground. */
-  clear: 150,
-  roof: 230,
+  /** Underside of the shelf, px above the ground (he crouches under it). */
+  clear: 198,
+  /** The cliff's top edge: the shelf's lip, then the slope up to the upper right. */
+  slope: [
+    [430, -300],
+    [560, -336],
+    [700, -416],
+    [850, -536],
+    [1000, -660],
+    [1150, -760],
+    [1450, -860],
+  ] as const,
+  /** How long a rock takes from the top of the slope to the lip, ms. */
+  roll: 1800,
   width: 900,
 };
 
@@ -41,11 +56,11 @@ export const GOAT = {
   /** His feet ride this far above the goat's feet. */
   saddle: 90,
   ledges: [
-    [600, 100],
-    [800, 200],
-    [1000, 300],
+    [600, 90],
+    [800, 170],
+    [1000, 250],
   ] as const,
-  top: 300,
+  top: 250,
   width: 1250,
 };
 

@@ -5,7 +5,8 @@ import { ForestCanopy, ForestFar, ForestFront, ForestMid, ForestNear } from './f
 import { PAINTED_FOREST } from './forestPalette';
 import { MineCeiling, MineFar, MineFront, MineMid, MineNear } from './mine';
 import { PAINTED_MINE } from './minePalette';
-import { MountainClouds, MountainFar, MountainMid, MountainNear } from './mountain';
+import { MountainClouds, MountainFar, MountainFront, MountainMid, MountainNear } from './mountain';
+import { PAINTED_MOUNTAIN } from './mountainPalette';
 import { RiverClouds, RiverFar, RiverFront, RiverMid, RiverNear } from './river';
 import { PAINTED_RIVER } from './riverPalette';
 import type { LayerProps } from './sceneryKit';
@@ -79,8 +80,14 @@ export const WORLD_ART: Record<number, WorldArt> = {
   ),
   4: world(
     MOUNTAIN,
-    { clouds: MountainClouds, far: MountainFar, mid: MountainMid, near: MountainNear },
-    { drift: true, chaser: Snowball, timer: 'sun' },
+    {
+      clouds: MountainClouds,
+      far: MountainFar,
+      mid: MountainMid,
+      near: MountainNear,
+      front: MountainFront,
+    },
+    { drift: true, chaser: Snowball, timer: 'sun', sky: skyOf(PAINTED_MOUNTAIN) },
   ),
   5: world(
     CANYON,

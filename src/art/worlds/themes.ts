@@ -39,14 +39,9 @@ export interface RiverTheme extends BaseTheme {
   kind: 'river';
 }
 
+/** The mountains are painted (M7b): their layers take their colors from `PAINTED_MOUNTAIN`. */
 export interface MountainTheme extends BaseTheme {
   kind: 'mountain';
-  cloud: string;
-  peakFar: string;
-  peakMid: string;
-  snow: string;
-  rock: string;
-  pine: string;
 }
 
 export interface CanyonTheme extends BaseTheme {
@@ -104,18 +99,12 @@ export const RIVER: RiverTheme = {
 
 export const MOUNTAIN: MountainTheme = {
   kind: 'mountain',
-  skyTop: '#7fa8d8',
-  skyBottom: '#e8f0fa',
-  ground: '#e4edf7',
-  groundLight: '#ffffff',
-  path: '#9a8f86',
-  pathEdge: '#6b625c',
-  cloud: '#f7fbff',
-  peakFar: '#a9bcd8',
-  peakMid: '#7d8ea8',
-  snow: '#ffffff',
-  rock: '#7e7a82',
-  pine: '#2f5e4a',
+  skyTop: '#2f6fc4',
+  skyBottom: '#eef7ff',
+  ground: '#e7f0fb',
+  groundLight: '#f8fbff',
+  path: '#aa9a8b',
+  pathEdge: '#7a6b61',
 };
 
 export const CANYON: CanyonTheme = {
