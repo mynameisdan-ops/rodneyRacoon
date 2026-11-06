@@ -186,9 +186,9 @@ branch, ⬜ not started.
 | M7b | Saturday-morning cartoon look: style test (approved) → the new hero and animation beats (Phase B) → each world's backdrop, obstacles, chaser and scenes repainted (Phase C) → the UI to match (D) → the tablet check (E) | The game looks and moves like a cartoon | ✅ (Phase E, the tablet check, moved to M10's tablet testing at the user's request) |
 | M8 | Avatars drawn from the parent's photos, a Look picker, a new save version | Kids play as themselves | ⬜ (waits for the photos; M9 and M10 went first, Oct 3) |
 | M9 | Audio: synthesized SFX and music loops, the map's speaker button, save v6 | Sound on | ✅ |
-| M10 | Settings and stats (with the unlock switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing (including M7b's: scene frame rate and the first-frame hitch) | Installed on PC and tablet | 🟡 Settings, stats and PWA polish merged (Oct 3); the deploy waits on Pages being turned on; the tablet test is the user's |
+| M10 | Settings and stats (with the unlock switch), PWA polish (PNG icons 192/512, Pages `base` path), final deploy, tablet testing (including M7b's: scene frame rate and the first-frame hitch) | Installed on PC and tablet | 🟡 Settings, stats and PWA polish merged (Oct 3); the repo is public and Pages on (Nov 6), but GitHub cancels the Pages deployment (account-side, the user checks); the tablet test is the user's |
 
-**Open gaps:** turning GitHub Pages on (then the deploy runs by itself). The repainted scenes
+**Open gaps:** GitHub cancels the Pages deployment (Nov 6; see STATUS), then the deploy runs by itself. The repainted scenes
 and the new audio haven't been checked on the tablet yet (M10); if the first frame of a scene
 hitches there, warm its backdrop images during the results screen.
 

@@ -124,3 +124,10 @@ mine and forest). The design is in `docs/PLAN.md`; the current snapshot is in `S
     manifest with an `id` and relative paths, an Install button where the browser offers one.
     Chrome's installability check passes for a `/rodneyRacoon/` build. `deploy.yml` publishes to
     Pages on pushes to `main`, and skips until Pages is turned on (the repo is private).
+
+- **2026-11-06: The repo goes public; Pages on.** The user chose a public repo over a paid plan.
+  A scan of the whole history first found no photos (only the generated icons), no secrets and no
+  names; the only personal data is the commit author email. Pages is on with Source: GitHub
+  Actions. The Deploy build passes, but GitHub cancels the Pages deployment itself (the first run
+  queued 10 min and timed out; two more were cancelled after ~12 s) while githubstatus.com shows
+  Pages operational. Likely account-side (unverified email or a new-account hold); the user checks.
