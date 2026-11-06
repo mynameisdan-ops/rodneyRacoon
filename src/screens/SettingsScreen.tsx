@@ -345,9 +345,27 @@ function PlayerPanel({
             }))}
             onPick={(hardest) => onUpdate({ hardest })}
           />
+          <Choices
+            label="× and ÷"
+            value={player.mixMulDiv}
+            options={[
+              { value: false, text: 'In their levels' },
+              { value: true, text: 'In every page' },
+            ]}
+            onPick={(mixMulDiv) => onUpdate({ mixMulDiv })}
+          />
+          <Choices
+            label="Blocks"
+            value={player.blocks}
+            options={[
+              { value: false, text: 'Off' },
+              { value: true, text: 'Show each problem' },
+            ]}
+            onPick={(blocks) => onUpdate({ blocks })}
+          />
           <p className="settings__note">
             A new age restarts the difficulty. Difficulty adapts inside each level, never above
-            Hardest.
+            Hardest. Blocks show how each problem works (try 90 s per page with them).
           </p>
         </>
       ) : (

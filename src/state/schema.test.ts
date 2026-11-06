@@ -15,7 +15,7 @@ describe('migrate', () => {
 
   it('keeps valid data unchanged', () => {
     const save = {
-      version: 7,
+      version: 8,
       lastProfileId: 'a',
       audio: { sound: 3, music: 0, muted: true },
       profiles: [
@@ -52,6 +52,8 @@ describe('migrate', () => {
           pageSeconds: 90,
           adapts: false,
           hardest: 0.5,
+          mixMulDiv: true,
+          blocks: true,
           stats: {
             skills: { doubles: { answered: 10, right: 9, firstTry: 7, ms: 31000 } },
             recent: [{ at: 9, level: 1, right: 9, total: 10, stars: 2, passed: true, seconds: 41 }],
@@ -122,6 +124,11 @@ describe('migrate', () => {
     });
   });
 
+  it('migrates a v7 save: × and ÷ stay in their levels, no blocks', () => {
+    const out = migrate({ version: 7, profiles: [{ id: 'a', name: 'Sam', progress: {} }] });
+    expect(out.profiles[0]).toMatchObject({ mixMulDiv: false, blocks: false });
+  });
+
   it('cleans up damaged player settings and stats', () => {
     const out = migrate({
       version: 7,
@@ -132,6 +139,8 @@ describe('migrate', () => {
           pageSeconds: 75,
           adapts: 'no',
           hardest: 7,
+          mixMulDiv: 'yes',
+          blocks: 1,
           stats: {
             skills: {
               doubles: { answered: 4, right: 9, firstTry: 5, ms: -3 },
@@ -145,7 +154,13 @@ describe('migrate', () => {
       ],
     });
     const [a, b] = out.profiles;
-    expect(a).toMatchObject({ pageSeconds: 60, adapts: true, hardest: 1 });
+    expect(a).toMatchObject({
+      pageSeconds: 60,
+      adapts: true,
+      hardest: 1,
+      mixMulDiv: false,
+      blocks: false,
+    });
     expect(a!.stats.skills).toEqual({ doubles: { answered: 4, right: 4, firstTry: 4, ms: 0 } });
     expect(a!.stats.recent).toEqual([
       { at: 0, level: 2, right: 5, total: 5, stars: 0, passed: false, seconds: 0 },

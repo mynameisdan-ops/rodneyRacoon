@@ -24,6 +24,6 @@ So far each version only added fields, so sanitizing is the whole migration.
 ## Privacy
 
 The app has no photo feature: M8's avatars are drawn from photos the parent shares, as unnamed
-presets (save v8 adds `avatar`; v6 added the device's `audio` settings, v7 each player's
-timer, difficulty settings and `stats`). Never commit, store or log those photos, and keep the children's
-names out of the repo. No network calls, ever.
+presets (save v9 adds `avatar`; v6 added the device's `audio` settings, v7 each player's
+timer, difficulty settings and `stats`, v8 `mixMulDiv` and `blocks`). Never commit, store or
+log those photos, and keep the children's names out of the repo. No network calls, ever.

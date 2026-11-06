@@ -14,6 +14,7 @@ import { comboBonus } from '../game/rewards';
 import { evaluatePage, type PageEvaluation } from '../game/scoring';
 import { createSession, currentProblem, sessionReducer, type SessionState } from '../game/session';
 import { Coin } from '../ui/icons';
+import { BlockAid } from '../ui/BlockAid';
 import { NumberPad, type PadKey } from '../ui/NumberPad';
 import { TrailStrip } from '../ui/TrailStrip';
 
@@ -22,6 +23,8 @@ interface Props {
   avatar: AvatarConfig;
   /** Check answers once enough digits are typed, instead of waiting for Enter / ✓. */
   autoSubmit: boolean;
+  /** Draw each problem as blocks (a parent setting). */
+  blocks?: boolean;
   /** Seconds on the clock (a parent can give a player more than the standard page). */
   pageSeconds: number;
   /** How many problems, how hard, and which missed facts to bring back (adaptive difficulty). */
@@ -70,9 +73,17 @@ export function PageScreen(props: Props) {
   return <TimedPage {...props} />;
 }
 
-function TimedPage({ level, avatar, autoSubmit, pageSeconds, plan, onFinish, onQuit }: Props) {
+function TimedPage(props: Props) {
+  const { level, avatar, autoSubmit, blocks = false, pageSeconds, plan, onFinish, onQuit } = props;
   const [problems] = useState<Problem[]>(() =>
-    generatePage(level.skill, plan.count, createRng(randomSeed()), plan.difficulty, plan.weak),
+    generatePage(
+      level.skill,
+      plan.count,
+      createRng(randomSeed()),
+      plan.difficulty,
+      plan.weak,
+      plan.mix,
+    ),
   );
   const [startedAt] = useState(() => performance.now());
   const [state, dispatch] = useReducer(sessionReducer, startedAt, (t) =>
@@ -239,7 +250,7 @@ function TimedPage({ level, avatar, autoSubmit, pageSeconds, plan, onFinish, onQ
       ) : done ? (
         <div className="page-over">{state.timedOut ? "Time's up!" : 'Page done!'}</div>
       ) : (
-        <ProblemView state={state} />
+        <ProblemView state={state} blocks={blocks} />
       )}
       {state.combo >= 3 && !done && !paused && <ComboBadge combo={state.combo} />}
     </PageLayout>
@@ -263,7 +274,7 @@ function ComboBadge({ combo }: { combo: number }) {
   );
 }
 
-function ProblemView({ state }: { state: SessionState }) {
+function ProblemView({ state, blocks }: { state: SessionState; blocks: boolean }) {
   const problem = currentProblem(state);
   if (!problem) return null;
   const fb = state.feedback;
@@ -283,7 +294,7 @@ function ProblemView({ state }: { state: SessionState }) {
   );
 
   return (
-    <div className="problem-area">
+    <div className={blocks ? 'problem-area problem-area--blocks' : 'problem-area'}>
       <div className={long ? 'problem problem--long' : 'problem'} key={`problem-${state.index}`}>
         <span>{problem.a}</span>
         <span className="problem__op">{problem.op}</span>
@@ -291,6 +302,7 @@ function ProblemView({ state }: { state: SessionState }) {
         <span className="problem__op">=</span>
         {problem.unknown === 'result' ? box : <span>{problem.result}</span>}
       </div>
+      {blocks && <BlockAid key={`blocks-${state.index}`} problem={problem} />}
       {fb?.kind === 'correct' && (
         <div className="cheer" key={`cheer-${fb.seq}`}>
           ✓

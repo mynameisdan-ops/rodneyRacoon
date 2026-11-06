@@ -1,0 +1,85 @@
+/* The block picture of a problem (BlockAid.tsx). Only transform and opacity animate. */
+.block-aid {
+  position: relative;
+  flex: none;
+}
+
+.block {
+  position: absolute;
+  border: 3px solid var(--ink);
+  border-radius: 6px;
+  /* Cel shading: a lit top and a shadowed bottom edge. */
+  background-image: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0) 45%);
+  box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.18);
+}
+
+.block--a {
+  background-color: #f08a3c;
+}
+.block--b {
+  background-color: #3a86ff;
+}
+.block--c {
+  background-color: #ffc53d;
+}
+.block--d {
+  background-color: #2a9d8f;
+}
+
+/* A tens rod: notched into ten. */
+.block--rod {
+  background-image:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.35), rgba(255, 255, 255, 0) 50%),
+    repeating-linear-gradient(
+      transparent 0 calc(10% - 2px),
+      rgba(26, 18, 32, 0.45) calc(10% - 2px) 10%
+    );
+}
+
+.block--ghost {
+  background: #fffdf6;
+  border-style: dashed;
+  border-color: var(--ink-soft);
+  box-shadow: none;
+  animation: block-ghost 900ms ease-in-out var(--block-start) 2 both;
+}
+
+.block--moves {
+  animation: block-move var(--block-move) cubic-bezier(0.3, 0.9, 0.35, 1.1) var(--block-start) both;
+}
+
+.block--leaves {
+  animation: block-leave var(--block-move) ease-in var(--block-start) both;
+}
+
+.block-aid__frame {
+  position: absolute;
+  border: 3px dashed var(--ink-soft);
+  border-radius: 10px;
+  animation: block-frame 300ms ease-out calc(var(--block-start) + var(--block-move)) both;
+}
+
+@keyframes block-move {
+  from {
+    transform: translate(var(--dx), var(--dy));
+  }
+}
+
+@keyframes block-leave {
+  to {
+    transform: translate(40px, -70px) rotate(25deg);
+    opacity: 0;
+  }
+}
+
+@keyframes block-ghost {
+  50% {
+    transform: scale(1.12);
+  }
+}
+
+@keyframes block-frame {
+  from {
+    opacity: 0;
+  }
+}

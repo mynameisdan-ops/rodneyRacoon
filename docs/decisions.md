@@ -131,3 +131,14 @@ mine and forest). The design is in `docs/PLAN.md`; the current snapshot is in `S
   Source: GitHub Actions. The first three Pages deployments were GitHub's own doing: one sat
   queued 10 min, two were cancelled after ~12 s (a brand-new Pages site still provisioning); the
   next push deployed fine. Live at https://mynameisdan-ops.github.io/rodneyRacoon/.
+
+- **2026-11-06: Feedback: × and ÷ in every page, and blocks** (`fb-mul-div-blocks`, save v8).
+  - **× and ÷:** read as "mix them into the journey", not "skip ahead" (Levels: All open already
+    does that). 30% of a page on levels 1–24 (`CONFIG.mulDiv`), each table at the player's own
+    rating (capped by Hardest), only tables up to 2 years past their age (always ×0/1/2/10 and
+    ÷1/2/5/10). Missed × ÷ facts come back on mixed pages. Mixed-in misses count toward the page.
+  - **Blocks:** `blockLayout.ts` (pure, tested) + `BlockAid`. Under a second of CSS motion; a
+    fixed box so nothing shifts. × shows one array grouped both ways (rows on one side, columns
+    on the other). Borrowing is drawn pre-regrouped; carrying fills a column of ten. The blocks
+    show the answer by counting: that's the point of this parent opt-in, not a breach of "never
+    hint at the answer" (which is about the ✓ and the answer box). M8 moves to save v9.

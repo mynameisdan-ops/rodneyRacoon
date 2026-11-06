@@ -1,6 +1,6 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Nov 6, 2026 (the repo is public and the game is live on GitHub Pages).
+Last updated: Nov 6, 2026 (live on GitHub Pages; feedback: × and ÷ in every page, and blocks).
 History: `docs/decisions.md`.
 
 ## Goals
@@ -33,8 +33,11 @@ are playable with rewards, audio and parent settings.
   from the hero's cut-in, a polished manifest, an Install button, and a Pages build under
   `/rodneyRacoon/` that Chrome reports installable. `deploy.yml` deploys on pushes to `main`
   once Pages is on.
-- **M8 (avatars from the user's photos)** waits for the photos; it will be save v8.
-- **Checks:** 500 unit tests, lint and build pass; CI runs them on every push.
+- **Nov 6 feedback (save v8):** two per-player settings: **× and ÷ in every page** (30% of
+  pages on levels 1–24) and **Blocks** (each problem drawn as blocks that join, leave, close up
+  or split; `#demo/page/12/blocks`, `#demo/page/3/mix`).
+- **M8 (avatars from the user's photos)** waits for the photos; it will be save v9.
+- **Checks:** 518 unit tests, lint and build pass; CI runs them on every push.
 - **Live:** https://mynameisdan-ops.github.io/rodneyRacoon/ (public repo, Pages Source: GitHub
   Actions, since Nov 6). Every push to `main` deploys. The game, manifest, service worker and
   icons load there with no console errors.
@@ -48,10 +51,12 @@ are playable with rewards, audio and parent settings.
 
 1. Install on the PC and the tablet from the Pages URL and play: scene frame rate and the
    first-frame hitch, sound levels, Settings at tablet size. Notes go in `docs/feedback.md`.
-2. M8 (avatars from the user's photos) when the photos are ready.
+2. Try the new settings with the kids: is 30% × ÷ the right amount, and are the blocks
+   readable and quick enough on the tablet (tune in `config.ts` / `blockLayout.ts`)?
+3. M8 (avatars from the user's photos) when the photos are ready.
 
 ## Handoff
 
-- **Branch:** `main`, pushed, with `m9-audio` and `m10-settings-deploy` merged. On the user's
+- **Branch:** `main`, pushed, with `fb-mul-div-blocks` (Nov 6 feedback) merged. On the user's
   PC, `handover.md` is the user's own old file (out of date; leave it).
 - **Waiting on the user:** installing and playing on the PC and the tablet, photos for M8.
