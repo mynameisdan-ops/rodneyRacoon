@@ -142,3 +142,6 @@ mine and forest). The design is in `docs/PLAN.md`; the current snapshot is in `S
     on the other). Borrowing is drawn pre-regrouped; carrying fills a column of ten. The blocks
     show the answer by counting: that's the point of this parent opt-in, not a breach of "never
     hint at the answer" (which is about the ✓ and the answer box). M8 moves to save v9.
+  - **Deploy:** Pages had been switched to "Deploy from a branch", which served the raw source
+    (`/src/main.tsx`); set back to GitHub Actions at the user's OK. Commits now use the GitHub
+    no-reply email (repo-local `user.email`), since the account blocks pushes with a private one.
