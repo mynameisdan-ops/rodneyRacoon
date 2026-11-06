@@ -330,6 +330,33 @@ describe('generatePage', () => {
     expect(new Set(page.map((p) => p.key)).size).toBe(15);
   });
 
+  it('mixes in exactly `mix.count` problems from the mix skills', () => {
+    const mix = {
+      count: 4,
+      skills: [
+        { skill: 'mul-5', difficulty: 0.5 },
+        { skill: 'div-3-4', difficulty: 0 },
+      ],
+    } as const;
+    for (let seed = 0; seed < 30; seed++) {
+      const page = generatePage('add-within-10', 12, createRng(seed), 0.5, [], mix);
+      expect(page).toHaveLength(12);
+      const mixed = page.filter((p) => p.skill === 'mul-5' || p.skill === 'div-3-4');
+      expect(mixed).toHaveLength(4);
+      expect(page.filter((p) => p.skill === 'add-within-10')).toHaveLength(8);
+      for (let i = 1; i < page.length; i++) expect(page[i]!.key).not.toBe(page[i - 1]!.key);
+    }
+  });
+
+  it('is unchanged without a mix', () => {
+    const plain = generatePage('add-within-20', 14, createRng(5), 0.5);
+    const empty = generatePage('add-within-20', 14, createRng(5), 0.5, [], {
+      count: 0,
+      skills: [],
+    });
+    expect(empty).toEqual(plain);
+  });
+
   it('is deterministic for a given seed', () => {
     const a = generatePage('world1-review', 16, createRng(42), 0.5);
     const b = generatePage('world1-review', 16, createRng(42), 0.5);
