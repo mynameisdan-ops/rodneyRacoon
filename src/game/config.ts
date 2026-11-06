@@ -63,6 +63,20 @@ export const CONFIG = {
      */
     hardestChoices: [0.25, 0.5, 0.75, 1],
   },
+  /**
+   * A parent setting ("× and ÷: In every page"): times and sharing problems mixed into pages
+   * that don't have them yet (levels 1–24), from Nov 2026 feedback.
+   */
+  mulDiv: {
+    /** This share of such a page is × and ÷ (weak facts may take some of those places). */
+    share: 0.3,
+    /** The skills it draws from, each at the player's own rating for it. */
+    skills: ['mul-0-1-2-10', 'mul-5', 'mul-3-4', 'mul-6-9', 'div-1-2-5-10', 'div-3-4', 'div-6-9'],
+    /** Only skills typically mastered by the player's age plus this many years... */
+    ageAhead: 2,
+    /** ...but always at least these (the easiest tables). */
+    always: ['mul-0-1-2-10', 'div-1-2-5-10'],
+  },
   /** The parent's stats: how many recent pages to remember per player. */
   recentPages: 20,
 } as const;

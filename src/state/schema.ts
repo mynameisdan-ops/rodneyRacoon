@@ -16,7 +16,7 @@ import { GEAR_SLOTS, getItem, type Gear } from '../content/shop';
 /**
  * Save format. Bump SAVE_VERSION and add a step to `migrate` whenever this shape changes.
  */
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 
 /** A player. The adaptive fields (`age`, `ratings`, `weakFacts`) were added in v3. */
 export interface Profile extends AdaptiveState {
@@ -42,6 +42,10 @@ export interface Profile extends AdaptiveState {
   adapts: boolean;
   /** A parent setting: the hardest pages get, one of `CONFIG.adaptive.hardestChoices` (v7). */
   hardest: number;
+  /** A parent setting: × and ÷ mixed into every page, not only their own levels (added in v8). */
+  mixMulDiv: boolean;
+  /** A parent setting: each problem drawn as blocks that join, split or group (added in v8). */
+  blocks: boolean;
   /** For the parent: answers by fact family and recent pages (added in v7). */
   stats: PlayerStats;
 }
@@ -94,7 +98,7 @@ export function migrate(raw: unknown): SaveData {
   // `autoSubmit` (Enter), v3 added `age` (not set), `ratings` and `weakFacts` (empty),
   // v4 added `unlockAll` (off), v5 added `coins` (0), `owned` and `gear` (none), v6 added
   // `audio` (the default volumes), v7 added `pageSeconds` (60), `adapts` (on), `hardest` (no
-  // limit) and `stats` (empty).
+  // limit) and `stats` (empty), v8 added `mixMulDiv` and `blocks` (both off).
   const profiles = Array.isArray(raw.profiles)
     ? raw.profiles.map(sanitizeProfile).filter((p): p is Profile => p !== null)
     : [];
@@ -143,6 +147,8 @@ function sanitizeProfile(raw: unknown): Profile | null {
     pageSeconds: oneOf(raw.pageSeconds, CONFIG.pageChoices, CONFIG.pageSeconds),
     adapts: raw.adapts !== false,
     hardest: oneOf(raw.hardest, CONFIG.adaptive.hardestChoices, 1),
+    mixMulDiv: raw.mixMulDiv === true,
+    blocks: raw.blocks === true,
     stats: sanitizeStats(raw.stats),
   };
 }

@@ -38,6 +38,7 @@ shape and input: design that in `docs/PLAN.md` first.
 ## Tune difficulty or rewards
 
 Global rules are numbers in `config.ts`, including the parent's choices: `pageChoices` (the
-timer; the 3-star time and time coins scale with it) and `hardestChoices` (a ceiling on the
-rating). A level's page size and difficulty range are its row in `content/levels.ts`
-(`problems`, `band`). Typical ages per skill are in `content/skills.ts`.
+timer; the 3-star time and time coins scale with it), `hardestChoices` (a ceiling on the
+rating) and `mulDiv` (the share, skills and ages of "× and ÷ in every page", which `planPage`
+turns into a `PageMix` for `generatePage`). A level's page size and difficulty range are its row
+in `content/levels.ts` (`problems`, `band`). Typical ages per skill are in `content/skills.ts`.

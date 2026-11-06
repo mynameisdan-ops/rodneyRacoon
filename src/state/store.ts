@@ -21,7 +21,7 @@ import {
 /** The per-player settings a parent picks in Settings (age also in the new-player editor). */
 export type ProfileSettings = Pick<
   Profile,
-  'autoSubmit' | 'age' | 'unlockAll' | 'pageSeconds' | 'adapts' | 'hardest'
+  'autoSubmit' | 'age' | 'unlockAll' | 'pageSeconds' | 'adapts' | 'hardest' | 'mixMulDiv' | 'blocks'
 >;
 /** Everything that can be changed about a player. */
 export type ProfileFields = Pick<Profile, 'name' | 'color'> & ProfileSettings;
@@ -134,6 +134,8 @@ export const useGame = create<GameStore>()((set, get) => {
         pageSeconds: settings.pageSeconds ?? CONFIG.pageSeconds,
         adapts: settings.adapts ?? true,
         hardest: settings.hardest ?? 1,
+        mixMulDiv: settings.mixMulDiv ?? false,
+        blocks: settings.blocks ?? false,
         stats: emptyStats(),
       };
       commit((d) => ({ ...d, profiles: [...d.profiles, profile], lastProfileId: id }));

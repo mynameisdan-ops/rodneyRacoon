@@ -284,3 +284,23 @@
     transform: translateY(-30px);
   }
 }
+
+/* With blocks on (a parent setting): a smaller problem over the block picture, and the notes
+   at the top, where they don't cover the blocks. */
+.problem-area--blocks {
+  gap: 16px;
+}
+
+.problem-area--blocks .problem {
+  font-size: 104px;
+}
+
+.problem-area--blocks .problem--long {
+  font-size: 92px;
+}
+
+.problem-area--blocks .retry-note,
+.problem-area--blocks .reveal-note {
+  top: 12px;
+  bottom: auto;
+}

@@ -20,6 +20,7 @@ import { DEFAULT_AUDIO, SAVE_VERSION, type Profile, type SaveData } from '../sta
  *   #demo  #demo/profiles  #demo/editor  #demo/new  #demo/map/3  #demo/worlds/2
  *   #demo/shop  #demo/stickers/2  #demo/page/12  #demo/results/9  #demo/retry/9  #demo/scene/16
  *   #demo/settings  #demo/settings/sam (a player's page)
+ *   #demo/page/12/blocks, #demo/page/3/mix, #demo/page/3/mix+blocks (Sam with those settings on)
  */
 
 /** Levels 1..`upTo` passed, with a mix of stars. */
@@ -45,6 +46,8 @@ const base = {
   pageSeconds: CONFIG.pageSeconds,
   adapts: true,
   hardest: 1,
+  mixMulDiv: false,
+  blocks: false,
   stats: emptyStats(),
 };
 
@@ -117,7 +120,7 @@ function results(levelId: number, pass: boolean): Screen {
 }
 
 /** The screen a `#demo/...` hash asks for. */
-function screenFor(hash: string): Screen {
+function screenFor(hash: string, sam: Profile): Screen {
   const [, name = 'map', arg] = hash.split('/');
   const n = arg === undefined ? undefined : Number(arg);
   const levelId = n ?? 1;
@@ -140,7 +143,7 @@ function screenFor(hash: string): Screen {
         name: 'page',
         levelId: level.id,
         attempt: 1,
-        plan: planPage(level, SAM, createRng(1)),
+        plan: planPage(level, sam, createRng(1)),
       };
     }
     case 'results':
@@ -158,12 +161,15 @@ function screenFor(hash: string): Screen {
 
 /** Puts the demo players in the store (in memory only) and returns the screen to open. */
 export function startDemo(hash: string): Screen {
+  // A fourth part turns settings on for Sam: `blocks`, `mix` or `mix+blocks`.
+  const flags = hash.split('/')[3] ?? '';
+  const sam = { ...SAM, blocks: flags.includes('blocks'), mixMulDiv: flags.includes('mix') };
   const data: SaveData = {
     version: SAVE_VERSION,
-    profiles: [SAM, AVA],
+    profiles: [sam, AVA],
     lastProfileId: SAM.id,
     audio: DEFAULT_AUDIO,
   };
   useGame.setState({ status: 'ready', persist: false, data, activeProfileId: SAM.id });
-  return screenFor(hash);
+  return screenFor(hash, sam);
 }

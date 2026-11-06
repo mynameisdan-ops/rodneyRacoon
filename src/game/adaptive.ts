@@ -1,7 +1,13 @@
 import type { LevelDef } from '../content/levels';
 import { DEFAULT_AGE, SKILL_AGE } from '../content/skills';
 import { CONFIG } from './config';
-import { skillCovers, type Problem, type SkillId } from './problems';
+import {
+  skillCovers,
+  type BaseSkillId,
+  type PageMix,
+  type Problem,
+  type SkillId,
+} from './problems';
 import type { Rng } from './rng';
 import type { PageEvaluation, ProblemResult } from './scoring';
 
@@ -32,6 +38,8 @@ export interface AdaptiveState {
   adapts?: boolean;
   /** A parent setting: the highest rating pages use, 0..1 (default 1, no limit). */
   hardest?: number;
+  /** A parent setting: × and ÷ mixed into pages that don't have them (default off). */
+  mixMulDiv?: boolean;
 }
 
 /** One answered problem on a finished page. */
@@ -44,6 +52,8 @@ export interface PagePlan {
   difficulty: number;
   /** Missed facts to mix into the page. */
   weak: Problem[];
+  /** Other skills mixed into the page (the parent's "× and ÷ in every page"). */
+  mix?: PageMix;
 }
 
 const clamp01 = (v: number) => Math.min(1, Math.max(0, v));
@@ -76,22 +86,51 @@ export function weakFactsFor(state: AdaptiveState, skill: SkillId): WeakFact[] {
     .sort((a, b) => b.misses - a.misses || a.lastSeen - b.lastSeen);
 }
 
+/**
+ * The × and ÷ skills mixed into a level's pages, each at the player's own rating for it
+ * (capped by Hardest): none when the setting is off or the level already has × or ÷.
+ */
+export function mulDivMix(level: LevelDef, state: AdaptiveState): PageMix['skills'] {
+  const { skills, ageAhead, always } = CONFIG.mulDiv;
+  if (!state.mixMulDiv) return [];
+  if (skills.some((s) => skillCovers(level.skill, s))) return [];
+  const age = state.age ?? DEFAULT_AGE;
+  return skills
+    .filter((s) => (always as readonly string[]).includes(s) || SKILL_AGE[s] <= age + ageAhead)
+    .map((skill: BaseSkillId) => ({
+      skill,
+      difficulty: Math.min(state.hardest ?? 1, skillRating(state, skill)),
+    }));
+}
+
 /** The page a player gets on a level: size and difficulty from their rating, plus weak facts. */
 export function planPage(level: LevelDef, state: AdaptiveState, rng: Rng): PagePlan {
   const rating = Math.min(state.hardest ?? 1, skillRating(state, level.skill));
+  const mixSkills = mulDivMix(level, state);
   // The rating runs from the level's easy end to its top, raised for older players.
   const reach = olderReach(level.skill, state.age);
   const count = Math.round(lerp(level.problems[0], level.problems[1] + reach.problems, rating));
   const difficulty = lerp(level.band[0], Math.min(1, level.band[1] + reach.band), rating);
   const room = Math.floor(count * CONFIG.adaptive.weakShare);
   // Take the top candidates, with a little shuffle so the same few don't always win.
-  const weak = weakFactsFor(state, level.skill)
+  // Facts missed on mixed-in skills come back on mixed pages too.
+  const covered = (w: WeakFact) => mixSkills.some((m) => m.skill === w.problem.skill);
+  const weak = [
+    ...weakFactsFor(state, level.skill),
+    ...state.weakFacts.filter(covered).sort((a, b) => b.misses - a.misses),
+  ]
     .slice(0, room * 2)
     .map((w, i) => ({ w, order: i + rng.next() * room }))
     .sort((a, b) => a.order - b.order)
     .slice(0, room)
     .map(({ w }) => w.problem);
-  return { count, difficulty, weak };
+  if (mixSkills.length === 0) return { count, difficulty, weak };
+  return {
+    count,
+    difficulty,
+    weak,
+    mix: { count: Math.round(count * CONFIG.mulDiv.share), skills: mixSkills },
+  };
 }
 
 /** A skill's rating after a page: up a step for 3 stars, a little for a pass, down for a miss. */

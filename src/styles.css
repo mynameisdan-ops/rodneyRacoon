@@ -16,6 +16,7 @@
 @import './screens/PageScreen.css';
 @import './ui/TrailStrip.css';
 @import './ui/NumberPad.css';
+@import './ui/BlockAid.css';
 @import './screens/ResultsScreen.css';
 @import './screens/ArtGallery.css';
 @import './screens/CutSceneScreen.css';

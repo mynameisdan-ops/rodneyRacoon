@@ -115,7 +115,7 @@ Numbers in `CONFIG.adaptive`.
   are in the repo. The app has no camera or photo feature.
 - **Look picker** in the player editor: pick a preset, then the shirt, pants and shoe colors.
   Shop items (hats, capes, packs, pets) are extra layers on top. A new save version adds
-  `avatar` (v6 went to M9's sound settings).
+  `avatar` (v6 went to M9's sound settings, v8 to the × ÷ and blocks settings, so it is v9).
 - The same `<Hero>` is used everywhere (map, page strip, cut scenes, shop), posed by a prop and
   (from M7b) given an expression.
 
@@ -139,7 +139,12 @@ Numbers in `CONFIG.adaptive`.
 - **Each player**: age (a new age restarts the difficulty), answers (press ✓ / automatic), levels
   (one by one / all open), time per page (60 / 90 / 120 s: the 3-star time and time coins scale
   with it, so more time doesn't pay more), difficulty (adapts / stays put; missed facts are
-  practised either way) and the hardest it gets (easy / medium / hard / no limit). Name & color
+  practised either way) and the hardest it gets (easy / medium / hard / no limit). Added Nov 6
+  (save v8): **× and ÷** (in their levels / in every page: 30% of a page on levels 1–24 is
+  times and sharing, each table at the player's own rating, the easier tables only for younger
+  players) and **blocks** (off / show each problem: + joins two groups into rows of ten, −
+  sends blocks away, a missing number shows empty places, × shows the same array grouped both
+  ways, ÷ deals a pile into equal groups; past 20, tens rods and ones). Name & color
   (the player editor), **start over** (levels, stars, stickers, difficulty and stats; coins, gear
   and settings are kept) and delete, each confirmed.
 - **Progress**: levels passed, stars, pages played, right %, seconds per answer; a row per fact

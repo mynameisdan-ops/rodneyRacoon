@@ -241,6 +241,7 @@ function Game({ start }: { start?: Screen }) {
           level={level}
           avatar={avatarForProfile(profile!)}
           autoSubmit={profile!.autoSubmit}
+          blocks={profile!.blocks}
           pageSeconds={profile!.pageSeconds}
           plan={current.plan}
           onFinish={finish}

@@ -5,6 +5,7 @@ import {
   applyPage,
   nextRating,
   olderReach,
+  mulDivMix,
   planPage,
   skillRating,
   startRating,
@@ -243,5 +244,74 @@ describe('generatePage with weak facts', () => {
       for (const w of weak) expect(page.some((q) => q.key === w.key)).toBe(true);
       for (let i = 1; i < page.length; i++) expect(page[i]!.key).not.toBe(page[i - 1]!.key);
     }
+  });
+});
+
+describe('× and ÷ in every page (mixMulDiv)', () => {
+  const mul = (a: number, b: number): Problem => ({
+    a,
+    op: '×',
+    b,
+    result: a * b,
+    unknown: 'result',
+    answer: a * b,
+    key: `${a}×${b}`,
+    skill: 'mul-5',
+  });
+
+  it('adds nothing when the setting is off', () => {
+    expect(planPage(getLevel(3)!, fresh(9), createRng(1)).mix).toBeUndefined();
+  });
+
+  it('mixes × and ÷ into a level without them', () => {
+    const level = getLevel(3)!;
+    const plan = planPage(level, { ...fresh(9), mixMulDiv: true }, createRng(1));
+    expect(plan.mix!.count).toBe(Math.round(plan.count * CONFIG.mulDiv.share));
+    expect(plan.mix!.skills.map((s) => s.skill)).toEqual(CONFIG.mulDiv.skills);
+  });
+
+  it('leaves levels that already have × or ÷ alone', () => {
+    for (const level of LEVELS.filter((l) => l.world >= 4)) {
+      expect(planPage(level, { ...fresh(9), mixMulDiv: true }, createRng(1)).mix).toBeUndefined();
+    }
+  });
+
+  it('gives a young player only the easier tables, at an easy rating', () => {
+    const skills = mulDivMix(getLevel(1)!, { ...fresh(5), mixMulDiv: true });
+    expect(skills.map((s) => s.skill)).toEqual(['mul-0-1-2-10', 'div-1-2-5-10']);
+    for (const s of skills) expect(s.difficulty).toBe(startRating(s.skill, 5));
+  });
+
+  it('uses the player rating per skill, held under Hardest', () => {
+    const state = { ...fresh(9), mixMulDiv: true, hardest: 0.5, ratings: { 'mul-5': 0.9 } };
+    const skills = mulDivMix(getLevel(1)!, state);
+    expect(skills.find((s) => s.skill === 'mul-5')!.difficulty).toBe(0.5);
+  });
+
+  it('brings back missed × facts on mixed pages', () => {
+    const weakFacts: WeakFact[] = [{ problem: mul(5, 7), misses: 3, streak: 0, lastSeen: 1 }];
+    const level = getLevel(2)!;
+    const on = planPage(level, { ...fresh(9), weakFacts, mixMulDiv: true }, createRng(1));
+    const off = planPage(level, { ...fresh(9), weakFacts }, createRng(1));
+    expect(on.weak.map((p) => p.key)).toContain('5×7');
+    expect(off.weak).toHaveLength(0);
+  });
+
+  it('remembers a × fact missed on a mixed page, and rates the level skill', () => {
+    const level = getLevel(3)!;
+    const answers: Answer[] = [
+      { problem: mul(5, 7), correct: false, tries: 2, ms: 4000 },
+      { problem: add(4, 5, 'add-within-10'), correct: true, tries: 1, ms: 2000 },
+    ];
+    const after = applyPage(
+      { ...fresh(9), mixMulDiv: true },
+      level,
+      evaluation(true, 3),
+      answers,
+      9,
+    );
+    expect(after.weakFacts.map((w) => w.problem.key)).toEqual(['5×7']);
+    expect(after.ratings[level.skill]).toBeDefined();
+    expect(after.ratings['mul-5']).toBeUndefined();
   });
 });

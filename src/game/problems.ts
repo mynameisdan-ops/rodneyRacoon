@@ -258,10 +258,20 @@ export function generateProblem(skill: SkillId, rng: Rng, difficulty: number): P
 }
 
 /**
+ * Other skills mixed into a page (the parent's "× and ÷ in every page"): `count` places on
+ * the page get a problem from one of `skills`, each at its own difficulty.
+ */
+export interface PageMix {
+  count: number;
+  skills: readonly { skill: BaseSkillId; difficulty: number }[];
+}
+
+/**
  * Builds a page of `count` problems. Never repeats a fact back-to-back, and avoids
  * repeats altogether where the skill has enough variety (tiny skills like
- * add-within-5 will still repeat). `weak` facts (ones the player missed before) are
- * mixed in at random places; the caller decides how many.
+ * add-within-5 will still repeat). `mix` puts problems of other skills in random places.
+ * `weak` facts (ones the player missed before) are mixed in at random places; the caller
+ * decides how many.
  */
 export function generatePage(
   skill: SkillId,
@@ -269,21 +279,43 @@ export function generatePage(
   rng: Rng,
   difficulty: number,
   weak: readonly Problem[] = [],
+  mix?: PageMix,
 ): Problem[] {
   const page: Problem[] = [];
   const used = new Set<string>();
+  const mixed = mixSlots(count, mix, rng);
   for (let i = 0; i < count; i++) {
     const prevKey = page[page.length - 1]?.key;
-    let p = generateProblem(skill, rng, difficulty);
+    const make =
+      mixed.has(i) && mix ? pickMix(mix, rng) : () => generateProblem(skill, rng, difficulty);
+    let p = make();
     for (let attempt = 0; attempt < 50; attempt++) {
       const backToBack = p.key === prevKey;
       if (!backToBack && (!used.has(p.key) || attempt >= 10)) break;
-      p = generateProblem(skill, rng, difficulty);
+      p = make();
     }
     used.add(p.key);
     page.push(p);
   }
   return mixIn(page, weak, rng);
+}
+
+/** The places on a page that get a mixed-in skill (none without a mix). */
+function mixSlots(count: number, mix: PageMix | undefined, rng: Rng): Set<number> {
+  if (!mix || mix.count <= 0 || mix.skills.length === 0) return new Set();
+  const free = Array.from({ length: count }, (_, i) => i);
+  const slots = new Set<number>();
+  while (slots.size < Math.min(mix.count, count)) {
+    const at = Math.floor(rng.next() * free.length);
+    slots.add(free.splice(at, 1)[0]!);
+  }
+  return slots;
+}
+
+/** A maker for one mixed-in place: one of the mix's skills, kept for that place's retries. */
+function pickMix(mix: PageMix, rng: Rng): () => Problem {
+  const { skill, difficulty } = rng.pick(mix.skills);
+  return () => generateProblem(skill, rng, difficulty);
 }
 
 /** Puts each weak fact on the page once, never next to the same fact. */
