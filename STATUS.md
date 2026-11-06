@@ -1,7 +1,7 @@
 # Status: The Long Way Home (rodneyRacoon)
 
-Last updated: Nov 6, 2026 (the repo is public and Pages is on, but GitHub cancels every Pages
-deployment so far). History: `docs/decisions.md`.
+Last updated: Nov 6, 2026 (the repo is public and the game is live on GitHub Pages).
+History: `docs/decisions.md`.
 
 ## Goals
 
@@ -35,10 +35,9 @@ are playable with rewards, audio and parent settings.
   once Pages is on.
 - **M8 (avatars from the user's photos)** waits for the photos; it will be save v8.
 - **Checks:** 500 unit tests, lint and build pass; CI runs them on every push.
-- **Deploy:** the repo is public and Pages is on (Source: GitHub Actions) since Nov 6. The
-  Deploy workflow builds fine, but GitHub cancels the Pages deployment ("Deployment cancelled",
-  ~12 s; the first try sat queued 10 min). GitHub's status page says Pages is operational, so
-  it's likely account-side (an unverified primary email, or a new account held for review).
+- **Live:** https://mynameisdan-ops.github.io/rodneyRacoon/ (public repo, Pages Source: GitHub
+  Actions, since Nov 6). Every push to `main` deploys. The game, manifest, service worker and
+  icons load there with no console errors.
 - **Known gaps:** nothing has run on the tablet yet: the repainted scenes cost 15–20 ms a frame in
   the dev build at 5× CPU throttle and their first frame hitches 0.5–0.8 s; the audio is
   untested on a real tablet speaker. The main JS chunk is 760 kB (about 210 kB gzipped), fine
@@ -47,15 +46,12 @@ are playable with rewards, audio and parent settings.
 
 ## Next steps
 
-1. Unblock the Pages deploy: the user checks github.com/settings/emails (primary email
-   verified) and the repo's Settings → Pages page for a banner, then re-runs Deploy (Actions →
-   Deploy → Run workflow). If it still cancels, ask GitHub Support.
-2. Install on the PC and the tablet from the Pages URL and play: scene frame rate and the
+1. Install on the PC and the tablet from the Pages URL and play: scene frame rate and the
    first-frame hitch, sound levels, Settings at tablet size. Notes go in `docs/feedback.md`.
-3. M8 (avatars from the user's photos) when the photos are ready.
+2. M8 (avatars from the user's photos) when the photos are ready.
 
 ## Handoff
 
 - **Branch:** `main`, pushed, with `m9-audio` and `m10-settings-deploy` merged. On the user's
   PC, `handover.md` is the user's own old file (out of date; leave it).
-- **Waiting on the user:** the Pages deploy (see step 1), a play on the tablet, photos for M8.
+- **Waiting on the user:** installing and playing on the PC and the tablet, photos for M8.
