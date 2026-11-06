@@ -296,4 +296,22 @@ describe('× and ÷ in every page (mixMulDiv)', () => {
     expect(on.weak.map((p) => p.key)).toContain('5×7');
     expect(off.weak).toHaveLength(0);
   });
+
+  it('remembers a × fact missed on a mixed page, and rates the level skill', () => {
+    const level = getLevel(3)!;
+    const answers: Answer[] = [
+      { problem: mul(5, 7), correct: false, tries: 2, ms: 4000 },
+      { problem: add(4, 5, 'add-within-10'), correct: true, tries: 1, ms: 2000 },
+    ];
+    const after = applyPage(
+      { ...fresh(9), mixMulDiv: true },
+      level,
+      evaluation(true, 3),
+      answers,
+      9,
+    );
+    expect(after.weakFacts.map((w) => w.problem.key)).toEqual(['5×7']);
+    expect(after.ratings[level.skill]).toBeDefined();
+    expect(after.ratings['mul-5']).toBeUndefined();
+  });
 });

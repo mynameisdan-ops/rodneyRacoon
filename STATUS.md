@@ -37,7 +37,7 @@ are playable with rewards, audio and parent settings.
   pages on levels 1–24) and **Blocks** (each problem drawn as blocks that join, leave, close up
   or split; `#demo/page/12/blocks`, `#demo/page/3/mix`).
 - **M8 (avatars from the user's photos)** waits for the photos; it will be save v9.
-- **Checks:** 518 unit tests, lint and build pass; CI runs them on every push.
+- **Checks:** 519 unit tests, lint and build pass; CI runs them on every push.
 - **Live:** https://mynameisdan-ops.github.io/rodneyRacoon/ (public repo, Pages Source: GitHub
   Actions, since Nov 6). Every push to `main` deploys. The game, manifest, service worker and
   icons load there with no console errors.
